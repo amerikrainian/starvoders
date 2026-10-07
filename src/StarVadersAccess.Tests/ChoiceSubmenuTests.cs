@@ -20,8 +20,10 @@ namespace StarVadersAccess.Tests
             public int Value = 1;
             public bool SpeakTitle;
             public bool HideCombo; // the picked option removed the combo (focus must land elsewhere)
+            public string Name;    // a screen name, spoken when the screen takes focus
 
             public override string Key => "test.combo";
+            public override string ScreenName => Name;
             public override bool IsActive() => true;
 
             public override void Build(GraphBuilder b)
@@ -67,7 +69,7 @@ namespace StarVadersAccess.Tests
             ScreenManager.Tick();
         }
 
-        private static void Run(ComboScreen screen, System.Action<List<string>, FakeNavInput> body)
+        private static void Run(ComboScreen screen, System.Action<List<string>, FakeNavInput> body, string[] opening = null)
         {
             var spoken = new List<string>();
             var input = new FakeNavInput { FrameCount = 1 };
@@ -80,7 +82,7 @@ namespace StarVadersAccess.Tests
             {
                 ScreenManager.Register(screen);
                 Tick(input);
-                Assert.Equal(new[] { "Settings, list, Display Mode, combo box, Windowed Borderless, 1 of 2" }, spoken.ToArray());
+                Assert.Equal(opening ?? new[] { "Settings, list, Display Mode, combo box, Windowed Borderless, 1 of 2" }, spoken.ToArray());
                 spoken.Clear();
                 body(spoken, input);
             }
@@ -159,6 +161,24 @@ namespace StarVadersAccess.Tests
                 Tick(input);
                 Assert.Equal(new[] { "VSync, toggle" }, spoken.ToArray());
             });
+        }
+
+        [Fact]
+        public void ClosingTheListDoesNotRepeatTheScreenName()
+        {
+            var screen = new ComboScreen { Name = "Options" };
+            Run(screen, (spoken, input) =>
+            {
+                Assert.True(Navigation.DispatchJustPressed(Action(UiActions.Activate)));
+                Tick(input);
+                spoken.Clear();
+
+                // The list was the screen's own child: focus coming back is no screen change, so
+                // only the combo box is read, not "Options" again.
+                Assert.True(Navigation.DispatchJustPressed(Action(UiActions.Activate)));
+                Tick(input);
+                Assert.Equal(new[] { "Display Mode, combo box, Windowed Borderless, 1 of 2" }, spoken.ToArray());
+            }, opening: new[] { "Options", "Settings, list, Display Mode, combo box, Windowed Borderless, 1 of 2" });
         }
 
         [Fact]

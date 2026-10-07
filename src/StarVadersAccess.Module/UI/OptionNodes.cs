@@ -77,15 +77,52 @@ namespace StarVadersAccess.Module.UI
             return vt;
         }
 
-        /// <summary>A chooser row (resolution, screen type, skins): "label, combo box, current";
-        /// Left and Right step through the choices with the row's own arrows, Enter steps forward.</summary>
+        /// <summary>A chooser row (resolution, screen type, skins) as a combo box: "label, combo box,
+        /// current"; Enter opens the choices as a list landing on the current one, where Enter picks
+        /// and Escape leaves the value alone (guildrun's dropdown). Left and Right navigate. The
+        /// game's arrows only move <c>_currentOptionIndex</c> (wrapping) and redraw the text with
+        /// <c>UpdateText</c>; a pick does the same, and the settings read the index on Apply.</summary>
         public static NodeVtable Chooser(OptionChooser row)
         {
             Func<string> label = () => Label(row);
             Func<string> value = () => row.CurrentOptionText != null ? row.CurrentOptionText.text : null;
-            var vt = Row(row, ControlTypes.ComboBox, label, value, null, onActivate: () => row.OnRightPressed());
-            vt.OnAdjust = (sign, large) => Step(sign, false, row.OnRightPressed, row.OnLeftPressed);
+            var vt = Row(row, ControlTypes.ComboBox, label, value, null, onActivate: () => OpenChoices(row, label));
+            vt.StateText = null; // Enter opens the list, which is its own feedback: no value echo first
             return vt;
+        }
+
+        private static void OpenChoices(OptionChooser row, Func<string> label)
+        {
+            var keys = row.OptionKeys;
+            int count = keys != null ? keys.Count : 0;
+            if (count == 0) return;
+            int current = row._currentOptionIndex;
+            var choices = new List<Core.Screens.ChoiceOption>();
+            for (int i = 0; i < count; i++)
+            {
+                int index = i;
+                choices.Add(new Core.Screens.ChoiceOption(ChoiceText(row, i, current), () =>
+                {
+                    if (row._currentOptionIndex == index) return;
+                    row._currentOptionIndex = index;
+                    row.UpdateText();
+                }));
+            }
+            // The combo box just read its own label: the list speaks only the option landed on.
+            Core.Screens.ChoiceSubmenuScreen.Open(label(), choices, current, speakTitle: false);
+        }
+
+        // An option as the game draws it: the shown text for the current one (the skin choosers set
+        // theirs another way than their keys), else the key, through the game's "<key>_Misc"
+        // localization when the chooser is localized (UpdateText's LocalizeMisc).
+        private static string ChoiceText(OptionChooser row, int index, int current)
+        {
+            if (index == current && row.CurrentOptionText != null && !string.IsNullOrWhiteSpace(row.CurrentOptionText.text))
+                return row.CurrentOptionText.text;
+            string key = row.OptionKeys[index];
+            if (!row.IsLocalized || string.IsNullOrEmpty(key)) return key;
+            try { return LocalizationUtils.LocalizeSynchronous(key + "_Misc") ?? key; }
+            catch (Exception) { return key; }
         }
 
         /// <summary>A button row: "label, button"; Enter is the row's click.</summary>

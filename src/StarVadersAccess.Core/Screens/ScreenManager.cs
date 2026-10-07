@@ -16,6 +16,7 @@ namespace StarVadersAccess.Core.Screens
         private static readonly List<Screen> _registered = new List<Screen>();
         private static List<Screen> _stack = new List<Screen>();
         private static Screen _focused; // the deepest screen the navigator is currently attached to
+        private static readonly List<Screen> _focusedAncestors = new List<Screen>(); // its parent chain when it took focus
 
         public static Screen Current => _stack.Count > 0 ? _stack[_stack.Count - 1].DeepestActiveScreen() : null;
         public static IReadOnlyList<Screen> Stack => _stack;
@@ -41,6 +42,7 @@ namespace StarVadersAccess.Core.Screens
             for (int i = _stack.Count - 1; i >= 0; i--) PopTree(_stack[i]);
             _stack = new List<Screen>();
             _focused = null;
+            _focusedAncestors.Clear();
             _registered.Clear();
             Navigation.Attach(null);
         }
@@ -104,8 +106,16 @@ namespace StarVadersAccess.Core.Screens
             var cur = Current;
             if (ReferenceEquals(cur, _focused)) return;
             _focused?.OnUnfocus();
+            // Focus handed back to an ancestor of the screen that had it: one of its own children
+            // closed. The ancestors are taken when a screen gains focus, since removing a child
+            // clears its ParentScreen before this runs.
+            bool fromChild = cur != null && _focusedAncestors.Contains(cur);
             _focused = cur;
-            Safe(() => cur?.OnFocus(), cur, "OnFocus"); // speaks the screen name
+            _focusedAncestors.Clear();
+            for (var p = cur?.ParentScreen; p != null; p = p.ParentScreen) _focusedAncestors.Add(p);
+            if (cur != null) cur.ReturningFromChild = fromChild;
+            Safe(() => cur?.OnFocus(), cur, "OnFocus"); // speaks the screen name, unless fromChild
+            if (cur != null) cur.ReturningFromChild = false;
             // Bind the navigator; the initial-focus landing is announced by EnsureFocus once the screen's
             // content exists.
             Navigation.Attach(cur);

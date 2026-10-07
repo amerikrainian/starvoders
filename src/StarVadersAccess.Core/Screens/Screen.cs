@@ -85,10 +85,15 @@ namespace StarVadersAccess.Core.Screens
         public virtual void OnFocus()
         {
             // Screen-change announcement (never interrupt). The Navigator separately announces the
-            // focused element within the screen.
-            if (!string.IsNullOrEmpty(ScreenName) && Navigation.FocusActive())
+            // focused element within the screen. Focus coming back from this screen's own child (a
+            // dropdown's list closing) is no screen change: the name was heard on entry.
+            if (!string.IsNullOrEmpty(ScreenName) && Navigation.FocusActive() && !ReturningFromChild)
                 Speech.Say(ScreenName);
         }
+
+        /// <summary>True while <see cref="OnFocus"/> runs for focus handed back by one of this screen's
+        /// own children (set by ScreenManager).</summary>
+        public bool ReturningFromChild { get; internal set; }
 
         public virtual void OnUnfocus() { }
         public virtual void OnPop() { }

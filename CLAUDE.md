@@ -113,6 +113,10 @@ separately. Host F6 uses the same OS read.
   under `MainPanel` by name (the Graphics page has its own `ApplyButton`: never look these up
   scene-wide). Escape = Apply & Exit (the game wires `OnCancelEvent` to `ApplyButton.OnClick`).
   `UI/OptionNodes` drives rows through their own `OnClick`/`OnLeftPressed`/`OnRightPressed`;
+  choosers (`OptionChooser`) are combo boxes in guildrun's dropdown pattern (Enter pushes a
+  `ChoiceSubmenuScreen` of the options, a pick sets `_currentOptionIndex` + `UpdateText`, which is
+  all the game's arrows do; option text = the key, or `LocalizeSynchronous(key + "_Misc")` when
+  `IsLocalized`; no `StateText`, so Enter does not echo the value before the list);
   label = `OptionView.Description`; a tooltip only where the "?" (`TooltipTrigger`) is active:
   several Graphics rows have `HasTooltip` set with the "?" hidden and copied text. Volumes are 0-1
   (read as percent), animation speeds 0-4 whole. Key binding rows are read only (rebinding listens
