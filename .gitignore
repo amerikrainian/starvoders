@@ -1,0 +1,20 @@
+# The decompiled game reference (game/il2cppdump, the derived types.tsv and version.json, the notes):
+# regenerated locally with `uv run python tools/python/dump_game.py`, never committed.
+/game/
+
+# Build output
+bin/
+obj/
+*.user
+.vs/
+
+# Machine-specific build overrides
+Directory.Build.local.props
+
+# Release artifacts (build_release.ps1, build-installer.ps1) and the installer's cargo output
+releases/
+installer/target/
+
+# The rendered manual (mdbook build docs_src)
+docs_src/book/
+tools/python/__pycache__/
