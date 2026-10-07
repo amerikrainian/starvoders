@@ -105,7 +105,18 @@ separately. Host F6 uses the same OS read.
 - Screens so far: `BootScreen` (title: `BootupController.OnPressAnything`, up while
   `IsFinishedLoadingGame && !IsEndingScene`), `MainMenuScreen` (the game's `VerticalViewItemList`,
   then profile, language dropdown, News/Discord/Credits by mod words), `TutorialSelectionScreen`
-  (layer 10, exclusive; Escape is `OnClickBack`), plus guildrun's `HelpScreen` and `ModMenuScreen`.
+  (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), plus guildrun's
+  `HelpScreen` and `ModMenuScreen`.
+- Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
+  tabs carry a selected part and the row `entry` is `_currentTab`, since landing on a tab selects
+  it), the page (`Panels[_currentTab]`, its top-level view items), and the bottom buttons found
+  under `MainPanel` by name (the Graphics page has its own `ApplyButton`: never look these up
+  scene-wide). Escape = Apply & Exit (the game wires `OnCancelEvent` to `ApplyButton.OnClick`).
+  `UI/OptionNodes` drives rows through their own `OnClick`/`OnLeftPressed`/`OnRightPressed`;
+  label = `OptionView.Description`; a tooltip only where the "?" (`TooltipTrigger`) is active:
+  several Graphics rows have `HasTooltip` set with the "?" hidden and copied text. Volumes are 0-1
+  (read as percent), animation speeds 0-4 whole. Key binding rows are read only (rebinding listens
+  on the keyboard focus mode disables, and the game's bindings matter only with focus mode off).
 
 ## Dev driver (Debug only; `SVA_NO_DEV=1` disables, `SVA_DEV_PORT` sets the port, default 8772)
 Guildrun's server unchanged: `/input`, `/nav`, `/gui`, `/speech`, `/log`, `/eval` (Roslyn, every

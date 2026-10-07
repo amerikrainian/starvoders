@@ -27,6 +27,7 @@ state.expanded=erweitert
 state.collapsed=reduziert
 value.blank=leer
 value.space=Leerzeichen
+value.percent={0} Prozent
 edit.begin=Bearbeiten
 edit.selected={0} ausgewählt
 edit.unselected={0} nicht ausgewählt

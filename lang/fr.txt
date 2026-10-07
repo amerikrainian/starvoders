@@ -27,6 +27,7 @@ state.expanded=développé
 state.collapsed=réduit
 value.blank=vide
 value.space=espace
+value.percent={0} pour cent
 edit.begin=édition
 edit.selected={0} sélectionné
 edit.unselected={0} désélectionné

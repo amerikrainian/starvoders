@@ -27,6 +27,7 @@ state.expanded=expandido
 state.collapsed=contraído
 value.blank=en blanco
 value.space=espacio
+value.percent={0} por ciento
 edit.begin=edición
 edit.selected={0} seleccionado
 edit.unselected={0} no seleccionado

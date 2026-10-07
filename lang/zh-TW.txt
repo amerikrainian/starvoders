@@ -27,6 +27,7 @@ state.expanded=展開
 state.collapsed=折疊
 value.blank=空白
 value.space=空格
+value.percent=百分之{0}
 edit.begin=編輯
 edit.selected={0} 已選取
 edit.unselected={0} 未選取

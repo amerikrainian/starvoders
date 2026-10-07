@@ -27,6 +27,7 @@ state.expanded=развёрнуто
 state.collapsed=свёрнуто
 value.blank=пусто
 value.space=пробел
+value.percent={0} процентов
 edit.begin=редактирование
 edit.selected=выделено: {0}
 edit.unselected=выделение снято: {0}

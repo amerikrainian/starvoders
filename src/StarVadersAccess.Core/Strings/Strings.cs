@@ -56,6 +56,8 @@ namespace StarVadersAccess.Core.Strings
             D("state.collapsed", "collapsed"),
             D("value.blank", "blank"),
             D("value.space", "space"),
+            // A 0 to 1 slider's value (the volumes). {0} = the whole percent.
+            D("value.percent", "{0} percent"),
             D("edit.begin", "editing"),
             D("edit.selected", "{0} selected"),
             D("edit.unselected", "{0} unselected"),
@@ -284,6 +286,7 @@ namespace StarVadersAccess.Core.Strings
         public static string ExpandedState(bool expanded) => Get(expanded ? "state.expanded" : "state.collapsed");
         public static string ValueBlank => Get("value.blank");
         public static string ValueSpace => Get("value.space");
+        public static string Percent(int percent) => F("value.percent", percent);
         public static string EditBegin => Get("edit.begin");
         public static string EditSelected(string text) => F("edit.selected", text);
         public static string EditUnselected(string text) => F("edit.unselected", text);
