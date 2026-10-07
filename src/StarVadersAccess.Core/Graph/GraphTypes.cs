@@ -135,6 +135,12 @@ namespace StarVadersAccess.Core.Graph
         /// here, so browsing them is choosing them and the landing reads "selected".</summary>
         public Action OnFocus;
 
+        /// <summary>Optional. Whether the control is the selected member of its group, NOT spoken: what
+        /// entering its Tab-stop lands on when the stop has no remembered position, as a selected-kind
+        /// announcement part would be. For tabs that select on landing, where "selected" would be said
+        /// on every tab.</summary>
+        public Func<bool> IsSelected;
+
         /// <summary>Optional. Secondary activation, the right-click equivalent (Backspace).</summary>
         public Action OnSecondary;
 

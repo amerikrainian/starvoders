@@ -108,7 +108,7 @@ separately. Host F6 uses the same OS read.
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
-  tabs carry a selected part and the row `entry` is `_currentTab`, since landing on a tab selects
+  tabs carry `NodeVtable.IsSelected` (unspoken: landing selects a tab anyway) and the row `entry` is `_currentTab`, since landing on a tab selects
   it), the page (`Panels[_currentTab]`, its top-level view items), and the bottom buttons found
   under `MainPanel` by name (the Graphics page has its own `ApplyButton`: never look these up
   scene-wide). Escape = Apply & Exit (the game wires `OnCancelEvent` to `ApplyButton.OnClick`).

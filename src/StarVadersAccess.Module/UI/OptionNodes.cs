@@ -40,9 +40,10 @@ namespace StarVadersAccess.Module.UI
             return body; // the last text: the first is the tooltip's title
         }
 
-        /// <summary>A tab of the strip: "label, tab[, selected]"; landing on it shows its page, as a
-        /// tab does. The selected part is what Tab-stop entry lands on when the strip has no
-        /// remembered position (a fresh render, a reload): landing elsewhere would switch the page.</summary>
+        /// <summary>A tab of the strip: "label, tab"; landing on it shows its page, as a tab does, so
+        /// no "selected" is spoken. Its <see cref="NodeVtable.IsSelected"/> is what Tab-stop entry
+        /// lands on when the strip has no remembered position (a fresh render, a reload): landing
+        /// elsewhere would switch the page.</summary>
         public static NodeVtable Tab(AViewItem tab, Func<bool> selected, Action select)
         {
             Func<string> label = () => ViewNodes.Label(tab);
@@ -50,7 +51,8 @@ namespace StarVadersAccess.Module.UI
             return new NodeVtable
             {
                 ControlType = ControlTypes.Tab,
-                Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(label), GameNodes.SelectedPart(selected) },
+                Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(label) },
+                IsSelected = selected,
                 SearchText = label,
                 OnActivate = pick,
                 OnFocus = () => { ViewNodes.Hover(tab); pick(); },

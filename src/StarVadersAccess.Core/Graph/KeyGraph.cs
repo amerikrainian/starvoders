@@ -455,13 +455,20 @@ namespace StarVadersAccess.Core.Graph
             return null;
         }
 
-        /// <summary>The first node in a stop that reads as SELECTED (carries a non-empty selected-kind
-        /// announcement part), or null.</summary>
+        /// <summary>The first node in a stop that reads as SELECTED (its <see cref="NodeVtable.IsSelected"/>
+        /// says so, or it carries a non-empty selected-kind announcement part), or null.</summary>
         public static GraphNode SelectedNodeInStop(GraphRender render, object stopKey)
         {
             foreach (var n in render.Order)
             {
                 if (!Equals(n.StopKey, stopKey)) continue;
+                var isSelected = n.Vtable?.IsSelected;
+                if (isSelected != null)
+                {
+                    bool yes = false;
+                    try { yes = isSelected(); } catch { }
+                    if (yes) return n;
+                }
                 var anns = n.Vtable?.Announcements;
                 if (anns == null) continue;
                 foreach (var a in anns)

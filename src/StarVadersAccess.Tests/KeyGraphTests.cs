@@ -350,6 +350,30 @@ namespace StarVadersAccess.Tests
         }
 
         [Fact]
+        public void TabIntoStopLandsOnUnspokenSelectedMember()
+        {
+            // Tabs that select on landing carry IsSelected instead of a spoken part: the landing finds
+            // the shown tab, and nothing reads "selected".
+            var state = new GraphState();
+            NodeVtable Tab(string label, bool selected) => new NodeVtable
+            {
+                Announcements = new[] { NodeAnnouncement.Static(label) },
+                IsSelected = () => selected,
+            };
+            var g = new KeyGraph(() => new GraphBuilder()
+                .AddItem(Id("a1"), Vt("A1"))
+                .BeginStop()
+                .AddItem(Id("t1"), Tab("Gameplay", false))
+                .AddItem(Id("t2"), Tab("Graphics", true))
+                .Build(), state);
+
+            var r = g.MoveStop(+1, wrap: false);
+            Assert.True(r.Moved);
+            Assert.Equal(Id("t2"), r.To.Id);
+            Assert.Equal("Graphics", GraphAnnouncer.LeafText(r.To));
+        }
+
+        [Fact]
         public void RawBlockBetweenMenuRowsStaysReachable()
         {
             // Menu row, raw block (its own internal wiring), menu row, all one stop. Menu wiring must
