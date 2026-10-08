@@ -15,7 +15,6 @@ role.tab=Registerkarte
 role.key binding=Tastenbelegung
 role.item=Gegenstand
 role.heading=Überschrift
-role.list=Liste
 role.table=Tabelle
 role.link=Link
 role.edit=Eingabefeld

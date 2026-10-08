@@ -15,7 +15,6 @@ role.tab=pestaña
 role.key binding=asignación de tecla
 role.item=objeto
 role.heading=encabezado
-role.list=lista
 role.table=tabla
 role.link=enlace
 role.edit=cuadro de edición

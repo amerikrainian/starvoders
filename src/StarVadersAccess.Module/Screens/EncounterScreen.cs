@@ -58,7 +58,7 @@ namespace StarVadersAccess.Module.Screens
             {
                 var board = FightBoard.Read();
                 b.BeginStop(TargetsStop);
-                b.PushContext(FightState.Prompt(), Strings.RoleList);
+                b.PushContext(FightState.Prompt());
                 foreach (var target in selection.Others)
                     b.AddItem(ControlId.Structural("fight:target:" + target.GetInstanceID()), Target(target, board));
                 b.PopContext();
@@ -67,13 +67,13 @@ namespace StarVadersAccess.Module.Screens
             BuildBoard(b);
 
             b.BeginStop("fight:hand");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             foreach (var card in FightState.Hand())
                 b.AddItem(ControlId.Structural("fight:card:" + card.GetInstanceID()), Card(card));
             b.PopContext();
 
             b.BeginStop("fight:rack");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             var endTurn = view.EndTurnView;
             if (ViewNodes.IsShown(endTurn))
                 b.AddItem(ControlId.Structural("fight:endturn"), Button(endTurn, () => GameLoc.Get("EndTurnTitle_Misc"),
@@ -94,7 +94,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             b.BeginStop("fight:status");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             b.AddItem(ControlId.Structural("fight:turn"), Stat(TurnText, null));
             var doom = view.DoomView;
             if (ViewNodes.IsShown(doom))

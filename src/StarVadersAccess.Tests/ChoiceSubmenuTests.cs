@@ -133,7 +133,7 @@ namespace StarVadersAccess.Tests
             {
                 Assert.True(Navigation.DispatchJustPressed(Action(UiActions.Activate)));
                 Tick(input);
-                Assert.Equal(new[] { "Display Mode, list, Windowed Borderless, button, selected, 2 of 3" }, spoken.ToArray());
+                Assert.Equal(new[] { "Display Mode, Windowed Borderless, button, selected, 2 of 3" }, spoken.ToArray());
                 spoken.Clear();
 
                 // Escape leaves the value alone; the return still re-reads the control.

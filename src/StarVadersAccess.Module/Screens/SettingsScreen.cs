@@ -52,7 +52,7 @@ namespace StarVadersAccess.Module.Screens
             if (c == null) return;
 
             b.BeginStop("tabs");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             b.StartRow(entry: () => c._currentTab);
             for (int i = 0; i < TabNames.Length; i++)
             {
@@ -66,7 +66,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             b.BeginStop("page");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             var panels = c.Panels;
             int current = c._currentTab;
             var page = panels != null && current >= 0 && current < panels.Count ? panels[current] : null;
@@ -76,7 +76,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             b.BeginStop("actions");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             foreach (var name in ActionNames)
             {
                 var item = Bottom(c, name);

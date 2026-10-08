@@ -15,7 +15,6 @@ role.tab=sekme
 role.key binding=tuş ataması
 role.item=öğe
 role.heading=başlık
-role.list=liste
 role.table=tablo
 role.link=bağlantı
 role.edit=düzenleme alanı

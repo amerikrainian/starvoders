@@ -15,7 +15,6 @@ role.tab=вкладка
 role.key binding=сочетание клавиш
 role.item=предмет
 role.heading=заголовок
-role.list=список
 role.table=таблица
 role.link=ссылка
 role.edit=редактор

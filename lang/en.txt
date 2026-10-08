@@ -17,7 +17,6 @@ role.tab=tab
 role.key binding=key binding
 role.item=item
 role.heading=heading
-role.list=list
 role.table=table
 role.link=link
 role.edit=edit

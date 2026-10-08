@@ -35,7 +35,7 @@ namespace StarVadersAccess.Module.Screens
             var c = Controller;
             if (c == null) return;
 
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             var column = c.VerticalViewItemList;
             if (column != null)
                 foreach (var item in column)
@@ -43,7 +43,7 @@ namespace StarVadersAccess.Module.Screens
                         b.AddItem(ControlId.Structural("main:" + item.gameObject.name), ViewNodes.Button(item));
             b.PopContext();
 
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             AddButton(b, c.ProfileButton, "main:profile", null);
             var dropdown = c.LanguageSelector != null ? c.LanguageSelector.GetComponentInChildren<TMP_Dropdown>(false) : null;
             if (dropdown != null && dropdown.gameObject.activeInHierarchy)

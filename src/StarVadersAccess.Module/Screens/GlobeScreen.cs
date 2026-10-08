@@ -69,7 +69,7 @@ namespace StarVadersAccess.Module.Screens
             }
 
             b.BeginStop("globe:encounters");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             var panels = c.CurrentRoomChoicePanels;
             if (panels != null)
                 for (int i = 0; i < panels.Count; i++)
@@ -81,7 +81,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             b.BeginStop("globe:actions");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             var proceed = c.ProceedButton;
             if (ViewNodes.IsShown(proceed))
                 b.AddItem(ControlId.Structural("globe:proceed"), ViewNodes.Button(proceed, enabled: () => proceed.ButtonEnabled));

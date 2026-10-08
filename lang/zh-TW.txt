@@ -15,7 +15,6 @@ role.tab=索引標籤
 role.key binding=按鍵綁定
 role.item=物品
 role.heading=標題
-role.list=清單
 role.table=表格
 role.link=連結
 role.edit=編輯方塊

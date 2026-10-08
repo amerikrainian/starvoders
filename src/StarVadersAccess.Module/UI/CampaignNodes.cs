@@ -53,7 +53,7 @@ namespace StarVadersAccess.Module.UI
             var portrait = c.CampaignPortraitView;
             if (portrait == null || !portrait.gameObject.activeInHierarchy) return;
             b.BeginStop(key + ":status");
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
 
             var doomTitle = Under<TMP_Text>(portrait, "CanvasGroup/Portrait/TitleText");
             var doomTip = Under<StarVaders.TooltipTrigger>(portrait, "CanvasGroup/Portrait/DoomTooltipTrigger");
@@ -118,7 +118,7 @@ namespace StarVadersAccess.Module.UI
             b.BeginStop(key + ":map");
             var (title, legend) = Tooltip(tip);
             string actText = GameText.Of(act);
-            b.PushContext(actText != null && title != null ? title + ", " + actText : title ?? actText, Strings.RoleList);
+            b.PushContext(actText != null && title != null ? title + ", " + actText : title ?? actText);
             int current = -1;
             for (int i = 0; i < map.nodes.Count; i++)
             {

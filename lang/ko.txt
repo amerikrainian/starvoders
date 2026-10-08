@@ -15,7 +15,6 @@ role.tab=탭
 role.key binding=키 설정
 role.item=항목
 role.heading=제목
-role.list=목록
 role.table=표
 role.link=링크
 role.edit=편집

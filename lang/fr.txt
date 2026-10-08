@@ -15,7 +15,6 @@ role.tab=onglet
 role.key binding=raccourci clavier
 role.item=objet
 role.heading=titre
-role.list=liste
 role.table=tableau
 role.link=lien
 role.edit=zone d'édition

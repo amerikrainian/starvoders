@@ -78,7 +78,7 @@ namespace StarVadersAccess.Core.Screens
 
         public override void Build(GraphBuilder b)
         {
-            if (_speakTitle) b.PushContext(_title, Strings.RoleList);
+            if (_speakTitle) b.PushContext(_title);
             for (int i = 0; i < _options.Count; i++)
             {
                 int idx = i;

@@ -15,7 +15,6 @@ role.tab=タブ
 role.key binding=キー割り当て
 role.item=アイテム
 role.heading=見出し
-role.list=リスト
 role.table=テーブル
 role.link=リンク
 role.edit=エディット

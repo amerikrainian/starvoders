@@ -42,7 +42,6 @@ namespace StarVadersAccess.Core.Strings
             D("role.key binding", "key binding"),
             D("role.item", "item"),
             D("role.heading", "heading"),
-            D("role.list", "list"),
             D("role.table", "table"),
             D("role.link", "link"),
             D("role.edit", "edit"),
@@ -358,7 +357,6 @@ namespace StarVadersAccess.Core.Strings
         /// <summary>The role word for a control type key ("button" -> "button"); null when none.</summary>
         public static string Role(string word) => Has("role." + word) ? Get("role." + word) : null;
         public static string RoleTable => Get("role.table");
-        public static string RoleList => Get("role.list");
         public static string RoleHeading => Get("role.heading");
 
         public static string StateDisabled => Get("state.disabled");

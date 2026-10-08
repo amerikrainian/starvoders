@@ -34,7 +34,7 @@ namespace StarVadersAccess.Module.Screens
         {
             var c = Controller;
             if (c == null) return;
-            b.PushContext(null, Strings.RoleList);
+            b.PushContext(null);
             Add(b, c, "StartButton", null, describe: true);
             Add(b, c, "QuickStartButton", null, describe: true);
             Add(b, c, "BackButton", () => Strings.Get("bind.ui.back"), describe: false);

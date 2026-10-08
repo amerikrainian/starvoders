@@ -15,7 +15,6 @@ role.tab=选项卡
 role.key binding=按键绑定
 role.item=物品
 role.heading=标题
-role.list=列表
 role.table=表格
 role.link=链接
 role.edit=编辑框

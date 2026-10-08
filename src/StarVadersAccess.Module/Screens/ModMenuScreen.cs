@@ -35,7 +35,7 @@ namespace StarVadersAccess.Module.Screens
 
         public override void Build(GraphBuilder b)
         {
-            b.PushContext(Strings.ScreenModMenu, Strings.RoleList);
+            b.PushContext(Strings.ScreenModMenu);
             b.AddItem(ControlId.Structural("modmenu:settings"), GameNodes.Button(() => Strings.ModSettings, () => PushChild(new ModSettingsScreen())));
             b.AddItem(ControlId.Structural("modmenu:keys"), GameNodes.Button(() => Strings.ModKeyHelp, () => PushChild(new KeyHelpScreen())));
             b.AddItem(ControlId.Structural("modmenu:close"), GameNodes.Button(() => Strings.ModClose, Close));
@@ -59,7 +59,7 @@ namespace StarVadersAccess.Module.Screens
         public override void Build(GraphBuilder b)
         {
             var settings = ModuleMain.Host != null ? ModuleMain.Host.Settings : null;
-            b.PushContext(Strings.ModSettings, Strings.RoleList);
+            b.PushContext(Strings.ModSettings);
             if (settings == null)
             {
                 b.AddItem(ControlId.Structural("modsettings:none"), GameNodes.Text(() => Strings.NoTooltip));
@@ -116,7 +116,7 @@ namespace StarVadersAccess.Module.Screens
                 foreach (var action in InputManager.Actions)
                     if (action.Category == category) actions.Add(action);
                 if (actions.Count == 0) continue;
-                b.PushContext(Strings.ModKeyCategory(category.ToString()), Strings.RoleList);
+                b.PushContext(Strings.ModKeyCategory(category.ToString()));
                 foreach (var action in actions)
                 {
                     var a = action;

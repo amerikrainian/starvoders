@@ -15,7 +15,6 @@ role.tab=guia
 role.key binding=atribuição de tecla
 role.item=item
 role.heading=cabeçalho
-role.list=lista
 role.table=tabela
 role.link=link
 role.edit=caixa de edição

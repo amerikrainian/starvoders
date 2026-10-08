@@ -41,7 +41,7 @@ namespace StarVadersAccess.Module.Screens
             if (c == null) return;
             var cards = Cards(c);
             b.BeginStop("deckview:cards");
-            b.PushContext(Title(cards), Strings.RoleList);
+            b.PushContext(Title(cards));
             foreach (var card in cards)
                 b.AddItem(ControlId.Structural("deckview:card:" + card.GetInstanceID()), Card(card));
             foreach (var grid in new[] { c._artifactGrid, c._artifactPilotUniqueGrid })
