@@ -87,19 +87,13 @@ namespace StarVadersAccess.Module.Fight
                     Turns = model.MaxTurns,
                     PlayerTurn = model.IsPlayerTurn,
                 };
+                // The model's figures, not the panels': hovering End Turn or a card previews them.
                 var doom = view.DoomView;
-                if (doom != null && doom.gameObject.activeInHierarchy)
-                {
-                    snap.DoomTitle = GameLoc.Get("DoomTitle_Misc");
-                    snap.Doom = UI.GameText.Of(doom.DoomText);
-                }
+                if (doom != null && doom.gameObject.activeInHierarchy) snap.Doom = Fight.Figure("Doom");
                 var heat = view.HeatView;
                 var group = heat != null ? heat.GetComponent<CanvasGroup>() : null;
                 if (heat != null && heat.gameObject.activeInHierarchy && (group == null || group.alpha > 0.05f))
-                {
-                    snap.HeatTitle = GameLoc.Get("HeatTitle_Misc");
-                    snap.Heat = UI.GameText.Of(heat._heatValueText);
-                }
+                    snap.Heat = Fight.Figure("Heat");
                 foreach (var entity in board.Entities)
                 {
                     var c = model.GridModel.GetEntityCoord(entity.ID.Cast<EntityID>(), false);

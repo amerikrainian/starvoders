@@ -108,6 +108,45 @@ namespace StarVadersAccess.Module.Fight
             return lines;
         }
 
+        // ---- the fight's figures ----
+
+        /// <summary>One of the fight's figures as the model holds it (<see cref="EncounterModel.Values"/>),
+        /// never as a panel draws it: hovering a card or End Turn makes the panels preview what it
+        /// would do ("Doom 5/5" while the model is at 3).</summary>
+        public static int? Value(EncounterValue key)
+        {
+            var values = Model?.Values;
+            try { return values != null && values.ContainsKey(key) ? values[key] : (int?)null; }
+            catch { return null; }
+        }
+
+        /// <summary>The Doom that loses the fight: the "/5" the Doom panel draws after its figure,
+        /// which a preview never changes.</summary>
+        public static int? DoomMax()
+        {
+            string text = GameText.Of(View?.DoomView?.DoomText);
+            int slash = text != null ? text.LastIndexOf('/') : -1;
+            return slash >= 0 && int.TryParse(text.Substring(slash + 1).Trim(), out int max) ? max : (int?)null;
+        }
+
+        /// <summary>"Doom 3/5", "Heat 1/3", "Power 2/4", "Mana 3/5": the game's title and the model's
+        /// figure over its maximum; null when the fight has no such figure.</summary>
+        public static string Figure(string which)
+        {
+            int? value, max;
+            switch (which)
+            {
+                case "Doom": value = Value(EncounterValue.Doom); max = DoomMax(); break;
+                case "Heat": value = Value(EncounterValue.Heat); max = Value(EncounterValue.MaxHeat); break;
+                case "Power": value = Value(EncounterValue.Power); max = Value(EncounterValue.MaxPower); break;
+                default: value = Value(EncounterValue.Mana); max = Value(EncounterValue.MaxMana); break;
+            }
+            if (value == null) return null;
+            string figure = max.HasValue && max.Value > 0 ? Core.Strings.Strings.Position(value.Value, max.Value) : value.Value.ToString();
+            string title = GameLoc.Get(which + "Title_Misc");
+            return title != null ? title + " " + figure : figure;
+        }
+
         // ---- target selection ----
 
         /// <summary>Whether the game is asking for a target (a card being played waits on it).</summary>

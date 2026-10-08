@@ -99,16 +99,16 @@ namespace StarVadersAccess.Module.Screens
             b.AddItem(ControlId.Structural("fight:turn"), Stat(TurnText, null));
             var doom = view.DoomView;
             if (ViewNodes.IsShown(doom))
-                b.AddItem(ControlId.Structural("fight:doom"), Stat(() => Figure("DoomTitle_Misc", doom.DoomText), () => GameLoc.Get("DoomPanelDesc_Misc")));
+                b.AddItem(ControlId.Structural("fight:doom"), Stat(() => FightState.Figure("Doom"), () => GameLoc.Get("DoomPanelDesc_Misc")));
             var heat = view.HeatView;
             if (ViewNodes.IsShown(heat) && Visible(heat))
-                b.AddItem(ControlId.Structural("fight:heat"), Stat(() => Figure("HeatTitle_Misc", heat._heatValueText), () => GameLoc.Get("HeatPanelDesc_Misc")));
+                b.AddItem(ControlId.Structural("fight:heat"), Stat(() => FightState.Figure("Heat"), () => GameLoc.Get("HeatPanelDesc_Misc")));
             var power = view.PowerView;
             if (ViewNodes.IsShown(power) && Visible(power))
-                b.AddItem(ControlId.Structural("fight:power"), Stat(() => PowerText(power), () => GameLoc.Get("PowerBankDesc_Misc")));
+                b.AddItem(ControlId.Structural("fight:power"), Stat(() => FightState.Figure("Power"), () => GameLoc.Get("PowerBankDesc_Misc")));
             var mana = view.ManaView;
             if (ViewNodes.IsShown(mana) && Visible(mana))
-                b.AddItem(ControlId.Structural("fight:mana"), Stat(() => ManaText(mana), () => GameLoc.Get("ManaPanelDesc_Misc")));
+                b.AddItem(ControlId.Structural("fight:mana"), Stat(() => FightState.Figure("Mana"), () => GameLoc.Get("ManaPanelDesc_Misc")));
             var stars = view._starBucksText;
             if (stars != null && stars.gameObject.activeInHierarchy)
                 b.AddItem(ControlId.Structural("fight:stars"), Stat(() => Join(GameLoc.Get("StarPanelTitle_Misc"), Number(stars)), () => GameLoc.Get("StarPanelDesc_Misc")));
@@ -434,14 +434,6 @@ namespace StarVadersAccess.Module.Screens
             var model = FightState.Model;
             return model != null ? Strings.FightTurn(model.TurnNumber, model.MaxTurns) : null;
         }
-
-        /// <summary>"Doom 0/5", "Heat 1/3": the game's title and the figure its panel draws.</summary>
-        public static string Figure(string titleKey, TMP_Text value) => Join(GameLoc.Get(titleKey), GameText.Of(value));
-
-        private static string PowerText(PowerView power) => Join(GameLoc.Get("PowerTitle_Misc"),
-            power._maxPower > 0 ? Strings.Position(power._power, power._maxPower) : GameText.Of(power._powerValueText));
-
-        private static string ManaText(ManaView mana) => Join(GameLoc.Get("ManaTitle_Misc"), GameText.Of(mana.GetComponentInChildren<TMP_Text>()));
 
         /// <summary>The objective the right-hand screen states when it shows nothing else.</summary>
         public static string Objective()

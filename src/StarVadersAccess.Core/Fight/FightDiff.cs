@@ -61,8 +61,8 @@ namespace StarVadersAccess.Core.Fight
             }
             foreach (var kv in byWho) lines.Add(S.FightTargets(kv.Key, string.Join("; ", kv.Value)));
 
-            if (after.Doom != null && after.Doom != before.Doom) lines.Add(Figure(after.DoomTitle, after.Doom));
-            if (after.Heat != null && after.Heat != before.Heat) lines.Add(Figure(after.HeatTitle, after.Heat));
+            if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
+            if (after.Heat != null && after.Heat != before.Heat) lines.Add(after.Heat);
             if (after.PlayerTurn && (!before.PlayerTurn || turnAdvanced)) lines.Add(S.FightTurn(after.Turn, after.Turns));
 
             var held = new HashSet<string>();
@@ -73,7 +73,5 @@ namespace StarVadersAccess.Core.Fight
             if (drawn.Count > 0) lines.Add(S.FightDrew(string.Join(", ", drawn)));
             return lines;
         }
-
-        private static string Figure(string title, string value) => string.IsNullOrEmpty(title) ? value : title + " " + value;
     }
 }

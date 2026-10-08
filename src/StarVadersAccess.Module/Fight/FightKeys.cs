@@ -43,8 +43,8 @@ namespace StarVadersAccess.Module.Fight
 
             Read("fight.coords", "Coordinates", KeyCode.C, Coords);
             Read("fight.turn", "Turn", KeyCode.T, EncounterScreen.TurnText);
-            Read("fight.doom", "Doom", KeyCode.D, () => Visible(Fight.View?.DoomView) ? EncounterScreen.Figure("DoomTitle_Misc", Fight.View.DoomView.DoomText) : null);
-            Read("fight.heat", "Heat", KeyCode.H, () => Visible(Fight.View?.HeatView) ? EncounterScreen.Figure("HeatTitle_Misc", Fight.View.HeatView._heatValueText) : null);
+            Read("fight.doom", "Doom", KeyCode.D, () => Visible(Fight.View?.DoomView) ? Fight.Figure("Doom") : null);
+            Read("fight.heat", "Heat", KeyCode.H, () => Visible(Fight.View?.HeatView) ? Fight.Figure("Heat") : null);
             Read("fight.objective", "Objective", KeyCode.O, EncounterScreen.Objective);
             Read("fight.mech", "Mech", KeyCode.M, MechLine);
             InputManager.Register("fight.mech.jump", "Go to the mech", InputCategory.Game, () => JumpTo(Mech()))

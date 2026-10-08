@@ -31,14 +31,12 @@ namespace StarVadersAccess.Core.Fight
     }
 
     /// <summary>The fight at one settled moment, what <see cref="FightDiff"/> compares. Doom and
-    /// Heat are kept as the panel draws them ("1/5"), with their titles, so a change reads as the
-    /// panel would.</summary>
+    /// Heat are kept as they read ("Doom 1/5"), so a change is said as the key reads it.</summary>
     public sealed class FightSnapshot
     {
         public int Turn, Turns;
         public bool PlayerTurn;
-        public string DoomTitle, Doom;
-        public string HeatTitle, Heat;
+        public string Doom, Heat;
         public List<EntitySnap> Entities = new List<EntitySnap>();
         public List<CardSnap> Hand = new List<CardSnap>();
         public List<DangerSnap> Dangers = new List<DangerSnap>();

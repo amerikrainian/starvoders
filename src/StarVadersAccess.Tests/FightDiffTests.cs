@@ -15,7 +15,7 @@ namespace StarVadersAccess.Tests
 
         private static FightSnapshot Snap(params EntitySnap[] entities)
         {
-            var s = new FightSnapshot { Turn = 1, Turns = 8, PlayerTurn = true, DoomTitle = "Doom", Doom = "0/5" };
+            var s = new FightSnapshot { Turn = 1, Turns = 8, PlayerTurn = true, Doom = "Doom 0/5" };
             s.Entities.AddRange(entities);
             return s;
         }
@@ -69,7 +69,7 @@ namespace StarVadersAccess.Tests
 
         private static FightSnapshot Mutate(FightSnapshot s, int x, int y)
         {
-            var copy = new FightSnapshot { Turn = s.Turn, Turns = s.Turns, PlayerTurn = s.PlayerTurn, DoomTitle = s.DoomTitle, Doom = s.Doom };
+            var copy = new FightSnapshot { Turn = s.Turn, Turns = s.Turns, PlayerTurn = s.PlayerTurn, Doom = s.Doom };
             copy.Entities.Add(Migo(1, x, y));
             return copy;
         }
@@ -79,7 +79,7 @@ namespace StarVadersAccess.Tests
         {
             var before = Snap(new EntitySnap { Key = "mech", Name = "mech", X = 3, Y = 2, Health = 1, IsMech = true });
             var after = Snap(new EntitySnap { Key = "mech", Name = "mech", X = 3, Y = 2, Health = 0, IsMech = true });
-            after.Doom = "1/5";
+            after.Doom = "Doom 1/5";
             Assert.Equal(new[] { "Doom 1/5" }, FightDiff.Lines(before, after));
         }
 
