@@ -15,10 +15,10 @@ namespace StarVadersAccess.Module.Screens
 {
     /// <summary>
     /// Run history (<c>HistoryScene</c>, <see cref="HistorySceneController"/>), one past run at a
-    /// time, one stop top to bottom: the run (its result as the heading, then the difficulty, time,
-    /// score, Doom, invaders defeated, highest combo, date and seed, as the panel words them; then
-    /// which run of how many with the previous and next arrows); its final deck as a row ("name,
-    /// cost, description", Left and Right); its artifacts as a row; Back. Escape is Back. Paging rebuilds the screen from the panel the game
+    /// time, one stop top to bottom, under the run's result: the difficulty, time, score, Doom,
+    /// invaders defeated and highest combo as the panel words them; its final deck as a row ("name,
+    /// cost, description", Left and Right); its artifacts as a row; the date and seed; which run of
+    /// how many with the previous and next arrows; then Back. Escape is Back. Paging rebuilds the screen from the panel the game
     /// redraws.
     /// </summary>
     public sealed class HistoryScreen : Screen
@@ -34,8 +34,9 @@ namespace StarVadersAccess.Module.Screens
             var c = Controller;
             if (c == null) return;
 
-            // One stop, read top to bottom: the run's lines, the deck as a row (Left and Right walk
-            // the cards), the artifacts as a row, Back at the bottom.
+            // One stop, read top to bottom: the run's figures, its deck as a row (Left and Right walk
+            // the cards), its artifacts as a row, the date and seed, the runs' arrows; Back at the
+            // bottom. All under the run's result, so leaving a row does not repeat it.
             b.BeginStop("history");
             b.PushContext(Result(c), null, positions: false);
             int i = 0;
@@ -44,12 +45,6 @@ namespace StarVadersAccess.Module.Screens
                 string text = line;
                 b.AddItem(ControlId.Structural("history:line" + i++), GameNodes.Text(() => text));
             }
-            if (ViewNodes.IsShown(c._leftArrow))
-                b.AddItem(ControlId.Structural("history:prev"), ViewNodes.Button(c._leftArrow, () => Strings.HistoryPrevious));
-            b.AddItem(ControlId.Structural("history:number"), GameNodes.Text(() => RunNumber(c)));
-            if (ViewNodes.IsShown(c._rightArrow))
-                b.AddItem(ControlId.Structural("history:next"), ViewNodes.Button(c._rightArrow, () => Strings.HistoryNext));
-            b.PopContext();
 
             var cards = c._allCards;
             if (cards != null && cards.Count > 0)
@@ -74,6 +69,15 @@ namespace StarVadersAccess.Module.Screens
                 b.EndRow();
                 b.PopContext();
             }
+
+            string date = GameText.Of(c.DateTimeSeedText);
+            if (date != null) b.AddItem(ControlId.Structural("history:date"), GameNodes.Text(() => GameText.Of(c.DateTimeSeedText)));
+            if (ViewNodes.IsShown(c._leftArrow))
+                b.AddItem(ControlId.Structural("history:prev"), ViewNodes.Button(c._leftArrow, () => Strings.HistoryPrevious));
+            b.AddItem(ControlId.Structural("history:number"), GameNodes.Text(() => RunNumber(c)));
+            if (ViewNodes.IsShown(c._rightArrow))
+                b.AddItem(ControlId.Structural("history:next"), ViewNodes.Button(c._rightArrow, () => Strings.HistoryNext));
+            b.PopContext();
 
             var back = GameScenes.Item(c, "BackButton");
             if (ViewNodes.IsShown(back))
@@ -100,7 +104,7 @@ namespace StarVadersAccess.Module.Screens
         // The panel's words, lone icons dropped ("Defeat <sprite Panic>" is "Defeat").
         private static string Word(TMP_Text text) => GameText.Of(text)?.Replace("Panic", "").Trim();
 
-        // The panel's lines as it words them: "Time: 2h 2m 43s", "Score: 500".
+        // The run's figures as the panel words them: "Time: 2h 2m 43s", "Score: 500".
         private static IEnumerable<string> Lines(HistorySceneController c)
         {
             var lines = new List<string>();
@@ -110,7 +114,6 @@ namespace StarVadersAccess.Module.Screens
             Add(lines, GameText.Of(c.DoomText));
             Add(lines, GameText.Of(c.InvadersDefeatedText));
             Add(lines, GameText.Of(c.HighestComboText));
-            Add(lines, GameText.Of(c.DateTimeSeedText));
             return lines;
         }
 
