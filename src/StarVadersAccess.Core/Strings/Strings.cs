@@ -121,6 +121,8 @@ namespace StarVadersAccess.Core.Strings
             D("main.credits", "Credits"),
             // The role word for a modal dialog context.
             D("role.dialog", "dialog"),
+            // A cutscene's line with its speaker ("Roxy: Wait."): {0} the speaker, {1} the line.
+            D("cutscene.line", "{0}: {1}"),
 
             D("screen.mod_menu", "StarVaders Access"),
             D("mod.settings", "Settings"),
@@ -321,6 +323,7 @@ namespace StarVadersAccess.Core.Strings
         public static string MainDiscord => Get("main.discord");
         public static string MainCredits => Get("main.credits");
         public static string RoleDialog => Get("role.dialog");
+        public static string CutsceneLine(string speaker, string line) => F("cutscene.line", speaker, line);
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");

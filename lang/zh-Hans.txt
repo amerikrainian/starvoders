@@ -75,6 +75,7 @@ main.news=新闻
 main.discord=Discord
 main.credits=制作人员
 role.dialog=对话框
+cutscene.line={0}：{1}
 screen.mod_menu=StarVaders Access
 mod.settings=设置
 mod.key_help=所有按键

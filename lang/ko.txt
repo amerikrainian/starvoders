@@ -75,6 +75,7 @@ main.news=뉴스
 main.discord=Discord
 main.credits=제작진
 role.dialog=대화 상자
+cutscene.line={0}: {1}
 screen.mod_menu=StarVaders Access
 mod.settings=설정
 mod.key_help=모든 키

@@ -75,6 +75,7 @@ main.news=ニュース
 main.discord=Discord
 main.credits=クレジット
 role.dialog=ダイアログ
+cutscene.line={0}：{1}
 screen.mod_menu=StarVaders Access
 mod.settings=設定
 mod.key_help=すべてのキー
