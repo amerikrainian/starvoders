@@ -15,11 +15,12 @@ namespace StarVadersAccess.Module.UI
         private static readonly Regex AnimatorTag = new Regex(@"\{/?[a-z]+[^}]*\}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex Sprite = new Regex(@"<sprite[^>]*?name=""?([^"">]+)""?[^>]*>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        // An icon is usually followed by its own word ("<sprite name=Bullet> <b>Bullet</b>", or
-        // "...Bullet</b>s"): the icon's name is dropped then, so "Bullet" is not read twice. Icons are marked while the tags
-        // between it and the word are stripped.
+        // A keyword is an icon and its word ("<sprite name=Bullet> <b>Bullet</b>s", "<sprite
+        // name=Panic> <b>Doom</b>"): an icon followed by a word is the keyword's decoration and its
+        // name is dropped; one standing alone ("2 <sprite name=Heat>") reads as its name. Icons are
+        // marked while the tags between it and the word are stripped.
         private const char IconStart = '\u0001', IconEnd = '\u0002';
-        private static readonly Regex IconThenWord = new Regex(@"\u0001([^\u0002]+)\u0002\s*(?=\1)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex IconThenWord = new Regex(@"\u0001([^\u0002]+)\u0002\s*(?=\p{L})", RegexOptions.Compiled);
         private static readonly Regex Icon = new Regex(@"\u0001([^\u0002]+)\u0002", RegexOptions.Compiled);
 
         public static string Clean(string text)

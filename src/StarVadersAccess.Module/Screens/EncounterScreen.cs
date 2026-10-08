@@ -25,7 +25,7 @@ namespace StarVadersAccess.Module.Screens
     {
         public override string Key => "fight";
         public override bool AllowsTypeahead => false;
-        public override object InitialFocusStop => "fight:hand";
+        public override object InitialFocusStop => BoardStop;
 
         private static readonly InputCategory[] Categories = { InputCategory.Game, InputCategory.UI };
         public override IReadOnlyList<InputCategory> InputCategories => Categories;
@@ -63,6 +63,8 @@ namespace StarVadersAccess.Module.Screens
                     b.PopContext();
                 }
             }
+
+            BuildBoard(b);
 
             b.BeginStop("fight:hand");
             b.PushContext(null, Strings.RoleList);
@@ -124,6 +126,162 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
         }
 
+        // ---- the board ----
+
+        private const string BoardStop = "fight:board";
+        private static string _lastZone;
+
+        public static ControlId TileId(int x, int y) => ControlId.Structural("fight:tile:" + x + "," + y);
+
+        /// <summary>The 0-based tile the focus is on, or null off the board.</summary>
+        public static (int X, int Y)? FocusedTile()
+        {
+            var id = (Navigation.Active as GraphNavigator)?.FocusedNode?.Id?.StructuralKey as string;
+            if (id == null || !id.StartsWith("fight:tile:")) return null;
+            var parts = id.Substring("fight:tile:".Length).Split(',');
+            return (int.Parse(parts[0]), int.Parse(parts[1]));
+        }
+
+        // The grid, top row first so Up goes up the board; the rows share a key, so Up and Down keep
+        // the column. Focus first lands on the mech.
+        private static void BuildBoard(GraphBuilder b)
+        {
+            var board = FightBoard.Read();
+            var grid = FightState.View?.GridView;
+            if (board == null || grid == null) return;
+            b.BeginStop(BoardStop);
+            for (int y = board.Rows - 1; y >= 0; y--)
+            {
+                b.StartRow(BoardStop);
+                for (int x = 0; x < board.Columns; x++)
+                    b.AddItem(TileId(x, y), Cell(x, y));
+                b.EndRow();
+            }
+        }
+
+        private static TileView Tile(int x, int y)
+        {
+            var dict = FightState.View?.GridView?.TileViewDict;
+            if (dict == null) return null;
+            var c = FightBoard.MakeCoord(x, y);
+            return dict.ContainsKey(c) ? dict[c] : null;
+        }
+
+        private static NodeVtable Cell(int x, int y)
+        {
+            return new NodeVtable
+            {
+                ControlType = ControlTypes.Text,
+                SpeaksOwnPosition = true,
+                // One part, in speechchem's order: the target mark, the coordinates, the zone when
+                // crossed into, then what is there.
+                Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => CellText(x, y)) },
+                SearchText = () => FightBoard.CoordText(x, y),
+                IsSelected = () => IsMech(x, y),
+                OnFocus = () => { var tile = Tile(x, y); if (tile != null) FightState.Hover(tile); },
+                OnActivate = () => { var tile = Tile(x, y); if (tile != null) FightState.Click(tile); },
+                Details = () => CellDetails(x, y),
+            };
+        }
+
+        private static string CellText(int x, int y)
+        {
+            var parts = new List<string>();
+            if (IsTarget(x, y)) parts.Add(Strings.FightTarget);
+            parts.Add(FightBoard.CoordText(x, y));
+            string zone = ZoneCrossing(x, y);
+            if (zone != null) parts.Add(zone);
+            string contents = CellContents(FightBoard.Read(), x, y);
+            if (contents != null) parts.Add(contents);
+            return string.Join(", ", parts);
+        }
+
+        private static bool IsMech(int x, int y) => FightBoard.Read()?.At(x, y)?.TryCast<PlayerEntityModel>() != null;
+
+        private static bool IsTarget(int x, int y)
+        {
+            if (!FightState.Selecting) return false;
+            var tile = Tile(x, y);
+            var sc = FightState.Controller?.SelectionController;
+            try { return tile != null && sc != null && sc.IsSatisfied(tile); }
+            catch { return false; }
+        }
+
+        // The zone is named only on entering it, like a region (speechchem's zone crossing); leaving
+        // the board forgets it, so coming back names it again.
+        private static string ZoneCrossing(int x, int y)
+        {
+            var board = FightBoard.Read();
+            if (board == null) return null;
+            string zone = board.Zone(x, y);
+            if (zone == _lastZone) return null;
+            _lastZone = zone;
+            return Strings.FightZone(zone);
+        }
+
+        /// <summary>What a tile holds and what threatens it, after its coordinates: the entity with
+        /// its state, the danger, the tile's status, a card pickup. Null for an empty, safe tile.</summary>
+        internal static string CellContents(FightBoard board, int x, int y)
+        {
+            if (board == null) return null;
+            var parts = new List<string>();
+            var entity = board.At(x, y);
+            if (entity != null) parts.Add(board.Describe(entity));
+            string danger = board.Danger(x, y);
+            if (danger != null) parts.Add(danger);
+            var status = board.Status(x, y);
+            if (status.HasValue) parts.Add(FightBoard.StatusName(status.Value));
+            string pickup = board.Pickup(x, y);
+            if (pickup != null) parts.Add(pickup);
+            return parts.Count > 0 ? string.Join(", ", parts) : null;
+        }
+
+        private static IEnumerable<string> CellDetails(int x, int y)
+        {
+            var board = FightBoard.Read();
+            if (board == null) yield break;
+            var entity = board.At(x, y);
+            if (entity != null)
+            {
+                string d = FightBoard.Description(entity);
+                yield return d != null ? Strings.FightLabelled(board.Name(entity), d) : board.Describe(entity);
+            }
+            string danger = board.Danger(x, y);
+            if (danger != null) yield return danger;
+            var status = board.Status(x, y);
+            if (status.HasValue)
+            {
+                string d = FightBoard.StatusDescription(status.Value);
+                yield return d != null ? Strings.FightLabelled(FightBoard.StatusName(status.Value), d) : FightBoard.StatusName(status.Value);
+            }
+            string pickup = board.Pickup(x, y);
+            if (pickup != null) yield return pickup;
+        }
+
+        /// <summary>Shift+arrow: past the cells that read the same as this one (contents and zone),
+        /// to the first that differs, or to the edge; at the edge, this cell again.</summary>
+        public static void Skip(int dx, int dy)
+        {
+            var at = FocusedTile();
+            var board = FightBoard.Read();
+            if (at == null || board == null) return;
+            var (x, y) = at.Value;
+            string from = Signature(board, x, y);
+            int nx = x, ny = y;
+            while (true)
+            {
+                int tx = nx + dx, ty = ny + dy;
+                if (tx < 0 || ty < 0 || tx >= board.Columns || ty >= board.Rows) break;
+                nx = tx;
+                ny = ty;
+                if (Signature(board, nx, ny) != from) break;
+            }
+            if (nx == x && ny == y) { Navigation.AnnounceCurrent(); return; }
+            Navigation.Active?.MoveTo(TileId(nx, ny));
+        }
+
+        private static string Signature(FightBoard board, int x, int y) => board.Zone(x, y) + "|" + CellContents(board, x, y);
+
         // ---- choosing a target ----
 
         private const string TargetsStop = "fight:targets";
@@ -136,6 +294,7 @@ namespace StarVadersAccess.Module.Screens
             bool selecting = FightState.Selecting && FightState.Targets().Count > 0;
             if (selecting && !_wasSelecting) Navigation.Active?.FocusStop(TargetsStop);
             _wasSelecting = selecting;
+            if (!(Navigation.Active is GraphNavigator nav) || !Equals(nav.FocusedNode?.StopKey, BoardStop)) _lastZone = null;
         }
 
         private static NodeVtable Target(AEncounterViewItem item, FightBoard board)
@@ -164,7 +323,7 @@ namespace StarVadersAccess.Module.Screens
                 var c = tile.TileModel.Coord;
                 string where = FightBoard.CoordText(c.x, c.y);
                 var occupant = board?.At(c.x, c.y);
-                return occupant != null ? where + ", " + FightBoard.Name(occupant) : where;
+                return occupant != null ? where + ", " + board.Describe(occupant) : where;
             }
             var card = item.TryCast<CardView>();
             if (card != null) return FightState.CardName(card.CardModel);

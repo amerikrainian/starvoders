@@ -152,6 +152,14 @@ namespace StarVadersAccess.Core.Strings
             D("fight.coord", "{0}, {1}"),
             // Your mech on the board.
             D("fight.mech", "mech"),
+            // The board: a valid target tile, an entity's health and charge, the zones (the bottom 3 rows where invaders add Doom, the rows they spawn in, between), "label: value" (Danger Zone: Migo 1).
+            D("fight.target", "target"),
+            D("fight.health", "{0} health"),
+            D("fight.charge", "charge {0}"),
+            D("fight.zone.doom", "doom rows"),
+            D("fight.zone.middle", "middle rows"),
+            D("fight.zone.spawn", "spawn rows"),
+            D("fight.danger", "{0}: {1}"),
 
             D("screen.mod_menu", "StarVaders Access"),
             D("mod.settings", "Settings"),
@@ -361,6 +369,11 @@ namespace StarVadersAccess.Core.Strings
         public static string FightDirection(string compass) => Get("fight.dir." + compass.ToLowerInvariant());
         public static string FightCoord(int column, int row) => F("fight.coord", column, row);
         public static string FightMech => Get("fight.mech");
+        public static string FightTarget => Get("fight.target");
+        public static string FightHealth(int health) => F("fight.health", health);
+        public static string FightCharge(int charge) => F("fight.charge", charge);
+        public static string FightZone(string zone) => Get("fight.zone." + zone);
+        public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");
