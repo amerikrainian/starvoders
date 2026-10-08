@@ -106,7 +106,8 @@ separately. Host F6 uses the same OS read.
   `IsFinishedLoadingGame && !IsEndingScene`), `MainMenuScreen` (the game's `VerticalViewItemList`,
   then profile, language dropdown, News/Discord/Credits by mod words), `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
-  `ConfirmPromptScreen`, `GlobeScreen` (all below), plus guildrun's `HelpScreen` and `ModMenuScreen`.
+  `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below), plus guildrun's
+  `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
   (`CutsceneDialogueHelper`). One node per bubble, "speaker: line"; the game draws no names, so the
@@ -146,6 +147,31 @@ separately. Host F6 uses the same OS read.
   `View_StartReplenishText()`), and `SpeechBubble`s under a `SpeechBubbleManager` ("Roxy: line"
   when the `SpeechName` has a `Name_` prefix; test: `CreateSpeechBubble(SpeechName.Roxy_Excited,
   1, 0, 0, 3, false)`).
+- Tips (`UI/Tips`): `TipManager.CurrentTip` while `_isShowing`; it waits for a click when its box
+  has `TipBox.LineGlow` (or a `ClickToContinueLine`), and then `TipScreen` (layer 40, exclusive)
+  holds it, Enter = `Tips.Continue` (`box.OnClick` + `_isFinished` if still typing, then the static
+  `TipManager.ClickTipBox`); other tips are the popup reader's.
+- The fight (`EncounterScene`, `Fight/*`, `EncounterScreen`): every press is the game's click,
+  `EncounterInputHandler.OnHoverViewItemByKey(item)` then `ClickViewItems()` (cards, buttons, and a
+  running selection's answer alike). Model: `EncounterController.EncounterModel` (`GridModel`:
+  `GridShape` 5x7, `Coord` 0-based with y UP; `ModelItemDict` holds every model, dead entities
+  kept; an entity's coord via `GetEntityCoord(model.ID.Cast<EntityID>())`). Spoken tiles are
+  "x, y" 1-based, row 1 at the bottom. Stops: Targets (while `SelectionController.IsSelecting`:
+  `EncounterView.ViewsItems` filtered by `IsSatisfied`, under `ScreenView.SelectionPrompt`; focus
+  jumps there; Escape = `SelectionController.Cancel` + preview/display board/hover resets; a card
+  that needs no target still asks for the `PlayAreaView`, read "Play"), Board (rows top first,
+  shared row key, lands on the mech; cell = target mark, coords, zone on crossing, contents),
+  Hand (`GetCardsInHandButNotBeingPlayed`, `CardPlayView.GetCardView`; text from
+  `<CardName>_CardTitle` and `_CardDesc` through `LocalizationUtils.GetModifiedDescriptions`),
+  Rack, Status. Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
+  `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
+  category): digits, Shift+arrows skip, C T D H O M, Shift+M, `[ ] , .` categories,
+  Alt+Backspace, E; Backspace reads details (`*_InfoLine` keywords).
+- Fight events (`Fight/FightEvents`, Core `Fight/FightDiff` with tests): snapshot at settle
+  points (task engine idle 3 frames, or waiting on the player: a selection or a click tip, else
+  an enemy turn's changes would wait for the next card to resolve), diff, speak queued as one
+  utterance, append to the uncapped combat buffer. Ticked before `ScreenManager` so an event
+  precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
 - Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
   tabs carry `NodeVtable.IsSelected` (unspoken: landing selects a tab anyway) and the row `entry` is `_currentTab`, since landing on a tab selects
   it), the page (`Panels[_currentTab]`, its top-level view items), and the bottom buttons found
