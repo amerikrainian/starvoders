@@ -124,6 +124,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Register(new MainMenuScreen());
             ScreenManager.Register(new TutorialSelectionScreen());
             ScreenManager.Register(new CutsceneScreen());
+            ScreenManager.Register(new ConfirmPromptScreen());
             ScreenManager.Register(new SettingsScreen());
             ScreenManager.Register(new ModMenuScreen());
             ScreenManager.Register(new HelpScreen());
