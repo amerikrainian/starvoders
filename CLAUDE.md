@@ -105,8 +105,27 @@ separately. Host F6 uses the same OS read.
 - Screens so far: `BootScreen` (title: `BootupController.OnPressAnything`, up while
   `IsFinishedLoadingGame && !IsEndingScene`), `MainMenuScreen` (the game's `VerticalViewItemList`,
   then profile, language dropdown, News/Discord/Credits by mod words), `TutorialSelectionScreen`
-  (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), plus guildrun's
-  `HelpScreen` and `ModMenuScreen`.
+  (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
+  `ConfirmPromptScreen` (both below), plus guildrun's `HelpScreen` and `ModMenuScreen`.
+- Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
+  pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
+  (`CutsceneDialogueHelper`). One node per bubble, "speaker: line"; the game draws no names, so the
+  speaker is the Dialogue System actor ("Display Name" field, else `Name`; never localized):
+  `ActivateNextDialogue` opens `_dialogueBubbles[_currIndex - 1]` with entry `_currIndex -
+  _dialogueDatabaseIndexOffset` then increments `_currIndex`, so after it the shown bubble is
+  `[_currIndex - 2]`, entry `_currIndex - 1 - offset`; a `LocKeyOverride` bubble (Roxy's 13 "wait"s,
+  shown unpaused) takes its actor from the key's last `_` segment. The bubble's click only finishes
+  the typewriter while any shown bubble's `TextAnimator._maxVisibleCharacters` is short of
+  `textInfo.characterCount`, so Enter `SkipTypewriter` + `ShowAllCharacters` first, then clicks:
+  one press always advances. Escape = `OnSkipCutscene` (the confirm prompt). Clicking the LAST
+  line, or YES on the skip, starts the tutorial run.
+- Confirm prompt (`ConfirmPromptSceneAdditive`, `ConfirmPromptController`, statics
+  `LocalizationKeyToShow`/`ActionToPerform`/`IsProceedOnly`): title + the setup's message name
+  the dialog context, then `NormalSetup` YES/NO (`YesButton`, `NoButton`) or `ProceedOnlySetup`
+  `OKButton`; focus lands on `ViewItemToStartAt` (NO). Escape clicks NO (or OK). Yes/No guard only
+  on `SceneLoader.IsTransitioning` and the prompt fades before unloading, so once answered the
+  screen stays up with no nodes until the scene goes (standing down hands a second Enter to the
+  screen beneath).
 - Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
   tabs carry `NodeVtable.IsSelected` (unspoken: landing selects a tab anyway) and the row `entry` is `_currentTab`, since landing on a tab selects
   it), the page (`Panels[_currentTab]`, its top-level view items), and the bottom buttons found
