@@ -181,6 +181,100 @@ namespace StarVadersAccess.Module.Fight
             return targets;
         }
 
+        /// <summary>What a running selection accepts, sorted by where it is answered: tiles, the play
+        /// area ("click the grid to play"), direction arrows: all answered on the board; anything
+        /// else (cards to choose) only in a list.</summary>
+        public sealed class TargetSet
+        {
+            public readonly List<TileView> Tiles = new List<TileView>();
+            public PlayAreaView PlayArea;
+            public readonly List<DirectionSelectionArrow> Arrows = new List<DirectionSelectionArrow>();
+            public readonly List<AEncounterViewItem> Others = new List<AEncounterViewItem>();
+            /// <summary>The tile the arrows point from (the selection's base, else the mech), 0-based.</summary>
+            public (int X, int Y)? Origin;
+
+            public bool OnBoard => Tiles.Count > 0 || PlayArea != null || Arrows.Count > 0;
+
+            public bool HasTile(int x, int y)
+            {
+                foreach (var t in Tiles)
+                {
+                    var c = t.TileModel.Coord;
+                    if (c.x == x && c.y == y) return true;
+                }
+                return false;
+            }
+
+            /// <summary>The arrow pointing from <see cref="Origin"/> toward the tile, when the tile lies
+            /// straight or diagonally out from it and that arrow is a target; else null.</summary>
+            public DirectionSelectionArrow ArrowToward(int x, int y)
+            {
+                if (Arrows.Count == 0 || Origin == null) return null;
+                int dx = x - Origin.Value.X, dy = y - Origin.Value.Y;
+                if (dx == 0 && dy == 0) return null;
+                if (dx != 0 && dy != 0 && Math.Abs(dx) != Math.Abs(dy)) return null;
+                string compass = (dy > 0 ? "N" : dy < 0 ? "S" : "") + (dx > 0 ? "E" : dx < 0 ? "W" : "");
+                foreach (var a in Arrows)
+                    if (a.Direction.ToString() == compass) return a;
+                return null;
+            }
+        }
+
+        // Read once per frame at most: a board render asks for every cell (never kept past the frame).
+        private static int _targetsFrame = -1;
+        private static TargetSet _targets;
+
+        /// <summary>The running selection's targets, sorted; null when nothing is being chosen.</summary>
+        public static TargetSet ReadTargets()
+        {
+            int frame = UnityEngine.Time.frameCount;
+            if (frame == _targetsFrame) return _targets;
+            _targetsFrame = frame;
+            _targets = ReadTargetsNow();
+            return _targets;
+        }
+
+        private static TargetSet ReadTargetsNow()
+        {
+            var targets = Targets();
+            if (targets.Count == 0) return null;
+            var set = new TargetSet();
+            foreach (var item in targets)
+            {
+                var tile = item.TryCast<TileView>();
+                if (tile != null) { set.Tiles.Add(tile); continue; }
+                var area = item.TryCast<PlayAreaView>();
+                if (area != null) { set.PlayArea = area; continue; }
+                var arrow = item.TryCast<DirectionSelectionArrow>();
+                if (arrow != null) { set.Arrows.Add(arrow); continue; }
+                set.Others.Add(item);
+            }
+            if (set.Arrows.Count > 0) set.Origin = ArrowOrigin();
+            return set;
+        }
+
+        // The selection's base tile when it has one, else the mech's.
+        private static (int X, int Y)? ArrowOrigin()
+        {
+            var c = Controller;
+            try
+            {
+                var baseCoord = c?.SelectionController?.CurrentSelection?.BaseCoord;
+                if (baseCoord != null)
+                {
+                    var coord = baseCoord.Unbox<Coord>();
+                    return (coord.x, coord.y);
+                }
+            }
+            catch { }
+            try
+            {
+                var p = Model.GridModel.GetPlayerCoord();
+                return (p.x, p.y);
+            }
+            catch { return null; }
+        }
+
         /// <summary>The selection's prompt as the right-hand screen states it ("Click grid to play").</summary>
         public static string Prompt()
         {

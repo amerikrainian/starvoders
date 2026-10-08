@@ -172,6 +172,13 @@ separately. Host F6 uses the same OS read.
   an enemy turn's changes would wait for the next card to resolve), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
+- Choosing a target (`Fight.ReadTargets`: the selection's targets sorted into tiles, `PlayAreaView`,
+  `DirectionSelectionArrow`s, others): a selection with grid targets is answered ON THE BOARD (its
+  prompt said, focus to the board or kept there with the game's hover synced; Enter on a cell =
+  the tile, else the play area from any cell, else the arrow toward the cell from the selection's
+  `BaseCoord` or the mech, else "not a target"; "target" marks valid tiles and the cells next to
+  the origin in a valid direction; a "targets" category). Only selections without grid targets
+  (cards) get the Targets list stop. Direction selections are untested (no such card yet).
 - Fight figures: read `EncounterModel.Values[EncounterValue.Doom/Heat/MaxHeat/Power/...]`, never
   the panels: hovering End Turn or a card PREVIEWS on them (Doom panel "5/5" with the model at 3).
   Doom's maximum is the panel's "/5" (a preview leaves it alone).

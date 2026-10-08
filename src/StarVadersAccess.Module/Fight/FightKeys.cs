@@ -17,8 +17,8 @@ namespace StarVadersAccess.Module.Fight
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
     /// card; single letters read one thing (C coordinates, T turn, D Doom, H Heat, O objective, M the
     /// mech) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
-    /// the board's categories (invaders, mech, bombs and items, pickups, danger zones; only those
-    /// with something in them), comma and period step through the current one in reading order
+    /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
+    /// bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; Alt+Backspace jumps back to where a jump left from; E ends
     /// the turn; Shift+arrows skip cells that read the same.
     /// </summary>
@@ -130,7 +130,7 @@ namespace StarVadersAccess.Module.Fight
 
         // ---- categories ----
 
-        private static readonly string[] Categories = { "invaders", "mech", "items", "pickups", "danger" };
+        private static readonly string[] Categories = { "targets", "invaders", "mech", "items", "pickups", "danger" };
         private static int _category = -1;
         private static int _item = -1;
 
@@ -145,6 +145,7 @@ namespace StarVadersAccess.Module.Fight
                     bool member;
                     switch (category)
                     {
+                        case "targets": member = EncounterScreen.IsTarget(x, y); break;
                         case "invaders": member = e?.TryCast<EnemyEntityModel>() != null; break;
                         case "mech": member = e?.TryCast<PlayerEntityModel>() != null; break;
                         case "items": member = e?.TryCast<ItemEntityModel>() != null; break;

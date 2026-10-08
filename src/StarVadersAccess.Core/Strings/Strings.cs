@@ -167,6 +167,9 @@ namespace StarVadersAccess.Core.Strings
             D("fight.cat.pickups", "Pickups"),
             D("fight.cat.danger", "Danger zones"),
             D("fight.cat.line", "{0}, {1}"),
+            // Choosing a target on the board: Enter on a cell the selection does not accept; the category of the valid tiles.
+            D("fight.nottarget", "not a target"),
+            D("fight.cat.targets", "Targets"),
             D("fight.nothing", "nothing"),
             // Fight events, spoken and logged: {0} a name, {1} a tile "x, y" or a row or column number. The combat buffer's name.
             D("fight.ev.enemyturn", "Enemy turn"),
@@ -416,6 +419,7 @@ namespace StarVadersAccess.Core.Strings
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
         public static string FightCategory(string category) => Get("fight.cat." + category);
         public static string FightCategoryLine(string category, int count) => F("fight.cat.line", category, count);
+        public static string FightNotTarget => Get("fight.nottarget");
         public static string FightNothing => Get("fight.nothing");
         public static string FightEnemyTurn => Get("fight.ev.enemyturn");
         public static string FightAppears(string name, string where) => F("fight.ev.appears", name, where);

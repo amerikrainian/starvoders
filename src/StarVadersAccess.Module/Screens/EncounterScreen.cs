@@ -51,18 +51,17 @@ namespace StarVadersAccess.Module.Screens
             if (c == null) return;
             var view = c.EncounterView;
 
-            if (FightState.Selecting)
+            // A selection the board cannot answer (cards to choose) is a list of its targets; one on
+            // the grid (tiles, the play area, arrows) is answered on the board itself.
+            var selection = FightState.Selecting ? FightState.ReadTargets() : null;
+            if (selection != null && !selection.OnBoard && selection.Others.Count > 0)
             {
-                var targets = FightState.Targets();
-                if (targets.Count > 0)
-                {
-                    var board = FightBoard.Read();
-                    b.BeginStop(TargetsStop);
-                    b.PushContext(FightState.Prompt(), Strings.RoleList);
-                    foreach (var target in targets)
-                        b.AddItem(ControlId.Structural("fight:target:" + target.GetInstanceID()), Target(target, board));
-                    b.PopContext();
-                }
+                var board = FightBoard.Read();
+                b.BeginStop(TargetsStop);
+                b.PushContext(FightState.Prompt(), Strings.RoleList);
+                foreach (var target in selection.Others)
+                    b.AddItem(ControlId.Structural("fight:target:" + target.GetInstanceID()), Target(target, board));
+                b.PopContext();
             }
 
             BuildBoard(b);
@@ -180,7 +179,7 @@ namespace StarVadersAccess.Module.Screens
                 SearchText = () => FightBoard.CoordText(x, y),
                 IsSelected = () => IsMech(x, y),
                 OnFocus = () => { var tile = Tile(x, y); if (tile != null) FightState.Hover(tile); },
-                OnActivate = () => { var tile = Tile(x, y); if (tile != null) FightState.Click(tile); },
+                OnActivate = () => ActivateCell(x, y),
                 Details = () => CellDetails(x, y),
                 OnSecondary = () => SayDetails(CellDetails(x, y)),
             };
@@ -200,13 +199,35 @@ namespace StarVadersAccess.Module.Screens
 
         private static bool IsMech(int x, int y) => FightBoard.Read()?.At(x, y)?.TryCast<PlayerEntityModel>() != null;
 
-        private static bool IsTarget(int x, int y)
+        /// <summary>Whether the running selection takes this cell: a valid tile, or the cell next to
+        /// the arrows' origin in a valid direction. A play-area selection marks nothing (any cell
+        /// plays the card).</summary>
+        public static bool IsTarget(int x, int y)
         {
             if (!FightState.Selecting) return false;
+            var set = FightState.ReadTargets();
+            if (set == null) return false;
+            if (set.HasTile(x, y)) return true;
+            var o = set.Origin;
+            return o != null && Math.Abs(x - o.Value.X) <= 1 && Math.Abs(y - o.Value.Y) <= 1 && set.ArrowToward(x, y) != null;
+        }
+
+        // Enter on a cell: outside a selection, the game's click on the tile; in one, the answer the
+        // cell gives: the tile itself, the play area (from any cell), or the arrow toward the cell.
+        private static void ActivateCell(int x, int y)
+        {
             var tile = Tile(x, y);
-            var sc = FightState.Controller?.SelectionController;
-            try { return tile != null && sc != null && sc.IsSatisfied(tile); }
-            catch { return false; }
+            var set = FightState.Selecting ? FightState.ReadTargets() : null;
+            if (set == null || !set.OnBoard)
+            {
+                if (tile != null) FightState.Click(tile);
+                return;
+            }
+            if (set.HasTile(x, y)) { FightState.Click(tile); return; }
+            if (set.PlayArea != null) { FightState.Click(set.PlayArea); return; }
+            var arrow = set.ArrowToward(x, y);
+            if (arrow != null) { FightState.Click(arrow); return; }
+            Speech.Say(Strings.FightNotTarget, interrupt: true);
         }
 
         // The zone is named only on entering it, like a region (speechchem's zone crossing); leaving
@@ -290,12 +311,25 @@ namespace StarVadersAccess.Module.Screens
         private const string TargetsStop = "fight:targets";
         private bool _wasSelecting;
 
-        // A selection starting takes focus to its targets; when it ends, focus is left to the
-        // navigator (the target list vanishing lands it on the hand).
+        // A selection starting: on the board, its prompt is said and focus goes to the board (staying
+        // where it is if already there, the game's cursor brought to it); otherwise focus goes to the
+        // target list. When it ends, focus is left to the navigator.
         public override void OnUpdate()
         {
-            bool selecting = FightState.Selecting && FightState.Targets().Count > 0;
-            if (selecting && !_wasSelecting) Navigation.Active?.FocusStop(TargetsStop);
+            var set = FightState.Selecting ? FightState.ReadTargets() : null;
+            bool selecting = set != null;
+            if (selecting && !_wasSelecting)
+            {
+                if (set.OnBoard)
+                {
+                    string prompt = FightState.Prompt();
+                    if (prompt != null) Speech.Say(prompt);
+                    var at = FocusedTile();
+                    if (at == null) Navigation.Active?.FocusStop(BoardStop);
+                    else { var tile = Tile(at.Value.X, at.Value.Y); if (tile != null) FightState.Hover(tile); }
+                }
+                else Navigation.Active?.FocusStop(TargetsStop);
+            }
             _wasSelecting = selecting;
             if (!(Navigation.Active is GraphNavigator nav) || !Equals(nav.FocusedNode?.StopKey, BoardStop)) _lastZone = null;
         }
