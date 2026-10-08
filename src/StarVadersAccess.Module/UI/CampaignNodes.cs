@@ -52,8 +52,9 @@ namespace StarVadersAccess.Module.UI
         {
             var portrait = c.CampaignPortraitView;
             if (portrait == null || !portrait.gameObject.activeInHierarchy) return;
+            // Short: no positions, the descriptions in the ui buffer and on Backspace.
             b.BeginStop(key + ":status");
-            b.PushContext(null);
+            b.PushContext(null, positions: false);
 
             var doomTitle = Under<TMP_Text>(portrait, "CanvasGroup/Portrait/TitleText");
             var doomTip = Under<StarVaders.TooltipTrigger>(portrait, "CanvasGroup/Portrait/DoomTooltipTrigger");
@@ -72,7 +73,7 @@ namespace StarVadersAccess.Module.UI
             b.PopContext();
         }
 
-        // A read-only figure: "label, value", its tooltip's description spoken after.
+        // A read-only figure: "label, value"; its tooltip's description in the ui buffer and on Backspace.
         private static NodeVtable Stat(Func<string> label, Func<string> value, StarVaders.TooltipTrigger tip)
         {
             Func<string> description = () =>
@@ -87,9 +88,14 @@ namespace StarVadersAccess.Module.UI
                 {
                     GameNodes.LabelPart(label),
                     new NodeAnnouncement(value, live: true, kind: AnnouncementKinds.Value),
-                    GameNodes.TooltipPart(description),
                 },
                 SearchText = label,
+                Details = () => GameNodes.Lines(description()),
+                OnSecondary = () =>
+                {
+                    string text = description();
+                    Core.Speech.Say(string.IsNullOrEmpty(text) ? Strings.NoDetails : text, interrupt: true);
+                },
             };
         }
 

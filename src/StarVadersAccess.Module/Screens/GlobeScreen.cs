@@ -81,7 +81,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             b.BeginStop("globe:actions");
-            b.PushContext(null);
+            b.PushContext(null, positions: false);
             var proceed = c.ProceedButton;
             if (ViewNodes.IsShown(proceed))
                 b.AddItem(ControlId.Structural("globe:proceed"), ViewNodes.Button(proceed, enabled: () => proceed.ButtonEnabled));
