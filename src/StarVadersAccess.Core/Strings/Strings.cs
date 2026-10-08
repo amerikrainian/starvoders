@@ -66,7 +66,7 @@ namespace StarVadersAccess.Core.Strings
             D("edit.deleted", "{0} deleted"),
 
             // Navigation feedback. {0} = index, {1} = count.
-            D("nav.position", "{0} of {1}"),
+            D("nav.position", "{0}/{1}"),
             D("nav.no_tooltip", "no description"),
             D("nav.no_details", "no details"),
             // Buffer review (Ctrl plus arrows): the buffer names, the "name: line" readout on switching,

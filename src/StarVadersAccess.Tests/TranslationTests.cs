@@ -78,7 +78,7 @@ namespace StarVadersAccess.Tests
             Assert.Equal(new[] { "role.toggle" }, report.EmptyKeys);
             Assert.Equal(new[] { "nav.position", "edit.selected" }, report.BadSlots);
             Assert.Equal("toggle", Strings.Get("role.toggle"));
-            Assert.Equal("3 of 9", Strings.Position(3, 9));
+            Assert.Equal("3/9", Strings.Position(3, 9));
             Assert.Equal("Regler", Strings.Get("role.slider"));
             Assert.Equal(4, System.Linq.Enumerable.Count(report.Problems()));
         }
