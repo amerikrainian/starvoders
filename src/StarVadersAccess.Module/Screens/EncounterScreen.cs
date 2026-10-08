@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using StarVaders;
+using StarVadersAccess.Core;
 using StarVadersAccess.Core.Graph;
 using StarVadersAccess.Core.Input;
 using StarVadersAccess.Core.Strings;
@@ -181,6 +182,7 @@ namespace StarVadersAccess.Module.Screens
                 OnFocus = () => { var tile = Tile(x, y); if (tile != null) FightState.Hover(tile); },
                 OnActivate = () => { var tile = Tile(x, y); if (tile != null) FightState.Click(tile); },
                 Details = () => CellDetails(x, y),
+                OnSecondary = () => SayDetails(CellDetails(x, y)),
             };
         }
 
@@ -245,6 +247,7 @@ namespace StarVadersAccess.Module.Screens
             {
                 string d = FightBoard.Description(entity);
                 yield return d != null ? Strings.FightLabelled(board.Name(entity), d) : board.Describe(entity);
+                foreach (var line in FightState.InfoLines(entity.MoreInfoWordNames)) yield return line;
             }
             string danger = board.Danger(x, y);
             if (danger != null) yield return danger;
@@ -349,7 +352,17 @@ namespace StarVadersAccess.Module.Screens
                 SearchText = name,
                 OnFocus = () => FightState.Hover(view),
                 OnActivate = () => FightState.Click(view),
+                Details = () => FightState.InfoLines(view.CardModel?.MoreInfoWordNames),
+                OnSecondary = () => SayDetails(FightState.InfoLines(view.CardModel?.MoreInfoWordNames)),
             };
+        }
+
+        /// <summary>Backspace, the game's right click ("more info"): the focused thing's details,
+        /// read out at once, the ones the ui buffer steps through.</summary>
+        private static void SayDetails(IEnumerable<string> lines)
+        {
+            var list = new List<string>(lines ?? Array.Empty<string>());
+            Speech.Say(list.Count > 0 ? string.Join(" ", list) : Strings.NoDetails, interrupt: true);
         }
 
         private static bool Playable(CardView view) => view._unplayableObject == null || !view._unplayableObject.activeInHierarchy;

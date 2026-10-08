@@ -160,6 +160,31 @@ namespace StarVadersAccess.Core.Strings
             D("fight.zone.middle", "middle rows"),
             D("fight.zone.spawn", "spawn rows"),
             D("fight.danger", "{0}: {1}"),
+            // The board's categories ([ ] and , .): their names, "Invaders, 2"; "nothing" for a key with nothing to say. Then the fight keys' names for F1.
+            D("fight.cat.invaders", "Invaders"),
+            D("fight.cat.mech", "Mech"),
+            D("fight.cat.items", "Bombs and items"),
+            D("fight.cat.pickups", "Pickups"),
+            D("fight.cat.danger", "Danger zones"),
+            D("fight.cat.line", "{0}, {1}"),
+            D("fight.nothing", "nothing"),
+            D("bind.fight.skip.up", "Skip up"),
+            D("bind.fight.skip.down", "Skip down"),
+            D("bind.fight.skip.left", "Skip left"),
+            D("bind.fight.skip.right", "Skip right"),
+            D("bind.fight.coords", "Coordinates"),
+            D("bind.fight.turn", "Turn"),
+            D("bind.fight.doom", "Doom"),
+            D("bind.fight.heat", "Heat"),
+            D("bind.fight.objective", "Objective"),
+            D("bind.fight.mech", "Mech"),
+            D("bind.fight.mech.jump", "Go to the mech"),
+            D("bind.fight.cat.next", "Next category"),
+            D("bind.fight.cat.prev", "Previous category"),
+            D("bind.fight.item.next", "Next in category"),
+            D("bind.fight.item.prev", "Previous in category"),
+            D("bind.fight.jumpback", "Jump back"),
+            D("bind.fight.endturn", "End turn"),
 
             D("screen.mod_menu", "StarVaders Access"),
             D("mod.settings", "Settings"),
@@ -374,6 +399,9 @@ namespace StarVadersAccess.Core.Strings
         public static string FightCharge(int charge) => F("fight.charge", charge);
         public static string FightZone(string zone) => Get("fight.zone." + zone);
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
+        public static string FightCategory(string category) => Get("fight.cat." + category);
+        public static string FightCategoryLine(string category, int count) => F("fight.cat.line", category, count);
+        public static string FightNothing => Get("fight.nothing");
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");

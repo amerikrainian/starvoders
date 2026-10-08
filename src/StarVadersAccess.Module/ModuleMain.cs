@@ -102,22 +102,7 @@ namespace StarVadersAccess.Module
             InputManager.Register("buffer.line.prev", "Previous buffer line", InputCategory.UI, Buffers.Controls.PreviousLine).AddBinding(new KeyboardBinding(KeyCode.DownArrow, ctrl: true)).Repeating();
 
             // The fight's keys: live while the fight screen declares the Game category.
-            for (int n = 1; n <= 10; n++)
-            {
-                int card = n;
-                InputManager.Register("fight.card" + card, "Play card " + card, InputCategory.Game, () => EncounterScreen.PlayCard(card))
-                    .AddBinding(new KeyboardBinding(card == 10 ? KeyCode.Alpha0 : KeyCode.Alpha0 + card));
-            }
-
-            // Shift+arrows skip the board cells that read the same.
-            InputManager.Register("fight.skip.up", "Skip up", InputCategory.Game, () => EncounterScreen.Skip(0, 1))
-                .AddBinding(new KeyboardBinding(KeyCode.UpArrow, shift: true)).Repeating();
-            InputManager.Register("fight.skip.down", "Skip down", InputCategory.Game, () => EncounterScreen.Skip(0, -1))
-                .AddBinding(new KeyboardBinding(KeyCode.DownArrow, shift: true)).Repeating();
-            InputManager.Register("fight.skip.left", "Skip left", InputCategory.Game, () => EncounterScreen.Skip(-1, 0))
-                .AddBinding(new KeyboardBinding(KeyCode.LeftArrow, shift: true)).Repeating();
-            InputManager.Register("fight.skip.right", "Skip right", InputCategory.Game, () => EncounterScreen.Skip(1, 0))
-                .AddBinding(new KeyboardBinding(KeyCode.RightArrow, shift: true)).Repeating();
+            Fight.FightKeys.Register();
 
             // Global: always live, so the player can hand the keyboard back to the game and reclaim it.
             InputManager.Register("mod.focus", "Toggle navigation", InputCategory.Global, ToggleFocus)

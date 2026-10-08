@@ -90,6 +90,24 @@ namespace StarVadersAccess.Module.Fight
             }
         }
 
+        /// <summary>The keyword explanations a card or entity carries (its info panel's lines:
+        /// "Danger Zone: Tiles that will be struck..."), from the game's <c>*_InfoLine</c> strings.</summary>
+        public static List<string> InfoLines(Il2CppSystem.Collections.Generic.HashSet<MoreInfoWordName> words)
+        {
+            var lines = new List<string>();
+            if (words == null) return lines;
+            try
+            {
+                foreach (var word in words)
+                {
+                    string line = GameLoc.Get(word + "_InfoLine");
+                    if (line != null && !lines.Contains(line)) lines.Add(line);
+                }
+            }
+            catch (Exception e) { CoreLog.Warning("Fight: reading the info lines failed: " + e.Message); }
+            return lines;
+        }
+
         // ---- target selection ----
 
         /// <summary>Whether the game is asking for a target (a card being played waits on it).</summary>
