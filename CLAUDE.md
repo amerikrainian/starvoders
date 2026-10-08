@@ -106,7 +106,7 @@ separately. Host F6 uses the same OS read.
   `IsFinishedLoadingGame && !IsEndingScene`), `MainMenuScreen` (the game's `VerticalViewItemList`,
   then profile, language dropdown, News/Discord/Credits by mod words), `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
-  `ConfirmPromptScreen` (both below), plus guildrun's `HelpScreen` and `ModMenuScreen`.
+  `ConfirmPromptScreen`, `GlobeScreen` (all below), plus guildrun's `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
   (`CutsceneDialogueHelper`). One node per bubble, "speaker: line"; the game draws no names, so the
@@ -126,6 +126,26 @@ separately. Host F6 uses the same OS read.
   on `SceneLoader.IsTransitioning` and the prompt fades before unloading, so once answered the
   screen stays up with no nodes until the scene goes (standing down hands a second Enter to the
   screen beneath).
+- Encounter choice (`GlobeScene`, `GlobeController : CampaignSceneController`): stops tip (while
+  `TipManager.CurrentTip` shows in this scene; Enter = `Tip.Destroy(true)`, what a finished tip
+  box's click does), encounters (`CurrentRoomChoicePanels`; invaders by `EnemyEntityModel.EnemyID
+  .EnemyName`, reward by its tooltip title; invader descriptions and every tooltip in the ui
+  buffer), Proceed/Reroll (`ButtonEnabled`), then `UI/CampaignNodes` (Doom, Stars, Deck; the act
+  timeline: kind from the active `Pip`/`StarPip`/`BossPip` child named by the map tooltip's
+  legend, cleared = `XPip.enabled`, current = first not cleared). **Clicking the encounter that is
+  already selected is `ProceedButton.OnClick` (the fight starts)**, as in the game, and the
+  tutorial preselects its one encounter: never Enter on an encounter through the driver.
+- Game strings: `Interop/GameLoc` (`<EnemyName>_EntityTitle`/`_EntityDesc`,
+  `<ArtifactName>_ArtiTitle`/`_ArtiDesc` through `LocalizeSynchronous`; the async
+  `LocalizationUtils.Localize*` helpers build those keys), `UI/GameText` (rich text, Text
+  Animator tags, `<sprite name=X>` read as X). `CampaignNodes.Tooltip`: a game `TooltipTrigger`'s
+  `toolTipObject` texts (first = title).
+- `Readers/PopupReader` (module tick, components via `GameScenes.Components<T>`, gathered once per
+  scene change): the tip box text when a new `CurrentTip` shows, `ActOverlay`'s act and Chrono
+  Token overlays on their fade-in (test: `o.StartCoroutine(o.View_StartActOverlay(1))`,
+  `View_StartReplenishText()`), and `SpeechBubble`s under a `SpeechBubbleManager` ("Roxy: line"
+  when the `SpeechName` has a `Name_` prefix; test: `CreateSpeechBubble(SpeechName.Roxy_Excited,
+  1, 0, 0, 3, false)`).
 - Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
   tabs carry `NodeVtable.IsSelected` (unspoken: landing selects a tab anyway) and the row `entry` is `_currentTab`, since landing on a tab selects
   it), the page (`Panels[_currentTab]`, its top-level view items), and the bottom buttons found
