@@ -101,6 +101,14 @@ namespace StarVadersAccess.Module
             InputManager.Register("buffer.line.next", "Next buffer line", InputCategory.UI, Buffers.Controls.NextLine).AddBinding(new KeyboardBinding(KeyCode.UpArrow, ctrl: true)).Repeating();
             InputManager.Register("buffer.line.prev", "Previous buffer line", InputCategory.UI, Buffers.Controls.PreviousLine).AddBinding(new KeyboardBinding(KeyCode.DownArrow, ctrl: true)).Repeating();
 
+            // The fight's keys: live while the fight screen declares the Game category.
+            for (int n = 1; n <= 10; n++)
+            {
+                int card = n;
+                InputManager.Register("fight.card" + card, "Play card " + card, InputCategory.Game, () => EncounterScreen.PlayCard(card))
+                    .AddBinding(new KeyboardBinding(card == 10 ? KeyCode.Alpha0 : KeyCode.Alpha0 + card));
+            }
+
             // Global: always live, so the player can hand the keyboard back to the game and reclaim it.
             InputManager.Register("mod.focus", "Toggle navigation", InputCategory.Global, ToggleFocus)
                 .AddBinding(new KeyboardBinding(KeyCode.A, ctrl: true, shift: true));
@@ -127,6 +135,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Register(new ConfirmPromptScreen());
             ScreenManager.Register(new GlobeScreen());
             ScreenManager.Register(new TipScreen());
+            ScreenManager.Register(new EncounterScreen());
             ScreenManager.Register(new SettingsScreen());
             ScreenManager.Register(new ModMenuScreen());
             ScreenManager.Register(new HelpScreen());

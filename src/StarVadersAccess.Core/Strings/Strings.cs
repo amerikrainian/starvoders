@@ -126,6 +126,32 @@ namespace StarVadersAccess.Core.Strings
             // The act timeline's nodes: one already played, and the one the run stands at.
             D("map.cleared", "cleared"),
             D("map.current", "current"),
+            // The fight: the turn as x/y, a card's cost ("1 Heat": {0} the amount, {1} the game's word), the digit keys.
+            D("fight.turn", "Turn {0}/{1}"),
+            D("fight.cost", "{0} {1}"),
+            D("bind.fight.card1", "Play card 1"),
+            D("bind.fight.card2", "Play card 2"),
+            D("bind.fight.card3", "Play card 3"),
+            D("bind.fight.card4", "Play card 4"),
+            D("bind.fight.card5", "Play card 5"),
+            D("bind.fight.card6", "Play card 6"),
+            D("bind.fight.card7", "Play card 7"),
+            D("bind.fight.card8", "Play card 8"),
+            D("bind.fight.card9", "Play card 9"),
+            D("bind.fight.card10", "Play card 10"),
+            // Choosing a target: the play area ("Play"), the arrows' directions, a tile ("x, y", 1-based, row 1 at the bottom).
+            D("fight.play", "Play"),
+            D("fight.dir.n", "up"),
+            D("fight.dir.s", "down"),
+            D("fight.dir.w", "left"),
+            D("fight.dir.e", "right"),
+            D("fight.dir.nw", "up left"),
+            D("fight.dir.ne", "up right"),
+            D("fight.dir.sw", "down left"),
+            D("fight.dir.se", "down right"),
+            D("fight.coord", "{0}, {1}"),
+            // Your mech on the board.
+            D("fight.mech", "mech"),
 
             D("screen.mod_menu", "StarVaders Access"),
             D("mod.settings", "Settings"),
@@ -329,6 +355,12 @@ namespace StarVadersAccess.Core.Strings
         public static string CutsceneLine(string speaker, string line) => F("cutscene.line", speaker, line);
         public static string MapCleared => Get("map.cleared");
         public static string MapCurrent => Get("map.current");
+        public static string FightTurn(int turn, int turns) => F("fight.turn", turn, turns);
+        public static string FightCost(int amount, string resource) => F("fight.cost", amount, resource);
+        public static string FightPlay => Get("fight.play");
+        public static string FightDirection(string compass) => Get("fight.dir." + compass.ToLowerInvariant());
+        public static string FightCoord(int column, int row) => F("fight.coord", column, row);
+        public static string FightMech => Get("fight.mech");
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");
