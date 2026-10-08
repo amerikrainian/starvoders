@@ -311,7 +311,7 @@ namespace StarVadersAccess.Module.Screens
         private const string TargetsStop = "fight:targets";
         private bool _wasSelecting;
 
-        // A selection starting: on the board, its prompt is said and focus goes to the board (staying
+        // A selection starting: on the board, its prompt is said (not the play area's) and focus goes to the board (staying
         // where it is if already there, the game's cursor brought to it); otherwise focus goes to the
         // target list. When it ends, focus is left to the navigator.
         public override void OnUpdate()
@@ -322,7 +322,9 @@ namespace StarVadersAccess.Module.Screens
             {
                 if (set.OnBoard)
                 {
-                    string prompt = FightState.Prompt();
+                    // A card played onto the grid as a whole ("Click grid to play") needs no prompt:
+                    // landing on the board says it; Enter on any cell plays it.
+                    string prompt = set.Tiles.Count > 0 || set.Arrows.Count > 0 ? FightState.Prompt() : null;
                     if (prompt != null) Speech.Say(prompt);
                     var at = FocusedTile();
                     if (at == null) Navigation.Active?.FocusStop(BoardStop);
