@@ -172,6 +172,14 @@ separately. Host F6 uses the same OS read.
   an enemy turn's changes would wait for the next card to resolve), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
+- Fight figures: read `EncounterModel.Values[EncounterValue.Doom/Heat/MaxHeat/Power/...]`, never
+  the panels: hovering End Turn or a card PREVIEWS on them (Doom panel "5/5" with the model at 3).
+  Doom's maximum is the panel's "/5" (a preview leaves it alone).
+- Card viewer (`DeckViewSceneAdditive`, `DeckViewSceneController`, statics `Type` (`DeckSceneType`:
+  RemoveCard, PlayerData, PileView, Glossary, StarterDeck) and `PileToShow`): `DeckViewScreen`,
+  title by the pile its first card is in (no title drawn), `DeckCardView`s from `_cardGrid` and
+  `_cardPilotUniqueGrid`, artifacts, Back its own stop; Escape = `ExitScene`. In RemoveCard mode a
+  card's click removes it: never Enter on a card there through the driver.
 - Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
   tabs carry `NodeVtable.IsSelected` (unspoken: landing selects a tab anyway) and the row `entry` is `_currentTab`, since landing on a tab selects
   it), the page (`Panels[_currentTab]`, its top-level view items), and the bottom buttons found
