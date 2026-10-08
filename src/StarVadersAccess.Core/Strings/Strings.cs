@@ -123,6 +123,9 @@ namespace StarVadersAccess.Core.Strings
             D("role.dialog", "dialog"),
             // A cutscene's line with its speaker ("Roxy: Wait."): {0} the speaker, {1} the line.
             D("cutscene.line", "{0}: {1}"),
+            // The act timeline's nodes: one already played, and the one the run stands at.
+            D("map.cleared", "cleared"),
+            D("map.current", "current"),
 
             D("screen.mod_menu", "StarVaders Access"),
             D("mod.settings", "Settings"),
@@ -324,6 +327,8 @@ namespace StarVadersAccess.Core.Strings
         public static string MainCredits => Get("main.credits");
         public static string RoleDialog => Get("role.dialog");
         public static string CutsceneLine(string speaker, string line) => F("cutscene.line", speaker, line);
+        public static string MapCleared => Get("map.cleared");
+        public static string MapCurrent => Get("map.current");
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");

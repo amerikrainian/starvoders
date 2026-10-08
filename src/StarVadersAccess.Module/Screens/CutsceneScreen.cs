@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using PixelCrushers.DialogueSystem;
 using StarVaders;
 using StarVadersAccess.Core;
 using StarVadersAccess.Core.Graph;
 using StarVadersAccess.Core.Strings;
-using StarVadersAccess.Core.Text;
 using StarVadersAccess.Core.UI;
 using StarVadersAccess.Module.Interop;
 using StarVadersAccess.Module.UI;
@@ -126,16 +124,7 @@ namespace StarVadersAccess.Module.Screens
             ViewNodes.Click(bubble);
         }
 
-        // The bubble's text without its markup: TMP rich text, and Text Animator's effect tags in
-        // both its forms (<shake a=0.2>, {rot}), which the bubble holds until the animator parses them.
-        private static readonly Regex AnimatorTag = new Regex(@"\{/?[a-z]+[^}]*\}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-        private static string LineOf(CutsceneDialogueBubble bubble)
-        {
-            var tmp = bubble.Text;
-            if (tmp == null) return null;
-            return TextUtil.StripRichText(AnimatorTag.Replace(tmp.text ?? "", ""));
-        }
+        private static string LineOf(CutsceneDialogueBubble bubble) => GameText.Of(bubble.Text);
 
         // The actor of the bubble on screen, when it is the one the controller opened last; null
         // otherwise (a bubble the timeline shows by itself) or when the database has no such actor.

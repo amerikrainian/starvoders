@@ -23,11 +23,14 @@ namespace StarVadersAccess.Module.UI
         /// <summary>A clickable view item: "label, button"; Enter is the game's click. With a
         /// <paramref name="describeFrom"/>, the visible texts under that transform other than the
         /// caption follow as the item's description: a choice that explains itself under its title,
-        /// where the game draws the explanation beside the button rather than in it.</summary>
-        public static NodeVtable Button(AViewItem item, Func<string> label = null, Transform describeFrom = null)
+        /// where the game draws the explanation beside the button rather than in it. With
+        /// <paramref name="enabled"/>, the button reads "disabled" and ignores Enter while it is false
+        /// (a game button greyed out, which still takes the click).</summary>
+        public static NodeVtable Button(AViewItem item, Func<string> label = null, Transform describeFrom = null,
+            Func<bool> enabled = null)
         {
             Func<string> lbl = label ?? (() => Label(item));
-            var vt = GameNodes.Button(lbl, () => Click(item), () => IsShown(item));
+            var vt = GameNodes.Button(lbl, () => Click(item), () => IsShown(item) && (enabled == null || enabled()));
             vt.OnFocus = () => Hover(item);
             if (describeFrom != null)
                 vt.Announcements = new List<NodeAnnouncement>(vt.Announcements) { GameNodes.TooltipPart(() => Description(describeFrom, lbl())) };

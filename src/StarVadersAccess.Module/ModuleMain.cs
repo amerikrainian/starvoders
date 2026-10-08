@@ -125,6 +125,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Register(new TutorialSelectionScreen());
             ScreenManager.Register(new CutsceneScreen());
             ScreenManager.Register(new ConfirmPromptScreen());
+            ScreenManager.Register(new GlobeScreen());
             ScreenManager.Register(new SettingsScreen());
             ScreenManager.Register(new ModMenuScreen());
             ScreenManager.Register(new HelpScreen());
@@ -138,6 +139,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Tick();
             Navigation.TickTypeahead();
             Safe(Later.Tick, "later");
+            Safe(Readers.PopupReader.Tick, "popups");
             Safe(Buffers.Tick, "buffers");
         }
 

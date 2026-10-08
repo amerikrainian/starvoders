@@ -58,6 +58,7 @@ namespace StarVadersAccess.Module.Interop
             s_controllers.Clear();
             s_inputs.Clear();
             s_items.Clear();
+            s_components.Clear();
         }
 
         /// <summary>The scene's input handler (each scene has its own; the enabled one is the
@@ -131,6 +132,33 @@ namespace StarVadersAccess.Module.Interop
             return items.TryGetValue(name, out var found) && found != null ? found : null;
         }
 
+        // Components of a type across the loaded scenes, gathered once per type per scene change
+        // (inactive ones included): for the readers that watch a scene's popups every frame.
+        private static readonly Dictionary<Type, System.Collections.IList> s_components = new Dictionary<Type, System.Collections.IList>();
+
+        /// <summary>The loaded scenes' components of that type (shown or not), gathered when first
+        /// asked after a scene change; destroyed ones read as null.</summary>
+        public static List<T> Components<T>() where T : UnityEngine.Component
+        {
+            if (s_dirty) Rebuild();
+            if (s_components.TryGetValue(typeof(T), out var cached)) return (List<T>)cached;
+            var list = new List<T>();
+            s_components[typeof(T)] = list;
+            try
+            {
+                for (int i = 0; i < SceneManager.sceneCount; i++)
+                {
+                    var scene = SceneManager.GetSceneAt(i);
+                    if (!scene.isLoaded) continue;
+                    foreach (var root in scene.GetRootGameObjects())
+                        foreach (var c in root.GetComponentsInChildren<T>(true))
+                            if (c != null) list.Add(c);
+                }
+            }
+            catch (Exception e) { CoreLog.Warning("GameScenes: gathering " + typeof(T).Name + " failed: " + e.Message); }
+            return list;
+        }
+
         /// <summary>Every live controller, for the dev driver.</summary>
         public static IEnumerable<StarVaders.SceneController> All
         {
@@ -147,6 +175,7 @@ namespace StarVadersAccess.Module.Interop
             s_controllers.Clear();
             s_inputs.Clear();
             s_items.Clear();
+            s_components.Clear();
             try
             {
                 for (int i = 0; i < SceneManager.sceneCount; i++)
