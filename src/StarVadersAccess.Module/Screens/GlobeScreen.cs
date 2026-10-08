@@ -5,7 +5,6 @@ using StarVadersAccess.Core.Graph;
 using StarVadersAccess.Core.Strings;
 using StarVadersAccess.Core.UI;
 using StarVadersAccess.Module.Interop;
-using StarVadersAccess.Module.Readers;
 using StarVadersAccess.Module.UI;
 using TMPro;
 using Screen = StarVadersAccess.Core.Screens.Screen;
@@ -56,18 +55,16 @@ namespace StarVadersAccess.Module.Screens
             var c = Controller;
             if (c == null) return;
 
-            var tip = TipManager.CurrentTip;
-            if (tip != null && tip._isShowing && tip.gameObject.scene.handle == c.gameObject.scene.handle && PopupReader.TipText(tip) != null)
+            var tip = Tips.Current;
+            if (tip != null && tip.gameObject.scene.handle == c.gameObject.scene.handle && Tips.Text(tip) != null)
             {
                 b.BeginStop("globe:tip");
                 b.AddItem(ControlId.Structural("globe:tip"), new NodeVtable
                 {
                     ControlType = ControlTypes.Text,
-                    Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => PopupReader.TipText(tip)) },
-                    SearchText = () => PopupReader.TipText(tip),
-                    // A finished tip box's click is Tip.Destroy; an unfinished one's only finishes the
-                    // typing, which the player has no use for.
-                    OnActivate = () => tip.Destroy(true),
+                    Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => Tips.Text(tip)) },
+                    SearchText = () => Tips.Text(tip),
+                    OnActivate = () => Tips.Continue(tip),
                 });
             }
 

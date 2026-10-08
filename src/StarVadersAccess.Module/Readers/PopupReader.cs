@@ -11,7 +11,7 @@ namespace StarVadersAccess.Module.Readers
 {
     /// <summary>
     /// Speaks the texts the game pops up by itself, each once, queued, as it shows: the tutorial's
-    /// tip box (<see cref="TipManager.CurrentTip"/>), the act and Chrono Token overlays
+    /// tip box (<see cref="Tips"/>; one that waits for a click is the tip modal's), the act and Chrono Token overlays
     /// (<see cref="ActOverlay"/>, faded in through CanvasGroups), and the pilot's speech bubbles
     /// (spawned under a <see cref="SpeechBubbleManager"/>, faded out after a while; "Roxy: line" when
     /// the line's name gives the speaker). Polled from the
@@ -46,26 +46,17 @@ namespace StarVadersAccess.Module.Readers
             s_bubbles.Clear();
         }
 
-        /// <summary>The tip box's text (its two lines), or null when no tip shows.</summary>
-        public static string TipText(Tip tip)
-        {
-            var box = tip != null ? tip.GetComponentInChildren<TipBox>() : null;
-            if (box == null) return null;
-            string first = GameText.Of(box.textAnimatorFirst?.tmproText);
-            string second = GameText.Of(box.textAnimatorSecond?.tmproText);
-            if (first == null) return second;
-            return second == null ? first : first + " " + second;
-        }
-
+        // A new tip is spoken once its text is in; one that waits for a click is read by the tip
+        // modal instead (TipScreen), which takes focus.
         private static void Tip()
         {
-            var tip = TipManager.CurrentTip;
-            if (tip == null || !tip._isShowing) { s_tip = IntPtr.Zero; return; }
+            var tip = Tips.Current;
+            if (tip == null) { s_tip = IntPtr.Zero; return; }
             if (tip.Pointer == s_tip) return;
-            string text = TipText(tip);
+            string text = Tips.Text(tip);
             if (text == null) return;
             s_tip = tip.Pointer;
-            Speech.Say(text);
+            if (!Tips.WaitsForClick(tip)) Speech.Say(text);
         }
 
         // An overlay fading in speaks its text once it is half shown; fully faded out, it may again.
