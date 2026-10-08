@@ -20,11 +20,6 @@ namespace StarVadersAccess.Module.Screens
     /// </summary>
     public sealed class SettingsScreen : Screen
     {
-        public SettingsScreen()
-        {
-            Wrap = true;
-        }
-
         public override string Key => "settings";
         // The panel's own title ("Options"), else the mod's word.
         public override string ScreenName
