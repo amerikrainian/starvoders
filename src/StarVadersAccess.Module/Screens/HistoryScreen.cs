@@ -15,10 +15,10 @@ namespace StarVadersAccess.Module.Screens
 {
     /// <summary>
     /// Run history (<c>HistoryScene</c>, <see cref="HistorySceneController"/>), one past run at a
-    /// time. Stops: the run (its result as the heading, then the difficulty, time, score, Doom,
-    /// invaders defeated, highest combo, date and seed, as the panel words them; then which run of
-    /// how many with the previous and next arrows); its final deck ("name, cost, description");
-    /// its artifacts; Back. Escape is Back. Paging rebuilds the screen from the panel the game
+    /// time, one stop top to bottom: the run (its result as the heading, then the difficulty, time,
+    /// score, Doom, invaders defeated, highest combo, date and seed, as the panel words them; then
+    /// which run of how many with the previous and next arrows); its final deck as a row ("name,
+    /// cost, description", Left and Right); its artifacts as a row; Back. Escape is Back. Paging rebuilds the screen from the panel the game
     /// redraws.
     /// </summary>
     public sealed class HistoryScreen : Screen
@@ -34,7 +34,9 @@ namespace StarVadersAccess.Module.Screens
             var c = Controller;
             if (c == null) return;
 
-            b.BeginStop("history:run");
+            // One stop, read top to bottom: the run's lines, the deck as a row (Left and Right walk
+            // the cards), the artifacts as a row, Back at the bottom.
+            b.BeginStop("history");
             b.PushContext(Result(c), null, positions: false);
             int i = 0;
             foreach (var line in Lines(c))
@@ -52,31 +54,30 @@ namespace StarVadersAccess.Module.Screens
             var cards = c._allCards;
             if (cards != null && cards.Count > 0)
             {
-                b.BeginStop("history:cards");
                 b.PushContext(GameLoc.Get("Deck_Misc"));
+                b.StartRow("history:deck");
                 foreach (var card in cards)
                     if (card != null && card.CardModel != null)
                         b.AddItem(ControlId.Structural("history:card:" + card.GetInstanceID()), Card(card));
+                b.EndRow();
                 b.PopContext();
             }
 
             var artifacts = c._allArtifacts;
             if (artifacts != null && artifacts.Count > 0)
             {
-                b.BeginStop("history:artifacts");
                 b.PushContext(GameLoc.Get("FilterArtifacts_Misc"));
+                b.StartRow("history:artifacts");
                 foreach (var artifact in artifacts)
                     if (artifact != null)
                         b.AddItem(ControlId.Structural("history:artifact:" + artifact.GetInstanceID()), Artifact(artifact));
+                b.EndRow();
                 b.PopContext();
             }
 
             var back = GameScenes.Item(c, "BackButton");
             if (ViewNodes.IsShown(back))
-            {
-                b.BeginStop("history:back");
                 b.AddItem(ControlId.Structural("history:back"), ViewNodes.Button(back, () => Strings.Get("bind.ui.back")));
-            }
         }
 
         public override IEnumerable<ElementAction> GetActions()
