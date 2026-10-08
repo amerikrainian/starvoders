@@ -12,8 +12,9 @@ namespace StarVadersAccess.Module.Fight
     /// tile. Tiles are named "x, y", 1-based, column then row, row 1 at the bottom (the game's
     /// <see cref="Coord"/> is 0-based with y growing upward, the way the mech fires). Built fresh on
     /// each call from <see cref="EncounterModel.ModelItemDict"/>: nothing is kept between renders.
-    /// An invader is numbered ("Migo 3", the game's own <see cref="EnemyID.Number"/> plus one,
-    /// stable for the fight) when the fight has more than one of its kind, dead ones included.
+    /// An invader is numbered within its kind ("Shooter 2": its place by the game's own
+    /// <see cref="EnemyID.Number"/>, stable for the fight) when the fight has more than one of its
+    /// kind, dead ones included.
     /// </summary>
     internal sealed class FightBoard
     {
@@ -21,7 +22,9 @@ namespace StarVadersAccess.Module.Fight
         private readonly EncounterModel _model;
         private readonly GridModel _grid;
         private readonly Dictionary<(int, int), AEntityModel> _at = new Dictionary<(int, int), AEntityModel>();
-        private readonly Dictionary<EnemyName, int> _kinds = new Dictionary<EnemyName, int>();
+        // Every invader of the fight by kind, dead ones included, as the game's numbers in order: an
+        // invader is called by its place in its kind ("Shooter 2"), stable since the dead stay.
+        private readonly Dictionary<EnemyName, List<int>> _kinds = new Dictionary<EnemyName, List<int>>();
         private readonly HashSet<(int, int)> _spawn = new HashSet<(int, int)>();
         public readonly List<AEntityModel> Entities = new List<AEntityModel>();
 
@@ -50,7 +53,8 @@ namespace StarVadersAccess.Module.Fight
                     if (enemy != null)
                     {
                         var kind = enemy.EnemyID.EnemyName;
-                        board._kinds[kind] = board._kinds.TryGetValue(kind, out int n) ? n + 1 : 1;
+                        if (!board._kinds.TryGetValue(kind, out var numbers)) board._kinds[kind] = numbers = new List<int>();
+                        numbers.Add(enemy.EnemyID.Number);
                     }
                     var id = entity.ID.Cast<EntityID>();
                     if (!grid.IsEntityOnGrid(id)) continue;
@@ -58,6 +62,7 @@ namespace StarVadersAccess.Module.Fight
                     board._at[(c.x, c.y)] = entity;
                     board.Entities.Add(entity);
                 }
+                foreach (var numbers in board._kinds.Values) numbers.Sort();
                 foreach (var c in grid.GetSpawnCoords()) board._spawn.Add((c.x, c.y));
             }
             catch (Exception e) { CoreLog.Warning("FightBoard: reading the board failed: " + e.Message); }
@@ -87,7 +92,8 @@ namespace StarVadersAccess.Module.Fight
             {
                 var id = enemy.EnemyID;
                 string name = GameLoc.EnemyName(id.EnemyName) ?? id.EnemyName.ToString();
-                return _kinds.TryGetValue(id.EnemyName, out int n) && n > 1 ? name + " " + (id.Number + 1) : name;
+                return _kinds.TryGetValue(id.EnemyName, out var numbers) && numbers.Count > 1
+                    ? name + " " + (numbers.IndexOf(id.Number) + 1) : name;
             }
             var item = entity.TryCast<ItemEntityModel>();
             if (item != null) { var n = item.ItemID.ItemName; return GameLoc.Get(n + "_EntityTitle") ?? n.ToString(); }
@@ -126,28 +132,34 @@ namespace StarVadersAccess.Module.Fight
             return null;
         }
 
-        /// <summary>"Danger Zone: Migo 1, Migo 3" when something will strike the tile, else null.</summary>
-        public string Danger(int x, int y)
+        /// <summary>Who strikes the tile (named), empty when it is no Danger Zone; the game's "Danger
+        /// Zone" alone when it is one but names no attacker.</summary>
+        public List<string> Attackers(int x, int y)
         {
+            var who = new List<string>();
             try
             {
                 var c = MakeCoord(x, y);
-                if (!_grid.IsCoordDangerZone(c)) return null;
-                var who = new List<string>();
+                if (!_grid.IsCoordDangerZone(c)) return who;
                 foreach (var id in _grid.WhoIsTargettingDangerZone(c, _model))
                 {
                     var entity = _model.ModelItemDict[id.Cast<ID>()]?.TryCast<AEntityModel>();
                     string name = Name(entity);
                     if (name != null && !who.Contains(name)) who.Add(name);
                 }
-                string label = GameLoc.Get("DangerZoneText_Misc") ?? "Danger Zone";
-                return who.Count > 0 ? Strings.FightLabelled(label, string.Join(", ", who)) : label;
+                if (who.Count == 0) who.Add(GameLoc.Get("DangerZoneText_Misc") ?? "Danger Zone");
             }
-            catch (Exception e)
-            {
-                CoreLog.Warning("FightBoard: reading the danger at " + x + "," + y + " failed: " + e.Message);
-                return null;
-            }
+            catch (Exception e) { CoreLog.Warning("FightBoard: reading the danger at " + x + "," + y + " failed: " + e.Message); }
+            return who;
+        }
+
+        /// <summary>"Danger Zone: Migo 1, Migo 3" when something will strike the tile, else null.</summary>
+        public string Danger(int x, int y)
+        {
+            var who = Attackers(x, y);
+            if (who.Count == 0) return null;
+            string label = GameLoc.Get("DangerZoneText_Misc") ?? "Danger Zone";
+            return who.Count == 1 && who[0] == label ? label : Strings.FightLabelled(label, string.Join(", ", who));
         }
 
         /// <summary>The tile's status ("Cracked", "Hole"), or null when it has none.</summary>

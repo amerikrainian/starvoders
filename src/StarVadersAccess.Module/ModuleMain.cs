@@ -141,6 +141,8 @@ namespace StarVadersAccess.Module
             Safe(LanguageSync.Tick, "language");
             FocusMode.Tick();
             InputManager.Tick();
+            // Before the screens: an event is heard before the focus landing it caused (a target list).
+            Safe(Fight.FightEvents.Tick, "fight events");
             ScreenManager.Tick();
             Navigation.TickTypeahead();
             Safe(Later.Tick, "later");

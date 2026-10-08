@@ -168,6 +168,21 @@ namespace StarVadersAccess.Core.Strings
             D("fight.cat.danger", "Danger zones"),
             D("fight.cat.line", "{0}, {1}"),
             D("fight.nothing", "nothing"),
+            // Fight events, spoken and logged: {0} a name, {1} a tile "x, y" or a row or column number. The combat buffer's name.
+            D("fight.ev.enemyturn", "Enemy turn"),
+            D("fight.ev.appears", "{0} appears at {1}"),
+            D("fight.ev.moves", "{0} to {1}"),
+            D("fight.ev.moves.row", "{0} to row {1}"),
+            D("fight.ev.moves.column", "{0} to column {1}"),
+            D("fight.ev.destroyed", "{0} destroyed"),
+            D("fight.ev.shielded", "{0} shielded"),
+            D("fight.ev.unshielded", "{0} loses its shield"),
+            D("fight.ev.shocked", "{0} shocked"),
+            D("fight.ev.unshocked", "{0} no longer shocked"),
+            D("fight.ev.drew", "Drew {0}"),
+            // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
+            D("fight.ev.targets", "{0} targets {1}"),
+            D("buffer.combat", "combat"),
             D("bind.fight.skip.up", "Skip up"),
             D("bind.fight.skip.down", "Skip down"),
             D("bind.fight.skip.left", "Skip left"),
@@ -402,6 +417,19 @@ namespace StarVadersAccess.Core.Strings
         public static string FightCategory(string category) => Get("fight.cat." + category);
         public static string FightCategoryLine(string category, int count) => F("fight.cat.line", category, count);
         public static string FightNothing => Get("fight.nothing");
+        public static string FightEnemyTurn => Get("fight.ev.enemyturn");
+        public static string FightAppears(string name, string where) => F("fight.ev.appears", name, where);
+        public static string FightMoves(string name, string where) => F("fight.ev.moves", name, where);
+        public static string FightMovesRow(string name, int row) => F("fight.ev.moves.row", name, row);
+        public static string FightMovesColumn(string name, int column) => F("fight.ev.moves.column", name, column);
+        public static string FightDestroyed(string name) => F("fight.ev.destroyed", name);
+        public static string FightShielded(string name) => F("fight.ev.shielded", name);
+        public static string FightUnshielded(string name) => F("fight.ev.unshielded", name);
+        public static string FightShocked(string name) => F("fight.ev.shocked", name);
+        public static string FightUnshocked(string name) => F("fight.ev.unshocked", name);
+        public static string FightDrew(string cards) => F("fight.ev.drew", cards);
+        public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
+        public static string BufferCombat => Get("buffer.combat");
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");
