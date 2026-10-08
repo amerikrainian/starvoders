@@ -12,7 +12,7 @@ namespace StarVadersAccess.Module.Fight
     /// <summary>
     /// The fight's events: the board, Doom, Heat, the turn and the hand are snapshotted whenever the
     /// game settles (its task engine idle for a few frames, or waiting on the player), and what changed
-    /// since the last settled snapshot (<see cref="FightDiff"/>) is spoken, queued so it never cuts
+    /// since the last settled snapshot (<see cref="FightDiff"/>) is spoken, an entry per event, queued so it never cuts
     /// off what is being said and nothing the mod says on its own cuts it off, and appended to the
     /// combat log (<see cref="Log"/>, the combat buffer). The log is uncapped and cleared when a new
     /// fight starts. Polled from the module tick; snapshots are plain data, nothing native is kept.
@@ -63,7 +63,8 @@ namespace StarVadersAccess.Module.Fight
             _settled = now;
             if (lines.Count == 0) return;
             Log.AddRange(lines);
-            Speech.Say(string.Join(". ", lines));
+            // One speech entry per event, all queued, in order.
+            foreach (var line in lines) Speech.Say(line);
         }
 
         private static bool WaitingOnTip()

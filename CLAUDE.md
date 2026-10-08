@@ -169,8 +169,8 @@ separately. Host F6 uses the same OS read.
   Alt+Backspace, E; Backspace reads details (`*_InfoLine` keywords).
 - Fight events (`Fight/FightEvents`, Core `Fight/FightDiff` with tests): snapshot at settle
   points (task engine idle 3 frames, or waiting on the player: a selection or a click tip, else
-  an enemy turn's changes would wait for the next card to resolve), diff, speak queued as one
-  utterance, append to the uncapped combat buffer. Ticked before `ScreenManager` so an event
+  an enemy turn's changes would wait for the next card to resolve), diff, speak each event as its own queued entry,
+  append to the uncapped combat buffer. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
 - Options (`SettingsMenuScene`, additive): stops = tabs (`Tab (1)`..`(5)`, click -> `OnPressTab`;
   tabs carry `NodeVtable.IsSelected` (unspoken: landing selects a tab anyway) and the row `entry` is `_currentTab`, since landing on a tab selects
