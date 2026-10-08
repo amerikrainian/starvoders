@@ -184,6 +184,10 @@ namespace StarVadersAccess.Core.Strings
             D("fight.ev.drew", "Drew {0}"),
             // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
             D("fight.ev.targets", "{0} targets {1}"),
+            // Run history: which run of how many, and its arrows (no caption of their own).
+            D("history.run", "Run {0}/{1}"),
+            D("history.prev", "Previous run"),
+            D("history.next", "Next run"),
             D("buffer.combat", "combat"),
             D("bind.fight.skip.up", "Skip up"),
             D("bind.fight.skip.down", "Skip down"),
@@ -431,6 +435,9 @@ namespace StarVadersAccess.Core.Strings
         public static string FightUnshocked(string name) => F("fight.ev.unshocked", name);
         public static string FightDrew(string cards) => F("fight.ev.drew", cards);
         public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
+        public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
+        public static string HistoryPrevious => Get("history.prev");
+        public static string HistoryNext => Get("history.next");
         public static string BufferCombat => Get("buffer.combat");
 
 
