@@ -72,8 +72,10 @@ namespace StarVadersAccess.Module.Screens
                 b.AddItem(ControlId.Structural("fight:card:" + card.GetInstanceID()), Card(card));
             b.PopContext();
 
+            // The rack and the status read short: no positions, their descriptions in the ui buffer
+            // (and on Backspace) rather than spoken on every visit.
             b.BeginStop("fight:rack");
-            b.PushContext(null);
+            b.PushContext(null, positions: false);
             var endTurn = view.EndTurnView;
             if (ViewNodes.IsShown(endTurn))
                 b.AddItem(ControlId.Structural("fight:endturn"), Button(endTurn, () => GameLoc.Get("EndTurnTitle_Misc"),
@@ -94,7 +96,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             b.BeginStop("fight:status");
-            b.PushContext(null);
+            b.PushContext(null, positions: false);
             b.AddItem(ControlId.Structural("fight:turn"), Stat(TurnText, null));
             var doom = view.DoomView;
             if (ViewNodes.IsShown(doom))
@@ -429,9 +431,13 @@ namespace StarVadersAccess.Module.Screens
             var vt = GameNodes.Button(label, () => FightState.Click(item), () => ViewNodes.IsShown(item) && (enabled == null || enabled()));
             var anns = new List<NodeAnnouncement>(vt.Announcements);
             if (value != null) anns.Insert(1, new NodeAnnouncement(value, live: true, kind: AnnouncementKinds.Value));
-            if (description != null) anns.Add(GameNodes.TooltipPart(description));
             vt.Announcements = anns;
             vt.OnFocus = () => FightState.Hover(item);
+            if (description != null)
+            {
+                vt.Details = () => GameNodes.Lines(description());
+                vt.OnSecondary = () => SayDetails(GameNodes.Lines(description()));
+            }
             return vt;
         }
 
@@ -456,12 +462,10 @@ namespace StarVadersAccess.Module.Screens
         private static NodeVtable Stat(Func<string> text, Func<string> description) => new NodeVtable
         {
             ControlType = ControlTypes.Text,
-            Announcements = new List<NodeAnnouncement>
-            {
-                new NodeAnnouncement(text, live: true, kind: AnnouncementKinds.Label),
-                GameNodes.TooltipPart(description ?? (() => null)),
-            },
+            Announcements = new List<NodeAnnouncement> { new NodeAnnouncement(text, live: true, kind: AnnouncementKinds.Label) },
             SearchText = text,
+            Details = description != null ? () => GameNodes.Lines(description()) : (Func<IEnumerable<string>>)null,
+            OnSecondary = description != null ? () => SayDetails(GameNodes.Lines(description())) : (Action)null,
         };
 
         /// <summary>"Turn 1/8".</summary>
