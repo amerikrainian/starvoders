@@ -81,10 +81,12 @@ namespace StarVadersAccess.Module.Readers
             foreach (var manager in GameScenes.Components<SpeechBubbleManager>())
             {
                 if (manager == null || !manager.gameObject.activeInHierarchy) continue;
-                // The bubbles spawn under the manager's anchor transforms (one per speaker position).
+                // The bubbles spawn under the manager's anchor transforms (one per speaker position:
+                // the fight's) or under the manager itself, the anchor only placing them (the
+                // workshop's, Min at MinSpeech). A bubble seen twice is spoken once.
+                Scan(manager.transform);
                 var anchors = manager.Transforms;
-                if (anchors == null || anchors.Count == 0) Scan(manager.transform);
-                else foreach (var anchor in anchors) if (anchor != null) Scan(anchor);
+                if (anchors != null) foreach (var anchor in anchors) if (anchor != null) Scan(anchor);
             }
             s_bubbles.IntersectWith(s_present);
         }
