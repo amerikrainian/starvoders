@@ -12,8 +12,8 @@ using FightState = StarVadersAccess.Module.Fight.Fight;
 namespace StarVadersAccess.Module.UI
 {
     /// <summary>
-    /// A card or an artifact shown outside the hand (the card viewer, the rewards): "name, cost,
-    /// description" with the keyword explanations in the ui buffer and on Backspace; focus hovers
+    /// A card or an artifact shown outside the hand (the card viewer, the rewards): "name, upgrade,
+    /// cost, description, upgrade's description" with the keyword explanations in the ui buffer and on Backspace; focus hovers
     /// its view as the mouse does, Enter is its click.
     /// </summary>
     internal static class CardNodes
@@ -27,16 +27,18 @@ namespace StarVadersAccess.Module.UI
                 Announcements = new List<NodeAnnouncement>
                 {
                     GameNodes.LabelPart(name),
+                    new NodeAnnouncement(() => FightState.CardUpgrade(card), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => EncounterScreen.Cost(card), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(card)),
+                    GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(card)),
                 },
                 SearchText = name,
                 OnFocus = () => ViewNodes.Hover(view),
                 OnActivate = () => ViewNodes.Click(view),
-                Details = () => FightState.InfoLines(card?.MoreInfoWordNames),
+                Details = () => FightState.CardInfoLines(card),
                 OnSecondary = () =>
                 {
-                    var lines = FightState.InfoLines(card?.MoreInfoWordNames);
+                    var lines = FightState.CardInfoLines(card);
                     Speech.Say(lines.Count > 0 ? string.Join(" ", lines) : Strings.NoDetails, interrupt: true);
                 },
             };

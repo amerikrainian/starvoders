@@ -147,11 +147,13 @@ namespace StarVadersAccess.Module.Screens
                 Announcements = new List<NodeAnnouncement>
                 {
                     GameNodes.LabelPart(name),
+                    new NodeAnnouncement(() => FightState.CardUpgrade(card), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => EncounterScreen.Cost(card), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(card)),
+                    GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(card)),
                 },
                 SearchText = name,
-                Details = () => FightState.InfoLines(card.MoreInfoWordNames),
+                Details = () => FightState.CardInfoLines(card),
             };
         }
 

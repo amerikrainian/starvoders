@@ -388,16 +388,18 @@ namespace StarVadersAccess.Module.Screens
                 Announcements = new List<NodeAnnouncement>
                 {
                     GameNodes.LabelPart(name),
+                    new NodeAnnouncement(() => FightState.CardUpgrade(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => Cost(view.CardModel), kind: AnnouncementKinds.Value),
                     GameNodes.DisabledPart(() => Playable(view)),
                     new NodeAnnouncement(() => Playable(view) ? null : GameText.Of(view._unplayableText), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(view.CardModel)),
+                    GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(view.CardModel)),
                 },
                 SearchText = name,
                 OnFocus = () => FightState.Hover(view),
                 OnActivate = () => FightState.Click(view),
-                Details = () => FightState.InfoLines(view.CardModel?.MoreInfoWordNames),
-                OnSecondary = () => SayDetails(FightState.InfoLines(view.CardModel?.MoreInfoWordNames)),
+                Details = () => FightState.CardInfoLines(view.CardModel),
+                OnSecondary = () => SayDetails(FightState.CardInfoLines(view.CardModel)),
             };
         }
 

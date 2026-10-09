@@ -71,12 +71,14 @@ namespace StarVadersAccess.Module.Fight
 
         public static string CardName(CardModel card) => card != null ? GameLoc.Get(card.CardName + "_CardTitle") ?? card.CardName.ToString() : null;
 
-        /// <summary>The card's description with its live numbers, as its info panel shows it.</summary>
+        /// <summary>The card's description with its live numbers, as its info panel shows it; none when
+        /// its upgrade replaces it (<see cref="AComponent.SkipNormalDescription"/>: the panel blanks it).</summary>
         public static string CardDescription(CardModel card)
         {
             if (card == null) return null;
             try
             {
+                if (card.Component != null && card.Component.SkipNormalDescription) return null;
                 string raw = LocalizationUtils.LocalizeSynchronous(card.CardName + "_CardDesc");
                 if (string.IsNullOrEmpty(raw) || raw.StartsWith("No translation for", StringComparison.Ordinal)) return null;
                 var controller = Controller;
@@ -88,6 +90,43 @@ namespace StarVadersAccess.Module.Fight
                 CoreLog.Warning("Fight: describing " + card.CardName + " failed: " + e.Message);
                 return null;
             }
+        }
+
+        /// <summary>The card's upgrade (its <see cref="AComponent"/>) by the title its panel draws under
+        /// the card's ("Unstable"), or null for a card without one.</summary>
+        public static string CardUpgrade(CardModel card)
+        {
+            var component = card?.Component;
+            return component != null ? GameLoc.Get(component.ComponentName + "_CompTitle") ?? component.ComponentName.ToString() : null;
+        }
+
+        /// <summary>What the card's upgrade does, with its live numbers, as the panel's component line
+        /// shows it ("+1 Repeat and +1 Heat cost when played.").</summary>
+        public static string CardUpgradeDescription(CardModel card)
+        {
+            var component = card?.Component;
+            if (component == null) return null;
+            try
+            {
+                string raw = LocalizationUtils.LocalizeSynchronous(component.ComponentName + "_CompDesc");
+                if (string.IsNullOrEmpty(raw) || raw.StartsWith("No translation for", StringComparison.Ordinal)) return null;
+                return GameText.Clean(LocalizationUtils.GetModifiedDescriptions(raw, component.ComponentName, Controller));
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: describing the upgrade of " + card.CardName + " failed: " + e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>A card's keyword explanations, its upgrade's included (the card's info panel lists
+        /// both: Unstable adds Repeat and Heat).</summary>
+        public static List<string> CardInfoLines(CardModel card)
+        {
+            var lines = InfoLines(card?.MoreInfoWordNames);
+            foreach (var line in InfoLines(card?.Component?.MoreInfoWordNames))
+                if (!lines.Contains(line)) lines.Add(line);
+            return lines;
         }
 
         /// <summary>The keyword explanations a card or entity carries (its info panel's lines:
