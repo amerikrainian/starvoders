@@ -14,7 +14,10 @@ namespace StarVadersAccess.Module.Readers
     /// tip box (<see cref="Tips"/>; one that waits for a click is the tip modal's), the act and Chrono Token overlays
     /// (<see cref="ActOverlay"/>, faded in through CanvasGroups), and the pilot's speech bubbles
     /// (spawned under a <see cref="SpeechBubbleManager"/>, faded out after a while; "Roxy: line" when
-    /// the line's name gives the speaker). Polled from the
+    /// the line's name gives the speaker), and the fight's bomb and puppet counters ("1/3 Bomb", which
+    /// the game flashes when one joins the player's: <see cref="BombLimitView.SetBombAmount"/> from
+    /// AddToPlayerBombListTask, ShowBombNumberTask and BombRainTask), also logged to the combat
+    /// buffer. Polled from the
     /// module tick over components gathered once per scene change; what was spoken is remembered by
     /// native pointer only while it shows.
     /// </summary>
@@ -26,6 +29,7 @@ namespace StarVadersAccess.Module.Readers
         private static readonly HashSet<IntPtr> s_overlays = new HashSet<IntPtr>();
         private static readonly HashSet<IntPtr> s_bubbles = new HashSet<IntPtr>();
         private static readonly HashSet<IntPtr> s_present = new HashSet<IntPtr>();
+        private static readonly Dictionary<IntPtr, string> s_counters = new Dictionary<IntPtr, string>();
 
         public static void Tick()
         {
@@ -36,6 +40,10 @@ namespace StarVadersAccess.Module.Readers
                 Overlay(overlay._canvasGroup);
                 Overlay(overlay._replenishCanvasGroup);
             }
+            foreach (var bombs in GameScenes.Components<BombLimitView>())
+                if (bombs != null) Counter(bombs.CanvasGroup, bombs.BombLimitText);
+            foreach (var puppets in GameScenes.Components<PuppetLimitView>())
+                if (puppets != null) Counter(puppets.CanvasGroup, puppets.PuppetLimitText);
             if (Time.frameCount % 5 == 0) Bubbles();
         }
 
@@ -44,6 +52,7 @@ namespace StarVadersAccess.Module.Readers
             s_tip = IntPtr.Zero;
             s_overlays.Clear();
             s_bubbles.Clear();
+            s_counters.Clear();
         }
 
         // A new tip is spoken once its text is in; one that waits for a click is read by the tip
@@ -71,6 +80,22 @@ namespace StarVadersAccess.Module.Readers
             if (text == null) return;
             s_overlays.Add(ptr);
             Speech.Say(text);
+        }
+
+        // A counter fading in speaks its text once half shown, and again when its number changes while
+        // it stays up (two bombs placed in a row); faded out, it forgets.
+        private static void Counter(CanvasGroup group, TMPro.TMP_Text tmp)
+        {
+            if (group == null) return;
+            var ptr = group.Pointer;
+            float alpha = group.gameObject.activeInHierarchy ? group.alpha : 0f;
+            if (alpha < Hidden) { s_counters.Remove(ptr); return; }
+            if (alpha < Shown) return;
+            string text = GameText.Of(tmp);
+            if (text == null || (s_counters.TryGetValue(ptr, out var said) && said == text)) return;
+            s_counters[ptr] = text;
+            Speech.Say(text);
+            Fight.FightEvents.Log.Add(text);
         }
 
         // Speech bubbles are spawned per line and destroyed after their fade: each is spoken once its
