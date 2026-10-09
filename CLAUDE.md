@@ -116,7 +116,14 @@ separately. Host F6 uses the same OS read.
   artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
   (`PauseMenuSceneAdditive`, layer 30, exclusive: "Paused", its buttons by object name, the run's
   difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
-  Save & Exit and Skip Tutorial/Abandon Run: never through the driver), plus guildrun's
+  Save & Exit and Skip Tutorial/Abandon Run: never through the driver), `WorkshopScreen`
+  (`WorkshopScene`, `ShopController`, named by `ShopTitle_Misc`: one stop of the wares, cards
+  top row first then artifacts, each "name, 8900 Stars" (the drawn price; the model's is a
+  hundredth), "Sale!, was 5700" (price on `SaleText`, `BuyButtonText` crossed out), "Bundle!, 2
+  copies" (bought twice), "disabled" while the price is drawn red (`Text.color !=
+  originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and
+  red button when shown, Exit; buying, tipping, Restock and Exit: never through the driver; the
+  unlock canvas is not read yet), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`

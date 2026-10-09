@@ -128,6 +128,8 @@ namespace StarVadersAccess.Core.Strings
             // The fight: the turn as x/y, a card's cost ("1 Heat": {0} the amount, {1} the game's word), the digit keys.
             D("fight.turn", "Turn {0}/{1}"),
             D("fight.cost", "{0} {1}"),
+            D("shop.was", "was {0}"),
+            D("shop.copies", "{0} copies"),
             D("bind.fight.card1", "Play card 1"),
             D("bind.fight.card2", "Play card 2"),
             D("bind.fight.card3", "Play card 3"),
@@ -418,6 +420,10 @@ namespace StarVadersAccess.Core.Strings
         public static string MapCurrent => Get("map.current");
         public static string FightTurn(int turn, int turns) => F("fight.turn", turn, turns);
         public static string FightCost(int amount, string resource) => F("fight.cost", amount, resource);
+        /// <summary>A sale's crossed-out price: "was 5700".</summary>
+        public static string ShopWas(string price) => F("shop.was", price);
+        /// <summary>A bundle's card count: "2 copies".</summary>
+        public static string ShopCopies(int count) => F("shop.copies", count);
         public static string FightPlay => Get("fight.play");
         public static string FightDirection(string compass) => Get("fight.dir." + compass.ToLowerInvariant());
         public static string FightCoord(int column, int row) => F("fight.coord", column, row);

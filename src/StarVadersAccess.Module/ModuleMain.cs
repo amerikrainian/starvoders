@@ -137,6 +137,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Register(new DeckViewScreen());
             ScreenManager.Register(new EncounterWinScreen());
             ScreenManager.Register(new RewardScreen());
+            ScreenManager.Register(new WorkshopScreen());
             ScreenManager.Register(new PauseScreen());
             ScreenManager.Register(new CampaignEndScreen());
             ScreenManager.Register(new HistoryScreen());

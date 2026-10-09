@@ -48,8 +48,9 @@ namespace StarVadersAccess.Module.UI
         }
 
         /// <summary>The Reroll button (its caption, "disabled" without tokens) with the Chrono Tokens
-        /// left, read live ("3 of 3").</summary>
-        public static void Reroll(GraphBuilder b, RerollButton reroll, string id)
+        /// left, read live ("3 of 3"), and the <paramref name="description"/> its hover panel shows,
+        /// if any (the workshop's Restock).</summary>
+        public static void Reroll(GraphBuilder b, RerollButton reroll, string id, Func<string> description = null)
         {
             if (!ViewNodes.IsShown(reroll)) return;
             var vt = ViewNodes.Button(reroll, () => GameText.Of(reroll.transform.Find("RerollText")?.GetComponent<TMP_Text>()),
@@ -59,6 +60,7 @@ namespace StarVadersAccess.Module.UI
             {
                 new NodeAnnouncement(left, live: true, kind: AnnouncementKinds.Value),
             };
+            if (description != null) vt.Announcements = new List<NodeAnnouncement>(vt.Announcements) { GameNodes.TooltipPart(description) };
             b.AddItem(ControlId.Structural(id), vt);
         }
 
