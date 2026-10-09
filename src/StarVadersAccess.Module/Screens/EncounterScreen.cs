@@ -498,22 +498,8 @@ namespace StarVadersAccess.Module.Screens
             return GameText.Of(screen.Text);
         }
 
-        private static NodeVtable Artifact(ArtifactView view)
-        {
-            var model = view.ArtifactModel;
-            Func<string> name = () => model != null ? GameLoc.ArtifactName(model.ArtifactName) : null;
-            return new NodeVtable
-            {
-                ControlType = ControlTypes.Text,
-                Announcements = new List<NodeAnnouncement>
-                {
-                    GameNodes.LabelPart(name),
-                    GameNodes.TooltipPart(() => model != null ? GameLoc.ArtifactDescription(model.ArtifactName) : null),
-                },
-                SearchText = name,
-                OnFocus = () => FightState.Hover(view),
-            };
-        }
+        private static NodeVtable Artifact(ArtifactView view) =>
+            CardNodes.Artifact(view.ArtifactModel, view, cooldown: false, focus: () => FightState.Hover(view));
 
         private static bool Visible(UnityEngine.Component view)
         {

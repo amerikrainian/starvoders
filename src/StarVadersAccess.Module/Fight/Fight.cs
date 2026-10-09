@@ -160,21 +160,80 @@ namespace StarVadersAccess.Module.Fight
             var component = Upgrade(card);
             void Add(string line) { if (line != null && !lines.Contains(line)) lines.Add(line); }
             foreach (var trait in Traits(card)) Add(GameLoc.Get(trait + "_InfoLine"));
-            foreach (var line in InfoLines(card?.MoreInfoWordNames)) Add(line);
             try
             {
-                foreach (var line in InfoLines(component?.MoreInfoWordNames)) Add(line);
-                foreach (var set in new[] { card?.MoreInfoCardNames, component?.MoreInfoCardNames })
-                    if (set != null)
-                        foreach (var name in set) Add(Named(GameLoc.Get(name + "_CardTitle") ?? name.ToString(), GameLoc.Get(name + "_CardDesc")));
-                foreach (var set in new[] { card?.MoreInfoItemNames, component?.MoreInfoItemNames })
-                    if (set != null)
-                        foreach (var name in set) Add(Named(GameLoc.Get(name + "_EntityTitle") ?? name.ToString(), GameLoc.Get(name + "_EntityDesc")));
-                foreach (var set in new[] { card?.MoreInfoEnemyNames, component?.MoreInfoEnemyNames })
-                    if (set != null)
-                        foreach (var name in set) Add(Named(GameLoc.EnemyName(name) ?? name.ToString(), GameLoc.Get(name + "_EntityDesc")));
+                MoreInfo(Add, card?.MoreInfoWordNames, card?.MoreInfoCardNames, card?.MoreInfoItemNames, card?.MoreInfoEnemyNames);
+                if (component != null)
+                    MoreInfo(Add, component.MoreInfoWordNames, component.MoreInfoCardNames, component.MoreInfoItemNames, component.MoreInfoEnemyNames);
             }
             catch (Exception e) { CoreLog.Warning("Fight: reading the more info of " + card?.CardName + " failed: " + e.Message); }
+            return lines;
+        }
+
+        /// <summary>One more-info set's lines, as the game's more info panel lists them: the keyword
+        /// explanations, then each card, item and invader it names with its description.</summary>
+        private static void MoreInfo(Action<string> add,
+            Il2CppSystem.Collections.Generic.HashSet<MoreInfoWordName> words,
+            Il2CppSystem.Collections.Generic.HashSet<CardName> cards,
+            Il2CppSystem.Collections.Generic.HashSet<ItemName> items,
+            Il2CppSystem.Collections.Generic.HashSet<EnemyName> enemies)
+        {
+            foreach (var line in InfoLines(words)) add(line);
+            if (cards != null)
+                foreach (var name in cards) add(Named(GameLoc.Get(name + "_CardTitle") ?? name.ToString(), GameLoc.Get(name + "_CardDesc")));
+            if (items != null)
+                foreach (var name in items) add(Named(GameLoc.Get(name + "_EntityTitle") ?? name.ToString(), GameLoc.Get(name + "_EntityDesc")));
+            if (enemies != null)
+                foreach (var name in enemies) add(Named(GameLoc.EnemyName(name) ?? name.ToString(), GameLoc.Get(name + "_EntityDesc")));
+        }
+
+        // ---- artifacts ----
+
+        /// <summary>The artifact's description as its panel shows it: a spell's "[#1#]" numbers filled
+        /// by <see cref="LocalizationUtils.GetModifiedDescriptions(string, ArtifactModel,
+        /// EncounterController)"/>, which the panel always runs (with the fight's controller in one).</summary>
+        public static string ArtifactDescription(ArtifactModel model)
+        {
+            if (model == null) return null;
+            try
+            {
+                string raw = LocalizationUtils.LocalizeSynchronous(model.ArtifactName + "_ArtiDesc");
+                if (string.IsNullOrEmpty(raw) || raw.StartsWith("No translation for", StringComparison.Ordinal)) return null;
+                return GameText.Clean(LocalizationUtils.GetModifiedDescriptions(raw, model, Controller));
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: describing " + model.ArtifactName + " failed: " + e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>The panel's trait line: "Spell" for a spell, else "Artifact".</summary>
+        public static string ArtifactTrait(ArtifactModel model) =>
+            model == null ? null : GameLoc.Get((model.IsSpell ? "Spell" : "Artifact") + "_Keyword");
+
+        /// <summary>A spell's "Cooldown: 3" (the game's <c>Cooldown_Misc</c> with its base cooldown), as
+        /// its panel draws it; null for other artifacts.</summary>
+        public static string ArtifactCooldown(ArtifactModel model)
+        {
+            if (model == null || !model.IsSpell) return null;
+            string text = GameLoc.Get("Cooldown_Misc");
+            return text != null ? text.Replace("[X]", model.BaseCooldown.ToString()) : null;
+        }
+
+        /// <summary>What an artifact's more info shows: a spell's "Spell: A type of artifact that can be
+        /// casted...", then its keywords, cards, items and invaders.</summary>
+        public static List<string> ArtifactInfoLines(ArtifactModel model)
+        {
+            var lines = new List<string>();
+            if (model == null) return lines;
+            void Add(string line) { if (line != null && !lines.Contains(line)) lines.Add(line); }
+            try
+            {
+                if (model.IsSpell) Add(GameLoc.Get("Spell_InfoLine"));
+                MoreInfo(Add, model.MoreInfoWordNames, model.MoreInfoCardNames, model.MoreInfoItemNames, model.MoreInfoEnemyNames);
+            }
+            catch (Exception e) { CoreLog.Warning("Fight: reading the more info of " + model.ArtifactName + " failed: " + e.Message); }
             return lines;
         }
 

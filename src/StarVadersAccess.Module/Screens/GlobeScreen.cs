@@ -183,7 +183,7 @@ namespace StarVadersAccess.Module.Screens
                 var model = view.ArtifactModel;
                 if (model == null) continue;
                 string n = GameLoc.ArtifactName(model.ArtifactName);
-                string d = GameLoc.ArtifactDescription(model.ArtifactName);
+                string d = Fight.Fight.ArtifactDescription(model);
                 if (n != null) lines.Add(d != null ? n + ": " + d : n);
             }
             foreach (var trigger in panel.GetComponentsInChildren<StarVaders.TooltipTrigger>(false))

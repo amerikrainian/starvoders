@@ -16,7 +16,6 @@ namespace StarVadersAccess.Module.Interop
     {
         public static string EnemyName(EnemyName name) => Get(name + "_EntityTitle");
         public static string ArtifactName(ArtifactName name) => Get(name + "_ArtiTitle");
-        public static string ArtifactDescription(ArtifactName name) => Get(name + "_ArtiDesc");
 
         /// <summary>
         /// An entity's description (<c>key</c> is its <c>_EntityDesc</c> key) as its info panel shows

@@ -158,21 +158,8 @@ namespace StarVadersAccess.Module.Screens
             };
         }
 
-        private static NodeVtable Artifact(DeckArtifactView view)
-        {
-            var model = view.ArtifactModel;
-            Func<string> name = () => model != null ? GameLoc.ArtifactName(model.ArtifactName) : null;
-            return new NodeVtable
-            {
-                ControlType = ControlTypes.Text,
-                Announcements = new List<NodeAnnouncement>
-                {
-                    GameNodes.LabelPart(name),
-                    GameNodes.TooltipPart(() => model != null ? GameLoc.ArtifactDescription(model.ArtifactName) : null),
-                },
-                SearchText = name,
-            };
-        }
+        // Not hovered, as the history's cards are not.
+        private static NodeVtable Artifact(DeckArtifactView view) => CardNodes.Artifact(view.ArtifactModel, null);
 
         private static void Add(List<string> lines, string text)
         {
