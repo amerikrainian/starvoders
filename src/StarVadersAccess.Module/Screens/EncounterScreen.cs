@@ -493,12 +493,14 @@ namespace StarVadersAccess.Module.Screens
             return model != null ? Strings.FightTurn(model.TurnNumber, model.MaxTurns) : null;
         }
 
-        /// <summary>The objective the right-hand screen states when it shows nothing else.</summary>
+        /// <summary>The objective the right-hand screen states ("Objective: Defeat Mothership!"). It
+        /// is hidden while anything is hovered, which our focus always is, but kept: a hover or a
+        /// selection writes <see cref="ScreenView.SelectionPrompt"/>, and only the default path
+        /// (<see cref="ScreenView.UpdateText"/>) writes <see cref="ScreenView.Text"/>.</summary>
         public static string Objective()
         {
             var screen = FightState.View?.ScreenView;
-            if (screen == null || !screen._isDefault) return null;
-            return GameText.Of(screen.Text);
+            return screen != null ? GameText.Of(screen.Text) : null;
         }
 
         private static NodeVtable Artifact(ArtifactView view) =>
