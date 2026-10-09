@@ -33,8 +33,10 @@ namespace StarVadersAccess.Module.Screens
 
         public override IEnumerable<ElementAction> GetActions()
         {
-            // Escape cancels a selection the game lets go of.
-            yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ => FightState.Cancel());
+            // Escape cancels a selection the game lets go of; otherwise it pauses (Navigation's
+            // fallback, as on every run screen).
+            if (FightState.Cancellable)
+                yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ => FightState.Cancel());
         }
 
         public override bool IsActive()

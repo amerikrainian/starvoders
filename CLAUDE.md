@@ -113,7 +113,10 @@ separately. Host F6 uses the same OS read.
   cards, upgrades and artifacts: title `TitleText`, the shown `CardRewardBoards` and
   `ArtifactRewardBoards` left to right by x, Enter takes one (`AddRewardToDeck`: never through
   the driver), Skip = `ProceedButton`, Reroll and the run status from `UI/CampaignNodes`; card and
-  artifact nodes shared with the deck viewer in `UI/CardNodes`), plus guildrun's
+  artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
+  (`PauseMenuSceneAdditive`, layer 30, exclusive: "Paused", its buttons by object name, the run's
+  difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
+  Save & Exit and Skip Tutorial/Abandon Run: never through the driver), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
@@ -221,5 +224,7 @@ interop proxy referenced), `/wait`, `/typeinfo`, `/screenshot`, `/reload`, `/mod
 the save, through the driver without asking**: verify screens by reading them.
 
 ## Keys
-F1 key help, arrows, Tab/Shift+Tab, Enter, Backspace (secondary), Escape, Home/End, Alt+Up/Down
+F1 key help, arrows, Tab/Shift+Tab, Enter, Backspace (secondary), Escape (on a screen with no
+Back of its own, `Navigation.BackFallback` = `UI/Pause`: the scene's `PauseButtonView` click, as the
+game's Menu key; the fight's Escape cancels a selection first), Home/End, Alt+Up/Down
 sections, type-ahead letters, Ctrl+arrows buffers, Ctrl+Shift+A focus mode, Ctrl+Shift+M mod menu.

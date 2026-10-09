@@ -42,6 +42,9 @@ namespace StarVadersAccess.Module
             Speech.Speak = (text, interrupt) => host.Speech.Speak(text, interrupt);
             NavInput.Current = new UnityNavInput();
             Navigation.FocusActive = () => FocusMode.Active;
+            // Escape where a screen has no Back of its own: the game's pause menu, as its Menu key.
+            Navigation.BackFallbackAvailable = Pause.CanOpen;
+            Navigation.BackFallback = Pause.Open;
             InputManager.FocusActive = () => FocusMode.Active;
             GraphAnnouncer.PositionText = (i, n) => host.Settings.SpeakPositions ? Strings.Position(i, n) : null;
             GraphAnnouncer.ExpandedStateText = Strings.ExpandedState;
@@ -134,6 +137,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Register(new DeckViewScreen());
             ScreenManager.Register(new EncounterWinScreen());
             ScreenManager.Register(new RewardScreen());
+            ScreenManager.Register(new PauseScreen());
             ScreenManager.Register(new CampaignEndScreen());
             ScreenManager.Register(new HistoryScreen());
             ScreenManager.Register(new SettingsScreen());

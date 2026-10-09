@@ -108,6 +108,11 @@ namespace StarVadersAccess.Core.UI
         /// <summary>Whether our navigation owns the keyboard right now (the module's focus mode).</summary>
         public static Func<bool> FocusActive = () => true;
 
+        /// <summary>Escape on a screen that offers no Back of its own (the game's pause menu, where
+        /// there is one): whether it would do something now, and doing it (true when it did).</summary>
+        public static Func<bool> BackFallbackAvailable;
+        public static Func<bool> BackFallback;
+
         /// <summary>Plays the default hover cue when focus lands on a node; null = silent.</summary>
         public static Action HoverSound;
 

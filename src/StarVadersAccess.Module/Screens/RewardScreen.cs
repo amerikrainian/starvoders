@@ -63,7 +63,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             CampaignNodes.Status(b, c, "reward");
-            CampaignNodes.Map(b, c, "reward");
+            CampaignNodes.Map(b, c.MapPanel, "reward");
         }
     }
 }

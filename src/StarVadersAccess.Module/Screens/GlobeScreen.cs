@@ -89,7 +89,7 @@ namespace StarVadersAccess.Module.Screens
             b.PopContext();
 
             CampaignNodes.Status(b, c, "globe");
-            CampaignNodes.Map(b, c, "globe");
+            CampaignNodes.Map(b, c.MapPanel, "globe");
         }
 
         private static NodeVtable Encounter(RoomChoicePanel panel)

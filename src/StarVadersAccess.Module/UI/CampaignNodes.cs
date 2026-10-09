@@ -137,9 +137,8 @@ namespace StarVadersAccess.Module.UI
         /// the boss node with the boss preview's line. The kinds are the map tooltip's own legend
         /// (combat, non-combat special, boss, in that order, then its summary line). A cleared node
         /// draws its cross; the current one is the first not crossed out.</summary>
-        public static void Map(GraphBuilder b, CampaignSceneController c, string key)
+        public static void Map(GraphBuilder b, AViewItem panel, string key)
         {
-            var panel = c.MapPanel;
             if (!ViewNodes.IsShown(panel)) return;
             var map = panel.GetComponentInChildren<MapView>();
             if (map == null || map.nodes == null) return;

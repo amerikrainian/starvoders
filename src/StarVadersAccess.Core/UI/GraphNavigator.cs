@@ -452,7 +452,8 @@ namespace StarVadersAccess.Core.UI
                     return true;
                 }
                 case UiActions.Back:
-                    return Screen != null && Screen.InvokeAction(ActionIds.Back);
+                    if (Screen != null && Screen.InvokeAction(ActionIds.Back)) return true;
+                    return Navigation.BackFallback != null && Navigation.BackFallback();
                 case UiActions.Drag:
                 {
                     var node = _graph?.CurrentNode;
@@ -510,7 +511,8 @@ namespace StarVadersAccess.Core.UI
                 case UiActions.RegionNext: return node != null && node.RegionKey != null;
                 case UiActions.Activate: return node != null && node.Vtable.OnActivate != null;
                 case UiActions.Secondary: return node != null && node.Vtable.OnSecondary != null;
-                case UiActions.Back: return ScreenOffers(ActionIds.Back);
+                case UiActions.Back:
+                    return ScreenOffers(ActionIds.Back) || (Navigation.BackFallbackAvailable != null && Navigation.BackFallbackAvailable());
                 case UiActions.Drag: return node != null && node.Vtable.OnDrag != null;
                 case UiActions.Delete: return node != null && node.Vtable.OnDelete != null;
                 case UiActions.ReadFocus: return node != null;
