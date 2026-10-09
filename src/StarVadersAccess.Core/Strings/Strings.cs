@@ -151,12 +151,11 @@ namespace StarVadersAccess.Core.Strings
             D("fight.coord", "{0}, {1}"),
             // Your mech on the board.
             D("fight.mech", "mech"),
-            // The board: a valid target tile, an entity's health and charge, the zones (the bottom 3 rows where invaders add Doom, the rows they spawn in, between), "label: value" (Danger Zone: Migo 1).
+            // The board: a valid target tile, an entity's health and charge, the zones (the bottom 3 rows where invaders add Doom, the rows they spawn in; the rows between are unnamed), "label: value" (Danger Zone: Migo 1).
             D("fight.target", "target"),
             D("fight.health", "{0} health"),
             D("fight.charge", "charge {0}"),
             D("fight.zone.doom", "doom rows"),
-            D("fight.zone.middle", "middle rows"),
             D("fight.zone.spawn", "spawn rows"),
             D("fight.danger", "{0}: {1}"),
             // The board's categories ([ ] and , .): their names, "Invaders, 2"; "nothing" for a key with nothing to say. Then the fight keys' names for F1.

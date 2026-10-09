@@ -104,7 +104,6 @@ fight.target=対象
 fight.health=体力 {0}
 fight.charge=チャージ {0}
 fight.zone.doom=破滅の列
-fight.zone.middle=中央の列
 fight.zone.spawn=出現の列
 fight.danger={0}: {1}
 fight.cat.invaders=インベーダー

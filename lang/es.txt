@@ -104,7 +104,6 @@ fight.target=objetivo
 fight.health={0} de vida
 fight.charge=carga {0}
 fight.zone.doom=filas de perdición
-fight.zone.middle=filas centrales
 fight.zone.spawn=filas de aparición
 fight.danger={0}: {1}
 fight.cat.invaders=Invasores

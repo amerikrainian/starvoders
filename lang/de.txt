@@ -104,7 +104,6 @@ fight.target=Ziel
 fight.health={0} Leben
 fight.charge=Ladung {0}
 fight.zone.doom=Untergangsreihen
-fight.zone.middle=mittlere Reihen
 fight.zone.spawn=Spawnreihen
 fight.danger={0}: {1}
 fight.cat.invaders=Invasoren

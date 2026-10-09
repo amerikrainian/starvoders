@@ -106,7 +106,6 @@ fight.target=target
 fight.health={0} health
 fight.charge=charge {0}
 fight.zone.doom=doom rows
-fight.zone.middle=middle rows
 fight.zone.spawn=spawn rows
 fight.danger={0}: {1}
 fight.cat.invaders=Invaders

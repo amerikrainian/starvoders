@@ -104,7 +104,6 @@ fight.target=目标
 fight.health={0} 生命
 fight.charge=充能 {0}
 fight.zone.doom=末日区
-fight.zone.middle=中间区
 fight.zone.spawn=刷新区
 fight.danger={0}: {1}
 fight.cat.invaders=入侵者

@@ -104,7 +104,6 @@ fight.target=цель
 fight.health={0} здоровья
 fight.charge=заряд {0}
 fight.zone.doom=ряды гибели
-fight.zone.middle=средние ряды
 fight.zone.spawn=ряды появления
 fight.danger={0}: {1}
 fight.cat.invaders=Захватчики

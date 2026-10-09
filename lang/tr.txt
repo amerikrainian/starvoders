@@ -104,7 +104,6 @@ fight.target=hedef
 fight.health={0} can
 fight.charge=şarj {0}
 fight.zone.doom=kıyamet sıraları
-fight.zone.middle=orta sıralar
 fight.zone.spawn=doğma sıraları
 fight.danger={0}: {1}
 fight.cat.invaders=İstilacılar

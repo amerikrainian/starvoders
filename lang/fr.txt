@@ -104,7 +104,6 @@ fight.target=cible
 fight.health={0} PV
 fight.charge=charge {0}
 fight.zone.doom=rangées de malheur
-fight.zone.middle=rangées du milieu
 fight.zone.spawn=rangées d'apparition
 fight.danger={0}: {1}
 fight.cat.invaders=Envahisseurs

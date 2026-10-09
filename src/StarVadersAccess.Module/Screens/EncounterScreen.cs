@@ -233,7 +233,8 @@ namespace StarVadersAccess.Module.Screens
         }
 
         // The zone is named only on entering it, like a region (speechchem's zone crossing); leaving
-        // the board forgets it, so coming back names it again.
+        // the board forgets it, so coming back names it again. The middle rows have no name: entering
+        // them says nothing, but still counts as leaving the zone, so going back names it.
         private static string ZoneCrossing(int x, int y)
         {
             var board = FightBoard.Read();
@@ -241,7 +242,7 @@ namespace StarVadersAccess.Module.Screens
             string zone = board.Zone(x, y);
             if (zone == _lastZone) return null;
             _lastZone = zone;
-            return Strings.FightZone(zone);
+            return zone == "middle" ? null : Strings.FightZone(zone);
         }
 
         /// <summary>What a tile holds and what threatens it, after its coordinates: the entity with

@@ -104,7 +104,6 @@ fight.target=대상
 fight.health=체력 {0}
 fight.charge=충전 {0}
 fight.zone.doom=파멸 구역
-fight.zone.middle=중앙 구역
 fight.zone.spawn=출현 구역
 fight.danger={0}: {1}
 fight.cat.invaders=침략자
