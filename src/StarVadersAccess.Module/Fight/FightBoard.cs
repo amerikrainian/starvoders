@@ -109,7 +109,7 @@ namespace StarVadersAccess.Module.Fight
             var parts = new List<string>();
             foreach (var trait in Traits(entity)) parts.Add(GameLoc.Get(trait + "_Keyword"));
             if (entity.TryCast<PlayerEntityModel>() == null && entity.Health > 1) parts.Add(Strings.FightHealth(entity.Health));
-            if (entity.IsShielded) parts.Add(GameLoc.Get("Shielded_Keyword"));
+            if (entity.IsShielded) parts.Add(ShieldName(entity) ?? GameLoc.Get("Shielded_Keyword"));
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));
             if (entity.Charge > 0) parts.Add(Strings.FightCharge(entity.Charge));
             parts.RemoveAll(string.IsNullOrEmpty);
@@ -133,17 +133,38 @@ namespace StarVadersAccess.Module.Fight
         }
 
         /// <summary>The explanations of an entity's traits ("Bomb: Detonates and strikes adjacent tiles
-        /// when destroyed..."), each its <c>_InfoLine</c>.</summary>
+        /// when destroyed..."), each its <c>_InfoLine</c>, an Explosive Shield's included.</summary>
         public static List<string> TraitLines(AEntityModel entity)
         {
             var lines = new List<string>();
-            foreach (var trait in Traits(entity))
+            var traits = Traits(entity);
+            if (ExplosiveShield(entity)) traits.Add(EntityTrait.ExplosiveShield);
+            foreach (var trait in traits)
             {
                 string line = GameLoc.Get(trait + "_InfoLine");
                 if (line != null && !lines.Contains(line)) lines.Add(line);
             }
             return lines;
         }
+
+        /// <summary>Whether the entity's shield is an Explosive Shield: shielded with the
+        /// <see cref="EntityTrait.ExplosiveShield"/> trait, the test
+        /// <see cref="EntityHoverIcons.SetHoverIcons"/> makes to draw that icon instead of the plain
+        /// shield's (the trait has no name of its own: it is the Explosive Shield card's).</summary>
+        public static bool ExplosiveShield(AEntityModel entity)
+        {
+            try { return entity != null && entity.IsShielded && entity.Traits != null && entity.Traits.Contains(EntityTrait.ExplosiveShield); }
+            catch (Exception e)
+            {
+                CoreLog.Warning("FightBoard: reading a shield failed: " + e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>"Explosive Shield" for an explosive shield, by the card that gives it; null for a
+        /// plain shield or none.</summary>
+        public static string ShieldName(AEntityModel entity) =>
+            ExplosiveShield(entity) ? GameLoc.Get("ExplosiveShield_CardTitle") : null;
 
         /// <summary>"Migo 3, 2 health, shielded": name then state.</summary>
         public string Describe(AEntityModel entity)

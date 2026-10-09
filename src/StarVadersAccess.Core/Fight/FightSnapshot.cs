@@ -11,6 +11,8 @@ namespace StarVadersAccess.Core.Fight
         public int X, Y;
         public int Health;
         public bool Shielded, Shocked;
+        /// <summary>The shield's name when it is not a plain one ("Explosive Shield"), else null.</summary>
+        public string Shield;
         public int Charge;
         /// <summary>Health changes are not spoken for the mech (it has none to lose).</summary>
         public bool IsMech;

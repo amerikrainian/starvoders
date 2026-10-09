@@ -39,7 +39,10 @@ namespace StarVadersAccess.Core.Fight
                 else if (was.Y != e.Y) lines.Add(S.FightMovesRow(e.Name, e.Y));
                 else if (was.X != e.X) lines.Add(S.FightMovesColumn(e.Name, e.X));
                 if (!e.IsMech && was.Health != e.Health) lines.Add(S.FightLabelled(e.Name, S.FightHealth(e.Health)));
-                if (was.Shielded != e.Shielded) lines.Add(e.Shielded ? S.FightShielded(e.Name) : S.FightUnshielded(e.Name));
+                // A named shield (an Explosive Shield) reads by its name: "Migo 1: Explosive Shield".
+                if (was.Shielded != e.Shielded || (e.Shielded && was.Shield != e.Shield))
+                    lines.Add(!e.Shielded ? S.FightUnshielded(e.Name)
+                        : e.Shield != null ? S.FightLabelled(e.Name, e.Shield) : S.FightShielded(e.Name));
                 if (was.Shocked != e.Shocked) lines.Add(e.Shocked ? S.FightShocked(e.Name) : S.FightUnshocked(e.Name));
                 if (was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
             }

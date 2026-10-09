@@ -21,6 +21,21 @@ namespace StarVadersAccess.Tests
         }
 
         [Fact]
+        public void A_named_shield_reads_by_its_name_and_its_loss_as_any_shield()
+        {
+            var plain = Migo(1, 2, 6);
+            var shielded = Migo(1, 2, 6);
+            shielded.Shielded = true;
+            var explosive = Migo(1, 2, 6);
+            explosive.Shielded = true;
+            explosive.Shield = "Explosive Shield";
+            Assert.Equal(new[] { "Migo 1: Explosive Shield" }, FightDiff.Lines(Snap(plain), Snap(explosive)));
+            Assert.Equal(new[] { "Migo 1: Explosive Shield" }, FightDiff.Lines(Snap(shielded), Snap(explosive)));
+            Assert.Equal(new[] { "Migo 1 loses its shield" }, FightDiff.Lines(Snap(explosive), Snap(plain)));
+            Assert.Equal(new[] { "Migo 1 shielded" }, FightDiff.Lines(Snap(plain), Snap(shielded)));
+        }
+
+        [Fact]
         public void Nothing_changed_says_nothing()
         {
             Assert.Empty(FightDiff.Lines(Snap(Migo(1, 2, 6)), Snap(Migo(1, 2, 6))));

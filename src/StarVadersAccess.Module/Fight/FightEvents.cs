@@ -111,6 +111,7 @@ namespace StarVadersAccess.Module.Fight
                         Y = c.y + 1,
                         Health = entity.Health,
                         Shielded = entity.IsShielded,
+                        Shield = FightBoard.ShieldName(entity),
                         Shocked = entity.IsShocked,
                         Charge = entity.Charge,
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,
