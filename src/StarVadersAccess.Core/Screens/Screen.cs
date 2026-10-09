@@ -59,6 +59,11 @@ namespace StarVadersAccess.Core.Screens
         /// <summary>The name held back by <see cref="HoldsArrival"/>, spoken by ScreenManager.</summary>
         internal bool NamePending { get; set; }
 
+        /// <summary>Whether the screen stays while the game changes scenes
+        /// (<see cref="ScreenManager.Transitioning"/>): the mod's own screens (help, the mod menu), which
+        /// no scene owns. A game screen drops out until the next scene's screen arrives.</summary>
+        public virtual bool KeptThroughTransitions => false;
+
         /// <summary>Stack layer: higher sits on top. 0 = base context, then windows, then overlays.</summary>
         public virtual int Layer => 0;
 

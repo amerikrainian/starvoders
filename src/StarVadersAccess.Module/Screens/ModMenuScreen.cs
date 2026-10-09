@@ -29,6 +29,7 @@ namespace StarVadersAccess.Module.Screens
         public static void Close() => s_open = false;
 
         public override string Key => "mod.menu";
+        public override bool KeptThroughTransitions => true;
         public override int Layer => 50;
         public override bool Exclusive => true;
         public override bool IsActive() => s_open;
@@ -53,6 +54,7 @@ namespace StarVadersAccess.Module.Screens
     public sealed class ModSettingsScreen : Screen
     {
         public override string Key => "mod.settings";
+        public override bool KeptThroughTransitions => true;
         public override string ScreenName => Strings.ModSettings;
         public override bool IsActive() => false; // only ever a child of the mod menu
 
@@ -104,6 +106,7 @@ namespace StarVadersAccess.Module.Screens
     public sealed class KeyHelpScreen : Screen
     {
         public override string Key => "mod.keys";
+        public override bool KeptThroughTransitions => true;
         public override string ScreenName => Strings.ModKeyHelp;
         public override bool IsActive() => false; // only ever a child of the mod menu
 

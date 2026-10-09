@@ -51,6 +51,7 @@ namespace StarVadersAccess.Module.Screens
         }
 
         public override string Key => "mod.help";
+        public override bool KeptThroughTransitions => true;
         public override int Layer => 51;
         public override bool Exclusive => true;
         public override bool IsActive() => s_open;

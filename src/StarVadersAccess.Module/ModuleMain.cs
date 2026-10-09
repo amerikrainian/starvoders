@@ -42,6 +42,9 @@ namespace StarVadersAccess.Module
             Speech.Speak = (text, interrupt) => host.Speech.Speak(text, interrupt);
             NavInput.Current = new UnityNavInput();
             Navigation.FocusActive = () => FocusMode.Active;
+            // A scene change in progress: no game screen until the next scene's (no overlay closing on
+            // its way out uncovers the screen beneath for a moment).
+            ScreenManager.Transitioning = () => StarVaders.SceneLoader.IsTransitioning;
             // Escape where a screen has no Back of its own: the game's pause menu, as its Menu key.
             Navigation.BackFallbackAvailable = Pause.CanOpen;
             Navigation.BackFallback = Pause.Open;

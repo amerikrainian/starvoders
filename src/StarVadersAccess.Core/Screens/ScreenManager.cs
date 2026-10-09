@@ -36,6 +36,13 @@ namespace StarVadersAccess.Core.Screens
 
         public static void Register(Screen screen) => _registered.Add(screen);
 
+        /// <summary>While true the game is changing scenes (StarVaders' SceneLoader.IsTransitioning,
+        /// set by the click that leaves): only screens <see cref="Screen.KeptThroughTransitions"/> stay
+        /// active. Without it, an overlay closing on its way out (the pause menu's Save &amp; Exit)
+        /// uncovered the screen beneath for a moment, which announced itself again before the next
+        /// scene's arrived. Null = never.</summary>
+        public static Func<bool> Transitioning;
+
         /// <summary>Pop everything and forget every registration (module teardown / tests).</summary>
         public static void Shutdown()
         {
@@ -44,6 +51,7 @@ namespace StarVadersAccess.Core.Screens
             _focused = null;
             _focusedAncestors.Clear();
             _registered.Clear();
+            Transitioning = null;
             Navigation.Attach(null);
         }
 
@@ -64,9 +72,21 @@ namespace StarVadersAccess.Core.Screens
         private static List<Screen> Resolve()
         {
             var active = new List<Screen>();
+            bool transitioning = SafeTransitioning();
             for (int i = 0; i < _registered.Count; i++)
-                if (SafeIsActive(_registered[i])) active.Add(_registered[i]);
+                if ((!transitioning || _registered[i].KeptThroughTransitions) && SafeIsActive(_registered[i]))
+                    active.Add(_registered[i]);
             return active.OrderBy(s => s.Layer).ToList();
+        }
+
+        private static bool SafeTransitioning()
+        {
+            try { return Transitioning != null && Transitioning(); }
+            catch (Exception e)
+            {
+                CoreLog.Error("ScreenManager: Transitioning threw: " + e.Message);
+                return false;
+            }
         }
 
         private static bool SafeIsActive(Screen s)
