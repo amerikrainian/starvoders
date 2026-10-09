@@ -101,17 +101,48 @@ namespace StarVadersAccess.Module.Fight
             return entity.GetIl2CppType().Name;
         }
 
-        /// <summary>The entity's state after its name: health above 1, shielded, shocked, charge.</summary>
+        /// <summary>The entity's state after its name: its named traits (Bomber Mech's "Bomb"), health
+        /// above 1, shielded, shocked, charge.</summary>
         public static string State(AEntityModel entity)
         {
             if (entity == null) return null;
             var parts = new List<string>();
+            foreach (var trait in Traits(entity)) parts.Add(GameLoc.Get(trait + "_Keyword"));
             if (entity.TryCast<PlayerEntityModel>() == null && entity.Health > 1) parts.Add(Strings.FightHealth(entity.Health));
             if (entity.IsShielded) parts.Add(GameLoc.Get("Shielded_Keyword"));
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));
             if (entity.Charge > 0) parts.Add(Strings.FightCharge(entity.Charge));
             parts.RemoveAll(string.IsNullOrEmpty);
             return parts.Count > 0 ? string.Join(", ", parts) : null;
+        }
+
+        /// <summary>The traits the tile panel's trait line names after the entity's kind ("Mech •
+        /// Bomb"): the ones with a <c>_Keyword</c> name, the kind (<see cref="EntityTrait.Enemy"/>, every
+        /// invader's) left out; the others are the game's own bookkeeping.</summary>
+        public static List<EntityTrait> Traits(AEntityModel entity)
+        {
+            var traits = new List<EntityTrait>();
+            try
+            {
+                if (entity?.Traits != null)
+                    foreach (var trait in entity.Traits)
+                        if (trait != EntityTrait.Enemy && GameLoc.Get(trait + "_Keyword") != null) traits.Add(trait);
+            }
+            catch (Exception e) { CoreLog.Warning("FightBoard: reading an entity's traits failed: " + e.Message); }
+            return traits;
+        }
+
+        /// <summary>The explanations of an entity's traits ("Bomb: Detonates and strikes adjacent tiles
+        /// when destroyed..."), each its <c>_InfoLine</c>.</summary>
+        public static List<string> TraitLines(AEntityModel entity)
+        {
+            var lines = new List<string>();
+            foreach (var trait in Traits(entity))
+            {
+                string line = GameLoc.Get(trait + "_InfoLine");
+                if (line != null && !lines.Contains(line)) lines.Add(line);
+            }
+            return lines;
         }
 
         /// <summary>"Migo 3, 2 health, shielded": name then state.</summary>

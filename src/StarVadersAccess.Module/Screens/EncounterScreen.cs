@@ -278,7 +278,10 @@ namespace StarVadersAccess.Module.Screens
             {
                 string d = FightBoard.Description(entity);
                 yield return d != null ? Strings.FightLabelled(board.Name(entity), d) : board.Describe(entity);
-                foreach (var line in FightState.InfoLines(entity.MoreInfoWordNames)) yield return line;
+                var traits = FightBoard.TraitLines(entity);
+                foreach (var line in traits) yield return line;
+                foreach (var line in FightState.InfoLines(entity.MoreInfoWordNames))
+                    if (!traits.Contains(line)) yield return line;
             }
             string danger = board.Danger(x, y);
             if (danger != null) yield return danger;
