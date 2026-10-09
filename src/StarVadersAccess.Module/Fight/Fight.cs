@@ -119,14 +119,105 @@ namespace StarVadersAccess.Module.Fight
             }
         }
 
-        /// <summary>A card's keyword explanations, its upgrade's included (the card's info panel lists
-        /// both: Unstable adds Repeat and Heat).</summary>
+        /// <summary>The card's traits as its panel lists them: its own, then the ones its upgrade adds
+        /// (Broken adds Junk), each by its <c>_Keyword</c> name ("Move, Junk").</summary>
+        public static string CardTraits(CardModel card)
+        {
+            var names = new List<string>();
+            foreach (var trait in Traits(card))
+            {
+                string name = GameLoc.Get(trait + "_Keyword");
+                if (name != null && !names.Contains(name)) names.Add(name);
+            }
+            return names.Count > 0 ? string.Join(", ", names) : null;
+        }
+
+        private static List<CardTrait> Traits(CardModel card)
+        {
+            var traits = new List<CardTrait>();
+            try
+            {
+                foreach (var set in new[] { card?.Traits, card?.Component?.AddedTraits })
+                    if (set != null)
+                        foreach (var trait in set)
+                            if (!traits.Contains(trait)) traits.Add(trait);
+            }
+            catch (Exception e) { CoreLog.Warning("Fight: reading the traits of " + card?.CardName + " failed: " + e.Message); }
+            return traits;
+        }
+
+        /// <summary>What a card's more info shows, its upgrade's included: its traits' explanations
+        /// (Junk's "Junk cards are usually gained when you are struck."), the keyword explanations
+        /// (Unstable adds Repeat and Heat), then the cards, items and invaders it names ("Jam: Purge
+        /// this card." for Broken, the Nova Bomb for Nova Bomb).</summary>
         public static List<string> CardInfoLines(CardModel card)
         {
-            var lines = InfoLines(card?.MoreInfoWordNames);
-            foreach (var line in InfoLines(card?.Component?.MoreInfoWordNames))
-                if (!lines.Contains(line)) lines.Add(line);
+            var lines = new List<string>();
+            var component = card?.Component;
+            void Add(string line) { if (line != null && !lines.Contains(line)) lines.Add(line); }
+            foreach (var trait in Traits(card)) Add(GameLoc.Get(trait + "_InfoLine"));
+            foreach (var line in InfoLines(card?.MoreInfoWordNames)) Add(line);
+            try
+            {
+                foreach (var line in InfoLines(component?.MoreInfoWordNames)) Add(line);
+                foreach (var set in new[] { card?.MoreInfoCardNames, component?.MoreInfoCardNames })
+                    if (set != null)
+                        foreach (var name in set) Add(Named(GameLoc.Get(name + "_CardTitle") ?? name.ToString(), GameLoc.Get(name + "_CardDesc")));
+                foreach (var set in new[] { card?.MoreInfoItemNames, component?.MoreInfoItemNames })
+                    if (set != null)
+                        foreach (var name in set) Add(Named(GameLoc.Get(name + "_EntityTitle") ?? name.ToString(), GameLoc.Get(name + "_EntityDesc")));
+                foreach (var set in new[] { card?.MoreInfoEnemyNames, component?.MoreInfoEnemyNames })
+                    if (set != null)
+                        foreach (var name in set) Add(Named(GameLoc.EnemyName(name) ?? name.ToString(), GameLoc.Get(name + "_EntityDesc")));
+            }
+            catch (Exception e) { CoreLog.Warning("Fight: reading the more info of " + card?.CardName + " failed: " + e.Message); }
             return lines;
+        }
+
+        private static string Named(string name, string description) => description != null ? name + ": " + description : name;
+
+        /// <summary>The cost as a card's art draws it ("1 Jam" for a Broken card the model still costs
+        /// 1 Heat): the cost icons under the view's <see cref="CardImageView"/>, one per point or a
+        /// large one with a number. Null when none is drawn (no cost, or the view not shown).</summary>
+        public static string DrawnCost(UnityEngine.Component view)
+        {
+            try
+            {
+                var image = view.GetComponentInChildren<CardImageView>(false);
+                var group = image != null ? image._costIconsLayoutGroup : null;
+                if (group == null || !group.activeInHierarchy) return null;
+                var counts = new List<KeyValuePair<CostType, int>>();
+                void Count(CostType type, int n)
+                {
+                    for (int i = 0; i < counts.Count; i++)
+                        if (counts[i].Key == type) { counts[i] = new KeyValuePair<CostType, int>(type, counts[i].Value + n); return; }
+                    counts.Add(new KeyValuePair<CostType, int>(type, n));
+                }
+                foreach (var icon in group.GetComponentsInChildren<CostIcon>(false)) Count(icon._costType, 1);
+                foreach (var icon in group.GetComponentsInChildren<LargeCostIcon>(false)) Count(icon._costType, icon._number);
+                if (counts.Count == 0) return null;
+                var parts = new List<string>();
+                foreach (var kv in counts) parts.Add(StarVadersAccess.Core.Strings.Strings.FightCost(kv.Value, CostWord(kv.Key)));
+                return string.Join(", ", parts);
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: reading a card's cost icons failed: " + e.Message);
+                return null;
+            }
+        }
+
+        private static string CostWord(CostType type)
+        {
+            switch (type)
+            {
+                case CostType.Heat: return GameLoc.Get("HeatTitle_Misc") ?? "Heat";
+                case CostType.Power: return GameLoc.Get("PowerTitle_Misc") ?? "Power";
+                case CostType.Mana: return GameLoc.Get("ManaTitle_Misc") ?? "Mana";
+                case CostType.Jam: return GameLoc.Get("Jam_CardTitle") ?? "Jam";
+                case CostType.Neutral: return GameLoc.Get("Neutral_Misc") ?? "Neutral";
+                default: return type.ToString();
+            }
         }
 
         /// <summary>The keyword explanations a card or entity carries (its info panel's lines:

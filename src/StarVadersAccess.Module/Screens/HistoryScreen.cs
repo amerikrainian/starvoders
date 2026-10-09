@@ -148,7 +148,8 @@ namespace StarVadersAccess.Module.Screens
                 {
                     GameNodes.LabelPart(name),
                     new NodeAnnouncement(() => FightState.CardUpgrade(card), kind: AnnouncementKinds.Value),
-                    new NodeAnnouncement(() => EncounterScreen.Cost(card), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => EncounterScreen.Cost(card, view), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.CardTraits(card), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(card)),
                     GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(card)),
                 },

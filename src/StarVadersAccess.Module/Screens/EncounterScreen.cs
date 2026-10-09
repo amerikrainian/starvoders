@@ -391,7 +391,8 @@ namespace StarVadersAccess.Module.Screens
                 {
                     GameNodes.LabelPart(name),
                     new NodeAnnouncement(() => FightState.CardUpgrade(view.CardModel), kind: AnnouncementKinds.Value),
-                    new NodeAnnouncement(() => Cost(view.CardModel), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => Cost(view.CardModel, view), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.CardTraits(view.CardModel), kind: AnnouncementKinds.Value),
                     GameNodes.DisabledPart(() => Playable(view)),
                     new NodeAnnouncement(() => Playable(view) ? null : GameText.Of(view._unplayableText), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(view.CardModel)),
@@ -415,10 +416,14 @@ namespace StarVadersAccess.Module.Screens
 
         private static bool Playable(CardView view) => view._unplayableObject == null || !view._unplayableObject.activeInHierarchy;
 
-        /// <summary>"1 Heat", "2 Power"...: each cost the card has, in the game's words.</summary>
-        public static string Cost(CardModel card)
+        /// <summary>"1 Heat", "2 Power", "1 Jam"...: each cost the card has, in the game's words. As
+        /// <paramref name="view"/>'s art draws it when it has one (an upgrade can change the kind:
+        /// Broken pays with a Jam, and the model still says 1 Heat), else from the model.</summary>
+        public static string Cost(CardModel card, UnityEngine.Component view = null)
         {
             if (card == null) return null;
+            string drawn = view != null ? FightState.DrawnCost(view) : null;
+            if (drawn != null) return drawn;
             var parts = new List<string>();
             if (card.HeatCost > 0) parts.Add(Strings.FightCost(card.HeatCost, GameLoc.Get("HeatTitle_Misc")));
             if (card.PowerCost > 0) parts.Add(Strings.FightCost(card.PowerCost, GameLoc.Get("PowerTitle_Misc")));

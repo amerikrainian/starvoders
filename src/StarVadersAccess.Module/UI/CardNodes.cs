@@ -13,7 +13,7 @@ namespace StarVadersAccess.Module.UI
 {
     /// <summary>
     /// A card or an artifact shown outside the hand (the card viewer, the rewards): "name, upgrade,
-    /// cost, description, upgrade's description" with the keyword explanations in the ui buffer and on Backspace; focus hovers
+    /// cost, traits, description, upgrade's description" with the keyword explanations in the ui buffer and on Backspace; focus hovers
     /// its view as the mouse does, Enter is its click.
     /// </summary>
     internal static class CardNodes
@@ -28,7 +28,8 @@ namespace StarVadersAccess.Module.UI
                 {
                     GameNodes.LabelPart(name),
                     new NodeAnnouncement(() => FightState.CardUpgrade(card), kind: AnnouncementKinds.Value),
-                    new NodeAnnouncement(() => EncounterScreen.Cost(card), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => EncounterScreen.Cost(card, view), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.CardTraits(card), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(card)),
                     GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(card)),
                 },
