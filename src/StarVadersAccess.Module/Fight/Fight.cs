@@ -78,7 +78,7 @@ namespace StarVadersAccess.Module.Fight
             if (card == null) return null;
             try
             {
-                if (card.Component != null && card.Component.SkipNormalDescription) return null;
+                if (Upgrade(card) != null && Upgrade(card).SkipNormalDescription) return null;
                 string raw = LocalizationUtils.LocalizeSynchronous(card.CardName + "_CardDesc");
                 if (string.IsNullOrEmpty(raw) || raw.StartsWith("No translation for", StringComparison.Ordinal)) return null;
                 var controller = Controller;
@@ -92,11 +92,15 @@ namespace StarVadersAccess.Module.Fight
             }
         }
 
+        /// <summary>The card's upgrade, or null: a card without one still carries a component named
+        /// None (the game's <see cref="CardModel.HasComponent"/> tests the name too).</summary>
+        private static AComponent Upgrade(CardModel card) => card != null && card.HasComponent ? card.Component : null;
+
         /// <summary>The card's upgrade (its <see cref="AComponent"/>) by the title its panel draws under
         /// the card's ("Unstable"), or null for a card without one.</summary>
         public static string CardUpgrade(CardModel card)
         {
-            var component = card?.Component;
+            var component = Upgrade(card);
             return component != null ? GameLoc.Get(component.ComponentName + "_CompTitle") ?? component.ComponentName.ToString() : null;
         }
 
@@ -104,7 +108,7 @@ namespace StarVadersAccess.Module.Fight
         /// shows it ("+1 Repeat and +1 Heat cost when played.").</summary>
         public static string CardUpgradeDescription(CardModel card)
         {
-            var component = card?.Component;
+            var component = Upgrade(card);
             if (component == null) return null;
             try
             {
@@ -137,7 +141,7 @@ namespace StarVadersAccess.Module.Fight
             var traits = new List<CardTrait>();
             try
             {
-                foreach (var set in new[] { card?.Traits, card?.Component?.AddedTraits })
+                foreach (var set in new[] { card?.Traits, Upgrade(card)?.AddedTraits })
                     if (set != null)
                         foreach (var trait in set)
                             if (!traits.Contains(trait)) traits.Add(trait);
@@ -153,7 +157,7 @@ namespace StarVadersAccess.Module.Fight
         public static List<string> CardInfoLines(CardModel card)
         {
             var lines = new List<string>();
-            var component = card?.Component;
+            var component = Upgrade(card);
             void Add(string line) { if (line != null && !lines.Contains(line)) lines.Add(line); }
             foreach (var trait in Traits(card)) Add(GameLoc.Get(trait + "_InfoLine"));
             foreach (var line in InfoLines(card?.MoreInfoWordNames)) Add(line);
