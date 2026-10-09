@@ -132,6 +132,7 @@ fight.range={0} 到 {1}
 fight.range.diagonal=斜线 {0} 到 {1}
 fight.row=第 {0} 行
 fight.column=第 {0} 列
+win.open=打开奖励箱
 history.run=第 {0}/{1} 局
 history.prev=上一局
 history.next=下一局

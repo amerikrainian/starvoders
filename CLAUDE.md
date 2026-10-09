@@ -106,7 +106,10 @@ separately. Host F6 uses the same OS read.
   `IsFinishedLoadingGame && !IsEndingScene`), `MainMenuScreen` (the game's `VerticalViewItemList`,
   then profile, language dropdown, News/Discord/Credits by mod words), `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
-  `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below), plus guildrun's
+  `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
+  `EncounterWinScreen` (`EncounterWinSceneAdditive`: "Victory", the stars earned, the loot box
+  `Box (1)` whose click is `GoToRewardScene`, up while `!IsEndingScene`; opening it leaves the
+  fight: never through the driver), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`

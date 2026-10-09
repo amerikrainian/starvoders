@@ -132,6 +132,7 @@ fight.range={0} a {1}
 fight.range.diagonal=diagonal {0} a {1}
 fight.row=fileira {0}
 fight.column=coluna {0}
+win.open=Abrir caixa de recompensa
 history.run=Partida {0}/{1}
 history.prev=Partida anterior
 history.next=Próxima partida

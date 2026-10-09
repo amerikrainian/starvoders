@@ -132,6 +132,7 @@ fight.range={0}부터 {1}
 fight.range.diagonal=대각선 {0}부터 {1}
 fight.row={0}행
 fight.column={0}열
+win.open=보상 상자 열기
 history.run=런 {0}/{1}
 history.prev=이전 런
 history.next=다음 런

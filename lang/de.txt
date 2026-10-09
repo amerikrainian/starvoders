@@ -132,6 +132,7 @@ fight.range={0} bis {1}
 fight.range.diagonal=diagonal {0} bis {1}
 fight.row=Reihe {0}
 fight.column=Spalte {0}
+win.open=Belohnungsbox öffnen
 history.run=Lauf {0}/{1}
 history.prev=Vorheriger Lauf
 history.next=Nächster Lauf

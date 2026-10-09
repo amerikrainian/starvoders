@@ -132,6 +132,7 @@ fight.range={0} — {1}
 fight.range.diagonal=диагональ {0} — {1}
 fight.row=ряд {0}
 fight.column=столбец {0}
+win.open=Открыть ящик с наградой
 history.run=Забег {0}/{1}
 history.prev=Предыдущий забег
 history.next=Следующий забег

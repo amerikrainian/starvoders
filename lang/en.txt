@@ -134,6 +134,7 @@ fight.range={0} to {1}
 fight.range.diagonal=diagonal {0} to {1}
 fight.row=row {0}
 fight.column=column {0}
+win.open=Open reward box
 history.run=Run {0}/{1}
 history.prev=Previous run
 history.next=Next run

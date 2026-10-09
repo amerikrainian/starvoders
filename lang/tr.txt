@@ -132,6 +132,7 @@ fight.range={0} ile {1} arası
 fight.range.diagonal=çapraz {0} ile {1} arası
 fight.row={0}. sıra
 fight.column={0}. sütun
+win.open=Ödül kutusunu aç
 history.run=Koşu {0}/{1}
 history.prev=Önceki koşu
 history.next=Sonraki koşu

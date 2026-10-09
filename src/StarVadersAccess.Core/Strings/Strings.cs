@@ -190,6 +190,8 @@ namespace StarVadersAccess.Core.Strings
             D("fight.range.diagonal", "diagonal {0} to {1}"),
             D("fight.row", "row {0}"),
             D("fight.column", "column {0}"),
+            // A won fight: the loot box, whose click opens the reward.
+            D("win.open", "Open reward box"),
             // Run history: which run of how many, and its arrows (no caption of their own).
             D("history.run", "Run {0}/{1}"),
             D("history.prev", "Previous run"),
