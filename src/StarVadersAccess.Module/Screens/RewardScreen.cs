@@ -11,7 +11,7 @@ namespace StarVadersAccess.Module.Screens
     /// A reward after a fight (<c>CardRewardScene</c>, one <see cref="RewardController"/> for cards,
     /// upgrades and artifacts). Its title ("Pick a Card") names the screen. Stops: the rewards, left
     /// to right, cards "name, cost, description" and artifacts "name, description", Enter taking one
-    /// as the game's click does; Skip and Reroll (with the Chrono Tokens left); the run status (Doom,
+    /// as the game's click does, then Skip and Reroll (with the Chrono Tokens left); the run status (Doom,
     /// Stars, Deck); the act timeline. Up until a reward is taken or skipped
     /// (<see cref="RewardController.IsEndingScene"/>).
     /// </summary>
@@ -54,7 +54,7 @@ namespace StarVadersAccess.Module.Screens
                     CardNodes.Artifact(board.GetArtifactModel(), board, clickable: true));
             b.PopContext();
 
-            b.BeginStop("reward:actions");
+            // Skip and Reroll answer the same choice: they follow the rewards in the stop, unnumbered.
             b.PushContext(null, positions: false);
             var skip = c.ProceedButton;
             if (ViewNodes.IsShown(skip))
