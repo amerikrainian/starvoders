@@ -158,6 +158,8 @@ namespace StarVadersAccess.Core.Strings
             D("fight.zone.doom", "doom rows"),
             D("fight.zone.spawn", "spawn rows"),
             D("fight.danger", "{0}: {1}"),
+            // A Danger Zone tile: {0} who will strike it ("targeted by Shooter 1, Migo 3").
+            D("fight.targeted", "targeted by {0}"),
             // The board's categories ([ ] and , .): their names, "Invaders, 2"; "nothing" for a key with nothing to say. Then the fight keys' names for F1.
             D("fight.cat.invaders", "Invaders"),
             D("fight.cat.mech", "Mech"),
@@ -183,6 +185,11 @@ namespace StarVadersAccess.Core.Strings
             D("fight.ev.drew", "Drew {0}"),
             // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
             D("fight.ev.targets", "{0} targets {1}"),
+            // The tiles of those targets, merged: a rectangle or a straight run by its corners ({0} and {1} are tiles, "5, 1 to 5, 5"), a diagonal run, a whole row or column ({0} its number).
+            D("fight.range", "{0} to {1}"),
+            D("fight.range.diagonal", "diagonal {0} to {1}"),
+            D("fight.row", "row {0}"),
+            D("fight.column", "column {0}"),
             // Run history: which run of how many, and its arrows (no caption of their own).
             D("history.run", "Run {0}/{1}"),
             D("history.prev", "Previous run"),
@@ -434,6 +441,11 @@ namespace StarVadersAccess.Core.Strings
         public static string FightUnshocked(string name) => F("fight.ev.unshocked", name);
         public static string FightDrew(string cards) => F("fight.ev.drew", cards);
         public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
+        public static string FightTargeted(string who) => F("fight.targeted", who);
+        public static string FightRange(string from, string to) => F("fight.range", from, to);
+        public static string FightDiagonalRange(string from, string to) => F("fight.range.diagonal", from, to);
+        public static string FightRow(int row) => F("fight.row", row);
+        public static string FightColumn(int column) => F("fight.column", column);
         public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
         public static string HistoryPrevious => Get("history.prev");
         public static string HistoryNext => Get("history.next");

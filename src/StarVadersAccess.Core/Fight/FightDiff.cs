@@ -46,20 +46,21 @@ namespace StarVadersAccess.Core.Fight
             foreach (var e in before.Entities)
                 if (!seen.Contains(e.Key)) lines.Add(S.FightDestroyed(e.Name));
 
-            // New Danger Zones, per attacker in the order they first appear: "Shooter 1 targets 2, 1;
-            // 2, 2". Zones that clear are not said: the strike or its cancelling is.
+            // New Danger Zones, per attacker in the order they first appear, their tiles merged into
+            // shapes (TileRanges): "Shooter 1 targets 2, 1 to 2, 5". Zones that clear are not said:
+            // the strike or its cancelling is.
             var known = new HashSet<string>();
             foreach (var d in before.Dangers) known.Add(d.Who + "@" + d.X + "," + d.Y);
-            var byWho = new List<KeyValuePair<string, List<string>>>();
+            var byWho = new List<KeyValuePair<string, List<(int X, int Y)>>>();
             foreach (var d in after.Dangers)
             {
                 if (known.Contains(d.Who + "@" + d.X + "," + d.Y)) continue;
                 var tiles = byWho.Find(kv => kv.Key == d.Who).Value;
-                if (tiles == null) { tiles = new List<string>(); byWho.Add(new KeyValuePair<string, List<string>>(d.Who, tiles)); }
-                string tile = S.FightCoord(d.X, d.Y);
-                if (!tiles.Contains(tile)) tiles.Add(tile);
+                if (tiles == null) { tiles = new List<(int X, int Y)>(); byWho.Add(new KeyValuePair<string, List<(int X, int Y)>>(d.Who, tiles)); }
+                if (!tiles.Contains((d.X, d.Y))) tiles.Add((d.X, d.Y));
             }
-            foreach (var kv in byWho) lines.Add(S.FightTargets(kv.Key, string.Join("; ", kv.Value)));
+            foreach (var kv in byWho)
+                lines.Add(S.FightTargets(kv.Key, string.Join("; ", TileRanges.Parts(kv.Value, after.Columns, after.Rows))));
 
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
             if (after.Heat != null && after.Heat != before.Heat) lines.Add(after.Heat);

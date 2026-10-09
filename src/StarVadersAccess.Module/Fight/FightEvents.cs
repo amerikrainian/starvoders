@@ -116,6 +116,8 @@ namespace StarVadersAccess.Module.Fight
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,
                     });
                 }
+                snap.Columns = board.Columns;
+                snap.Rows = board.Rows;
                 for (int y = 0; y < board.Rows; y++)
                     for (int x = 0; x < board.Columns; x++)
                         foreach (var who in board.Attackers(x, y))

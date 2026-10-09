@@ -153,13 +153,14 @@ namespace StarVadersAccess.Module.Fight
             return who;
         }
 
-        /// <summary>"Danger Zone: Migo 1, Migo 3" when something will strike the tile, else null.</summary>
+        /// <summary>"targeted by Migo 1, Migo 3" when something will strike the tile (the game's
+        /// "Danger Zone" alone when it names no attacker), else null.</summary>
         public string Danger(int x, int y)
         {
             var who = Attackers(x, y);
             if (who.Count == 0) return null;
             string label = GameLoc.Get("DangerZoneText_Misc") ?? "Danger Zone";
-            return who.Count == 1 && who[0] == label ? label : Strings.FightLabelled(label, string.Join(", ", who));
+            return who.Count == 1 && who[0] == label ? label : Strings.FightTargeted(string.Join(", ", who));
         }
 
         /// <summary>The tile's status ("Cracked", "Hole"), or null when it has none.</summary>

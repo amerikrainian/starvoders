@@ -35,6 +35,8 @@ namespace StarVadersAccess.Core.Fight
     public sealed class FightSnapshot
     {
         public int Turn, Turns;
+        /// <summary>The board's size (0 when unknown), for whole rows and columns.</summary>
+        public int Columns, Rows;
         public bool PlayerTurn;
         public string Doom, Heat;
         public List<EntitySnap> Entities = new List<EntitySnap>();

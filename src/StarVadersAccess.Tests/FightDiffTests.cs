@@ -110,7 +110,7 @@ namespace StarVadersAccess.Tests
                 new DangerSnap { Who = "Shooter 2", X = 4, Y = 1 },
                 new DangerSnap { Who = "Shooter 2", X = 4, Y = 2 },
             });
-            Assert.Equal(new[] { "Shooter 2 targets 4, 1; 4, 2" }, FightDiff.Lines(before, after));
+            Assert.Equal(new[] { "Shooter 2 targets 4, 1 to 4, 2" }, FightDiff.Lines(before, after));
         }
     }
 }
