@@ -486,11 +486,26 @@ namespace StarVadersAccess.Module.Screens
             OnSecondary = description != null ? () => SayDetails(GameNodes.Lines(description())) : (Action)null,
         };
 
-        /// <summary>"Turn 1/8".</summary>
+        /// <summary>The turn as the game's banner names it at the turn's start (TurnOverlay): "Encounter
+        /// Start" for the opening turn, then "Player Turn 3", with ", 2 Turns Left", ", Final Turn" or
+        /// ", Bonus Turn" once fewer than 4 remain. The banner is given the model's TurnNumber before
+        /// StartTurnTask raises it, so the turn the game shows is TurnNumber - 1 for the whole turn
+        /// (seen: the opening banner made at 0, the model then 1; "Player Turn 5" with the model at 6);
+        /// turns left are MaxTurns minus that (100 without a limit, as GetTurnsRemaining).</summary>
         public static string TurnText()
         {
             var model = FightState.Model;
-            return model != null ? Strings.FightTurn(model.TurnNumber, model.MaxTurns) : null;
+            if (model == null) return null;
+            int shown = model.TurnNumber - 1;
+            if (shown <= 0) return GameLoc.Get("OverlayEncounterStart_Misc") ?? Strings.FightTurn(0, model.MaxTurns);
+            string turn = GameLoc.Get("OverlayPlayerTurnX_Misc");
+            turn = turn != null ? turn.Replace("[X]", shown.ToString()) : Strings.FightTurn(shown, model.MaxTurns);
+            int left = model.MaxTurns < 0 ? 100 : model.MaxTurns - shown;
+            if (left >= 4) return turn;
+            string more = left == 1 ? GameLoc.Get("OverlayFinalTurn_Misc")
+                : left < 1 ? GameLoc.Get("OverlayBonusTurn_Misc")
+                : GameLoc.Get("OverlayXTurnsLeft_Misc")?.Replace("[X]", left.ToString());
+            return more != null ? turn + ", " + more : turn;
         }
 
         /// <summary>The objective the right-hand screen states ("Objective: Defeat Mothership!"). It

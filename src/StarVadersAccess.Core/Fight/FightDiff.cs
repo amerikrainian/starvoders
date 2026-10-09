@@ -22,7 +22,7 @@ namespace StarVadersAccess.Core.Fight
             // the end of the player's turn to the start of the next); the new turn follows it, then
             // the cards it dealt.
             bool turnAdvanced = after.Turn != before.Turn;
-            if (before.PlayerTurn && (!after.PlayerTurn || turnAdvanced)) lines.Add(S.FightEnemyTurn);
+            if (before.PlayerTurn && (!after.PlayerTurn || turnAdvanced)) lines.Add(after.EnemyTurnText ?? S.FightEnemyTurn);
 
             var old = new Dictionary<string, EntitySnap>();
             foreach (var e in before.Entities) old[e.Key] = e;
@@ -68,7 +68,7 @@ namespace StarVadersAccess.Core.Fight
             if (after.Combo > before.Combo && after.ComboText != null) lines.Add(after.ComboText);
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
             if (after.Heat != null && after.Heat != before.Heat) lines.Add(after.Heat);
-            if (after.PlayerTurn && (!before.PlayerTurn || turnAdvanced)) lines.Add(S.FightTurn(after.Turn, after.Turns));
+            if (after.PlayerTurn && (!before.PlayerTurn || turnAdvanced)) lines.Add(after.TurnText ?? S.FightTurn(after.Turn, after.Turns));
 
             var held = new HashSet<string>();
             foreach (var c in before.Hand) held.Add(c.Key);

@@ -37,6 +37,9 @@ namespace StarVadersAccess.Core.Fight
     public sealed class FightSnapshot
     {
         public int Turn, Turns;
+        /// <summary>The turn and the enemy phase as the game's banner names them ("Player Turn 3, 2
+        /// Turns Left", "Invader Turn"); null falls back to the mod's "Turn 3/8" and "Enemy turn".</summary>
+        public string TurnText, EnemyTurnText;
         /// <summary>The board's size (0 when unknown), for whole rows and columns.</summary>
         public int Columns, Rows;
         public bool PlayerTurn;

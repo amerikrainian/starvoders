@@ -63,6 +63,18 @@ namespace StarVadersAccess.Tests
         }
 
         [Fact]
+        public void The_game_s_own_turn_words_are_said_when_given()
+        {
+            var before = Snap(Migo(1, 2, 6));
+            before.EnemyTurnText = "Invader Turn";
+            var after = Snap(Migo(1, 2, 5));
+            after.Turn = 2;
+            after.TurnText = "Player Turn 1";
+            after.EnemyTurnText = "Invader Turn";
+            Assert.Equal(new[] { "Invader Turn", "Migo 1 to row 5", "Player Turn 1" }, FightDiff.Lines(before, after));
+        }
+
+        [Fact]
         public void Nothing_changed_says_nothing()
         {
             Assert.Empty(FightDiff.Lines(Snap(Migo(1, 2, 6)), Snap(Migo(1, 2, 6))));

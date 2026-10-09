@@ -111,6 +111,8 @@ namespace StarVadersAccess.Module.Fight
                     Turn = model.TurnNumber,
                     Turns = model.MaxTurns,
                     PlayerTurn = model.IsPlayerTurn,
+                    TurnText = EncounterScreen.TurnText(),
+                    EnemyTurnText = GameLoc.Get("OverlayInvaderTurn_Misc"),
                 };
                 // The model's figures, not the panels': hovering End Turn or a card previews them.
                 var doom = view.DoomView;
