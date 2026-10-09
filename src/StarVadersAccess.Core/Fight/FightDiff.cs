@@ -65,6 +65,7 @@ namespace StarVadersAccess.Core.Fight
             foreach (var kv in byWho)
                 lines.Add(S.FightTargets(kv.Key, string.Join("; ", TileRanges.Parts(kv.Value, after.Columns, after.Rows))));
 
+            if (after.Combo > before.Combo && after.ComboText != null) lines.Add(after.ComboText);
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
             if (after.Heat != null && after.Heat != before.Heat) lines.Add(after.Heat);
             if (after.PlayerTurn && (!before.PlayerTurn || turnAdvanced)) lines.Add(S.FightTurn(after.Turn, after.Turns));

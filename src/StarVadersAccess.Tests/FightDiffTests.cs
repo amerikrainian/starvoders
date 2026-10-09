@@ -48,6 +48,21 @@ namespace StarVadersAccess.Tests
         }
 
         [Fact]
+        public void A_rising_combo_reads_as_drawn_and_its_reset_says_nothing()
+        {
+            var none = Snap(Migo(1, 2, 6));
+            var two = Snap(Migo(1, 2, 6));
+            two.Combo = 2;
+            two.ComboText = "Combo! 2";
+            var four = Snap(Migo(1, 2, 6));
+            four.Combo = 4;
+            four.ComboText = "Combo! 4, Nice!";
+            Assert.Equal(new[] { "Combo! 2" }, FightDiff.Lines(none, two));
+            Assert.Equal(new[] { "Combo! 4, Nice!" }, FightDiff.Lines(two, four));
+            Assert.Empty(FightDiff.Lines(four, none));
+        }
+
+        [Fact]
         public void Nothing_changed_says_nothing()
         {
             Assert.Empty(FightDiff.Lines(Snap(Migo(1, 2, 6)), Snap(Migo(1, 2, 6))));

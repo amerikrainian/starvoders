@@ -41,6 +41,10 @@ namespace StarVadersAccess.Core.Fight
         public int Columns, Rows;
         public bool PlayerTurn;
         public string Doom, Heat;
+        /// <summary>The combo (invaders destroyed this turn, the Stars multiplier) and how it reads
+        /// ("Combo! 4, Nice!"): said when the count rises, never when it drops back to 0.</summary>
+        public int Combo;
+        public string ComboText;
         public List<EntitySnap> Entities = new List<EntitySnap>();
         public List<CardSnap> Hand = new List<CardSnap>();
         public List<DangerSnap> Dangers = new List<DangerSnap>();

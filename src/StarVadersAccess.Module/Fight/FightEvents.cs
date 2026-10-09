@@ -5,6 +5,7 @@ using StarVadersAccess.Core;
 using StarVadersAccess.Core.Fight;
 using StarVadersAccess.Module.Interop;
 using StarVadersAccess.Module.Screens;
+using StarVadersAccess.Module.UI;
 using UnityEngine;
 
 namespace StarVadersAccess.Module.Fight
@@ -21,6 +22,24 @@ namespace StarVadersAccess.Module.Fight
     {
         /// <summary>Every event line of the current fight, oldest first.</summary>
         public static readonly List<string> Log = new List<string>();
+
+        // "Combo! 4, Nice!": the combo view's caption and count (it shows any count above 0), and
+        // the praise line (ComboText_IntensityN_Misc) while it is up.
+        private static string ComboText(int combo, ComboView view)
+        {
+            if (combo <= 0) return null;
+            string text = (GameLoc.Get("Combo_Misc") ?? "Combo!") + " " + combo;
+            try
+            {
+                if (view != null && view.IsAmazingShowing)
+                {
+                    string praise = GameText.Of(view.AmazingText);
+                    if (praise != null) text += ", " + praise;
+                }
+            }
+            catch (Exception e) { CoreLog.Warning("FightEvents: reading the combo's praise failed: " + e.Message); }
+            return text;
+        }
 
         private const int SettleFrames = 3;
         private static IntPtr _fight;
@@ -96,6 +115,8 @@ namespace StarVadersAccess.Module.Fight
                 // The model's figures, not the panels': hovering End Turn or a card previews them.
                 var doom = view.DoomView;
                 if (doom != null && doom.gameObject.activeInHierarchy) snap.Doom = Fight.Figure("Doom");
+                snap.Combo = Fight.Value(EncounterValue.Combo) ?? 0;
+                snap.ComboText = ComboText(snap.Combo, view.ComboView);
                 var heat = view.HeatView;
                 var group = heat != null ? heat.GetComponent<CanvasGroup>() : null;
                 if (heat != null && heat.gameObject.activeInHierarchy && (group == null || group.alpha > 0.05f))
