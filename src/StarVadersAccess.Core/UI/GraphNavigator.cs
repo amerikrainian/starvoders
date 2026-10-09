@@ -49,6 +49,8 @@ namespace StarVadersAccess.Core.UI
         /// <summary>Focus = a focused NODE.</summary>
         public override bool HasFocus => _graph?.CurrentNode != null;
 
+        public override bool LandingSpoken => _lastSpokenKey != null;
+
         public override void Attach(Screens.Screen screen)
         {
             var prev = Screen;
@@ -274,6 +276,10 @@ namespace StarVadersAccess.Core.UI
                 }
             }
 
+            // A screen holding its arrival keeps its first landing (nothing spoken since it took
+            // focus) until it lets go; ScreenManager speaks the held name just before.
+            if (_lastSpokenKey == null && !_reannounce && HoldsArrival()) return;
+
             if (_reannounce || _lastSpokenKey == null || !_lastSpokenKey.Equals(node.Id))
             {
                 // Queued (not interrupting): landings follow the screen name / preceding feedback. A
@@ -286,6 +292,16 @@ namespace StarVadersAccess.Core.UI
             }
 
             WatchLive(node);
+        }
+
+        private bool HoldsArrival()
+        {
+            try { return Screen.HoldsArrival; }
+            catch (Exception e)
+            {
+                CoreLog.Error("Screen.HoldsArrival threw for '" + Screen.Key + "': " + e.Message);
+                return false;
+            }
         }
 
         // ---- live announcements: watch the FOCUSED node's Live parts and speak a part when its value

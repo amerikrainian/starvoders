@@ -27,8 +27,13 @@ namespace StarVadersAccess.Module.Fight
         private static FightSnapshot _settled;
         private static int _idle;
 
+        /// <summary>Whether the fight settled this frame (see <see cref="Tick"/>): nothing moving, or
+        /// waiting on the player.</summary>
+        public static bool Settled { get; private set; }
+
         public static void Tick()
         {
+            Settled = false;
             var c = Fight.Controller;
             if (c == null || c.EncounterEnded)
             {
@@ -55,6 +60,7 @@ namespace StarVadersAccess.Module.Fight
                 if (busy) { _idle = 0; return; }
                 if (++_idle < SettleFrames) return;
             }
+            Settled = true;
 
             var now = Take();
             if (now == null) return;

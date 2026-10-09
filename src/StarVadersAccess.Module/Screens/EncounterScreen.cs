@@ -45,6 +45,11 @@ namespace StarVadersAccess.Module.Screens
 
         public override string ScreenName => Objective();
 
+        // The objective and the landing wait while the fight still moves or a tip is on its way: the
+        // tutorial's tips come one after another, each covering the fight, and the fight showing
+        // between two of them is no arrival.
+        public override bool HoldsArrival => !FightEvents.Settled || Tips.Coming;
+
         public override void Build(GraphBuilder b)
         {
             var c = FightState.Controller;

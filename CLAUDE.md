@@ -151,6 +151,10 @@ separately. Host F6 uses the same OS read.
   has `TipBox.LineGlow` (or a `ClickToContinueLine`), and then `TipScreen` (layer 40, exclusive)
   holds it, Enter = `Tips.Continue` (`box.OnClick` + `_isFinished` if still typing, then the static
   `TipManager.ClickTipBox`); other tips are the popup reader's.
+  Between chained tips the fight is uncovered for a moment: `EncounterScreen.HoldsArrival` (Core
+  `Screen.HoldsArrival`) keeps its name and landing until `FightEvents.Settled` and no tip is
+  `Tips.Coming` (`IsCreatingTip` or `TipQueue`); test chains with two `TipManager.Tip` calls (the
+  second queues), never `AddTipTask` (it builds the tutorial's tasks: draws, triggers).
 - The fight (`EncounterScene`, `Fight/*`, `EncounterScreen`): every press is the game's click,
   `EncounterInputHandler.OnHoverViewItemByKey(item)` then `ClickViewItems()` (cards, buttons, and a
   running selection's answer alike). Model: `EncounterController.EncounterModel` (`GridModel`:

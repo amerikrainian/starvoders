@@ -51,6 +51,14 @@ namespace StarVadersAccess.Core.Screens
         /// <summary>Spoken when the screen gains focus. Null/empty = silent.</summary>
         public virtual string ScreenName => null;
 
+        /// <summary>While true, the screen's arrival waits: its name and its first landing are spoken
+        /// once it turns false (the game still moving, or about to cover the screen again, as the
+        /// tutorial's tips do one after another). Keys work meanwhile and speak as usual.</summary>
+        public virtual bool HoldsArrival => false;
+
+        /// <summary>The name held back by <see cref="HoldsArrival"/>, spoken by ScreenManager.</summary>
+        internal bool NamePending { get; set; }
+
         /// <summary>Stack layer: higher sits on top. 0 = base context, then windows, then overlays.</summary>
         public virtual int Layer => 0;
 
@@ -89,7 +97,10 @@ namespace StarVadersAccess.Core.Screens
             // focused element within the screen. Focus coming back from this screen's own child (a
             // dropdown's list closing) is no screen change: the name was heard on entry.
             if (!string.IsNullOrEmpty(ScreenName) && Navigation.FocusActive() && !ReturningFromChild)
-                Speech.Say(ScreenName);
+            {
+                if (HoldsArrival) NamePending = true;
+                else Speech.Say(ScreenName);
+            }
         }
 
         /// <summary>True while <see cref="OnFocus"/> runs for focus handed back by one of this screen's

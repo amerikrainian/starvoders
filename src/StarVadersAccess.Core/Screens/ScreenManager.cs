@@ -53,6 +53,7 @@ namespace StarVadersAccess.Core.Screens
             SyncFocus();          // focus the deepest screen (outer changes; before OnUpdate)
             Current?.OnUpdate();  // may push/remove child sub-screens
             SyncFocus();          // re-sync if OnUpdate (or this frame's input) changed the child tree
+            SpeakHeldName();      // a held arrival released: the name, then the landing below
             // Standardized first-focus: once the focused screen has built its content, make sure
             // something is focused. No-op when focus already exists or the screen is intentionally
             // unfocused.
@@ -105,6 +106,7 @@ namespace StarVadersAccess.Core.Screens
         {
             var cur = Current;
             if (ReferenceEquals(cur, _focused)) return;
+            if (_focused != null) _focused.NamePending = false;
             _focused?.OnUnfocus();
             // Focus handed back to an ancestor of the screen that had it: one of its own children
             // closed. The ancestors are taken when a screen gains focus, since removing a child
@@ -119,6 +121,25 @@ namespace StarVadersAccess.Core.Screens
             // Bind the navigator; the initial-focus landing is announced by EnsureFocus once the screen's
             // content exists.
             Navigation.Attach(cur);
+        }
+
+        private static void SpeakHeldName()
+        {
+            var cur = Current;
+            if (cur == null || !cur.NamePending) return;
+            bool hold;
+            try { hold = cur.HoldsArrival; }
+            catch (Exception e)
+            {
+                CoreLog.Error("Screen.HoldsArrival threw for '" + cur.Key + "': " + e.Message);
+                hold = false;
+            }
+            if (hold) return;
+            cur.NamePending = false;
+            // Keys pressed during the hold spoke where the player is: the name is old news by now.
+            if (Navigation.LandingSpoken) return;
+            string name = cur.ScreenName;
+            if (!string.IsNullOrEmpty(name) && Navigation.FocusActive()) Speech.Say(name);
         }
 
         private static void Safe(Action a, Screen s, string hook)

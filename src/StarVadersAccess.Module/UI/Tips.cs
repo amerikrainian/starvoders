@@ -21,6 +21,18 @@ namespace StarVadersAccess.Module.UI
             }
         }
 
+        /// <summary>Whether a tip is on its way: being created (its delay, then its prefab loading)
+        /// or queued behind the current one.</summary>
+        public static bool Coming
+        {
+            get
+            {
+                if (TipManager.IsCreatingTip) return true;
+                var queue = TipManager.TipQueue;
+                return queue != null && queue.Count > 0;
+            }
+        }
+
         private static TipBox Box(Tip tip) => tip != null ? tip.GetComponentInChildren<TipBox>() : null;
 
         /// <summary>The tip box's text (its two lines, not the continue prompt), or null.</summary>

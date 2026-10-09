@@ -22,6 +22,10 @@ namespace StarVadersAccess.Core.UI
         /// state of a screen that starts unfocused.</summary>
         public abstract bool HasFocus { get; }
 
+        /// <summary>Whether something on the bound screen has been spoken since it took focus (its
+        /// landing, or a key's move).</summary>
+        public virtual bool LandingSpoken => true;
+
         /// <summary>Bind to a screen. Re-attaching the SAME screen means "content changed" (focus and
         /// announce memory survive); a new screen resets both.</summary>
         public abstract void Attach(Screen screen);
@@ -110,6 +114,8 @@ namespace StarVadersAccess.Core.UI
 
         /// <summary>True when something is focused (the navigator owns the keys).</summary>
         public static bool HasFocus => Active != null && Active.HasFocus;
+
+        public static bool LandingSpoken => Active != null && Active.LandingSpoken;
 
         public static bool DispatchJustPressed(InputAction action) =>
             Active != null && Active.OnInputJustPressed(action);
