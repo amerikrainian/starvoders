@@ -125,7 +125,11 @@ namespace StarVadersAccess.Module.Screens
             if (encounter != null)
             {
                 var names = new List<string>();
-                foreach (var name in Enemies(encounter)) names.Add(GameLoc.EnemyName(name) ?? name.ToString());
+                foreach (var enemy in Enemies(encounter))
+                {
+                    var name = enemy.EnemyID.EnemyName;
+                    names.Add(GameLoc.EnemyName(name) ?? name.ToString());
+                }
                 if (names.Count > 0)
                 {
                     string label = CampaignNodes.Tooltip(Trigger(encounter, "Enemies")).Title;
@@ -164,10 +168,12 @@ namespace StarVadersAccess.Module.Screens
         {
             var lines = new List<string>();
             if (encounter != null)
-                foreach (var name in Enemies(encounter))
+                foreach (var enemy in Enemies(encounter))
                 {
+                    var name = enemy.EnemyID.EnemyName;
                     string n = GameLoc.EnemyName(name) ?? name.ToString();
-                    string d = GameLoc.EnemyDescription(name);
+                    // No encounter yet: the game strips a counter's "([#] left)" here.
+                    string d = GameLoc.EntityDescription(enemy, name + "_EntityDesc", null);
                     string line = d != null ? n + ": " + d : n;
                     if (!lines.Contains(line)) lines.Add(line);
                 }
@@ -188,7 +194,7 @@ namespace StarVadersAccess.Module.Screens
             return lines;
         }
 
-        private static IEnumerable<EnemyName> Enemies(EncounterRoomChoicePanel encounter)
+        private static IEnumerable<EnemyEntityModel> Enemies(EncounterRoomChoicePanel encounter)
         {
             var holders = encounter.EnemyHolders;
             if (holders == null) yield break;
@@ -196,7 +202,7 @@ namespace StarVadersAccess.Module.Screens
             {
                 if (holder == null || !holder.gameObject.activeInHierarchy) continue;
                 var model = holder.EntityModel?.TryCast<EnemyEntityModel>();
-                if (model != null) yield return model.EnemyID.EnemyName;
+                if (model != null) yield return model;
             }
         }
 

@@ -15,9 +15,30 @@ namespace StarVadersAccess.Module.Interop
     internal static class GameLoc
     {
         public static string EnemyName(EnemyName name) => Get(name + "_EntityTitle");
-        public static string EnemyDescription(EnemyName name) => Get(name + "_EntityDesc");
         public static string ArtifactName(ArtifactName name) => Get(name + "_ArtiTitle");
         public static string ArtifactDescription(ArtifactName name) => Get(name + "_ArtiDesc");
+
+        /// <summary>
+        /// An entity's description (<c>key</c> is its <c>_EntityDesc</c> key) as its info panel shows
+        /// it: <see cref="LocalizationUtils.GetModifiedDescriptions(string, AEntityModel,
+        /// EncounterController)"/> fills a counter's "[#]" from the model in a fight (Time Angel's
+        /// "([#] left)"), and strips that parenthesis without an encounter.
+        /// </summary>
+        public static string EntityDescription(AEntityModel entity, string key, EncounterController encounter)
+        {
+            try
+            {
+                string text = LocalizationUtils.LocalizeSynchronous(key);
+                if (string.IsNullOrWhiteSpace(text) || text.StartsWith("No translation for", StringComparison.Ordinal)) return null;
+                if (entity != null) text = LocalizationUtils.GetModifiedDescriptions(text, entity, encounter);
+                return GameText.Clean(text);
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("GameLoc: describing " + key + " failed: " + e.Message);
+                return null;
+            }
+        }
 
         public static string Get(string key)
         {

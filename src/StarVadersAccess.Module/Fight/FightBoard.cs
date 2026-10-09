@@ -126,9 +126,9 @@ namespace StarVadersAccess.Module.Fight
         public static string Description(AEntityModel entity)
         {
             var enemy = entity?.TryCast<EnemyEntityModel>();
-            if (enemy != null) return GameLoc.EnemyDescription(enemy.EnemyID.EnemyName);
+            if (enemy != null) return GameLoc.EntityDescription(entity, enemy.EnemyID.EnemyName + "_EntityDesc", Fight.Controller);
             var item = entity?.TryCast<ItemEntityModel>();
-            if (item != null) return GameLoc.Get(item.ItemID.ItemName + "_EntityDesc");
+            if (item != null) return GameLoc.EntityDescription(entity, item.ItemID.ItemName + "_EntityDesc", Fight.Controller);
             return null;
         }
 
