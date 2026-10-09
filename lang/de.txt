@@ -78,6 +78,7 @@ cutscene.line={0}: {1}
 map.cleared=abgeschlossen
 map.current=aktuell
 fight.turn=Zug {0}/{1}
+fight.turn_open=Zug {0}
 fight.cost={0} {1}
 shop.was=vorher {0}
 shop.copies={0} Exemplare

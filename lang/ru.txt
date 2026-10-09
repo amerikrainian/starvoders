@@ -78,6 +78,7 @@ cutscene.line={0}: {1}
 map.cleared=пройдено
 map.current=текущий
 fight.turn=Ход {0}/{1}
+fight.turn_open=Ход {0}
 fight.cost={0} {1}
 shop.was=было {0}
 shop.copies={0} копии

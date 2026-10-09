@@ -36,6 +36,18 @@ namespace StarVadersAccess.Tests
         }
 
         [Fact]
+        public void A_fight_without_a_turn_limit_says_the_turn_alone()
+        {
+            var before = Snap(Migo(1, 2, 6));
+            before.Turns = -1;
+            before.PlayerTurn = false;
+            var after = Snap(Migo(1, 2, 6));
+            after.Turns = -1;
+            after.Turn = 2;
+            Assert.Equal(new[] { "Turn 2" }, FightDiff.Lines(before, after));
+        }
+
+        [Fact]
         public void Nothing_changed_says_nothing()
         {
             Assert.Empty(FightDiff.Lines(Snap(Migo(1, 2, 6)), Snap(Migo(1, 2, 6))));

@@ -78,6 +78,7 @@ cutscene.line={0}: {1}
 map.cleared=completado
 map.current=actual
 fight.turn=Turno {0}/{1}
+fight.turn_open=Turno {0}
 fight.cost={0} {1}
 shop.was=antes {0}
 shop.copies={0} copias

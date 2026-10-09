@@ -127,6 +127,7 @@ namespace StarVadersAccess.Core.Strings
             D("map.current", "current"),
             // The fight: the turn as x/y, a card's cost ("1 Heat": {0} the amount, {1} the game's word), the digit keys.
             D("fight.turn", "Turn {0}/{1}"),
+            D("fight.turn_open", "Turn {0}"),
             D("fight.cost", "{0} {1}"),
             D("shop.was", "was {0}"),
             D("shop.copies", "{0} copies"),
@@ -418,7 +419,8 @@ namespace StarVadersAccess.Core.Strings
         public static string CutsceneLine(string speaker, string line) => F("cutscene.line", speaker, line);
         public static string MapCleared => Get("map.cleared");
         public static string MapCurrent => Get("map.current");
-        public static string FightTurn(int turn, int turns) => F("fight.turn", turn, turns);
+        /// <summary>"Turn 3/8"; "Turn 3" in a fight with no turn limit (the game's MaxTurns is -1).</summary>
+        public static string FightTurn(int turn, int turns) => turns > 0 ? F("fight.turn", turn, turns) : F("fight.turn_open", turn);
         public static string FightCost(int amount, string resource) => F("fight.cost", amount, resource);
         /// <summary>A sale's crossed-out price: "was 5700".</summary>
         public static string ShopWas(string price) => F("shop.was", price);

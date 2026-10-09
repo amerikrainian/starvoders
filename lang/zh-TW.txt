@@ -78,6 +78,7 @@ cutscene.line={0}：{1}
 map.cleared=已完成
 map.current=目前
 fight.turn=回合 {0}/{1}
+fight.turn_open=回合 {0}
 fight.cost={1} {0}
 shop.was=原價 {0}
 shop.copies={0} 張

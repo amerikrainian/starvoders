@@ -78,6 +78,7 @@ cutscene.line={0}: {1}
 map.cleared=tamamlandı
 map.current=şu anki
 fight.turn=Tur {0}/{1}
+fight.turn_open=Tur {0}
 fight.cost={0} {1}
 shop.was=eski fiyat {0}
 shop.copies={0} kopya

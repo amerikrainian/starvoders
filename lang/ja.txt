@@ -78,6 +78,7 @@ cutscene.line={0}：{1}
 map.cleared=クリア済み
 map.current=現在地
 fight.turn=ターン {0}/{1}
+fight.turn_open=ターン {0}
 fight.cost={1} {0}
 shop.was=定価 {0}
 shop.copies={0}枚
