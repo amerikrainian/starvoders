@@ -109,7 +109,11 @@ separately. Host F6 uses the same OS read.
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
   `EncounterWinScreen` (`EncounterWinSceneAdditive`: "Victory", the stars earned, the loot box
   `Box (1)` whose click is `GoToRewardScene`, up while `!IsEndingScene`; opening it leaves the
-  fight: never through the driver), plus guildrun's
+  fight: never through the driver), `RewardScreen` (`CardRewardScene`, `RewardController` for
+  cards, upgrades and artifacts: title `TitleText`, the shown `CardRewardBoards` and
+  `ArtifactRewardBoards` left to right by x, Enter takes one (`AddRewardToDeck`: never through
+  the driver), Skip = `ProceedButton`, Reroll and the run status from `UI/CampaignNodes`; card and
+  artifact nodes shared with the deck viewer in `UI/CardNodes`), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`

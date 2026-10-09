@@ -85,32 +85,11 @@ namespace StarVadersAccess.Module.Screens
             var proceed = c.ProceedButton;
             if (ViewNodes.IsShown(proceed))
                 b.AddItem(ControlId.Structural("globe:proceed"), ViewNodes.Button(proceed, enabled: () => proceed.ButtonEnabled));
-            var reroll = c.RerollButton;
-            if (ViewNodes.IsShown(reroll))
-            {
-                var vt = ViewNodes.Button(reroll, () => GameText.Of(reroll.transform.Find("RerollText")?.GetComponent<TMP_Text>()),
-                    enabled: () => reroll.ButtonEnabled);
-                Func<string> left = () => RerollsLeft(reroll);
-                vt.Announcements = new List<NodeAnnouncement>(vt.Announcements)
-                {
-                    new NodeAnnouncement(left, live: true, kind: AnnouncementKinds.Value),
-                };
-                b.AddItem(ControlId.Structural("globe:reroll"), vt);
-            }
+            CampaignNodes.Reroll(b, c.RerollButton, "globe:reroll");
             b.PopContext();
 
             CampaignNodes.Status(b, c, "globe");
             CampaignNodes.Map(b, c, "globe");
-        }
-
-        // "3 of 3": the tokens left over the most, as the button draws them ("3", "/3").
-        private static string RerollsLeft(RerollButton reroll)
-        {
-            if (reroll.NumberObject == null || !reroll.NumberObject.activeInHierarchy) return null;
-            string left = GameText.Of(reroll.NumberText);
-            string max = GameText.Of(reroll.MaxNumberText)?.TrimStart('/').Trim();
-            if (left == null) return null;
-            return int.TryParse(left, out int l) && int.TryParse(max, out int m) ? Strings.Position(l, m) : left;
         }
 
         private static NodeVtable Encounter(RoomChoicePanel panel)

@@ -47,6 +47,31 @@ namespace StarVadersAccess.Module.UI
             return t != null ? t.GetComponent<T>() : null;
         }
 
+        /// <summary>The Reroll button (its caption, "disabled" without tokens) with the Chrono Tokens
+        /// left, read live ("3 of 3").</summary>
+        public static void Reroll(GraphBuilder b, RerollButton reroll, string id)
+        {
+            if (!ViewNodes.IsShown(reroll)) return;
+            var vt = ViewNodes.Button(reroll, () => GameText.Of(reroll.transform.Find("RerollText")?.GetComponent<TMP_Text>()),
+                enabled: () => reroll.ButtonEnabled);
+            Func<string> left = () => RerollsLeft(reroll);
+            vt.Announcements = new List<NodeAnnouncement>(vt.Announcements)
+            {
+                new NodeAnnouncement(left, live: true, kind: AnnouncementKinds.Value),
+            };
+            b.AddItem(ControlId.Structural(id), vt);
+        }
+
+        // "3 of 3": the tokens left over the most, as the button draws them ("3", "/3").
+        private static string RerollsLeft(RerollButton reroll)
+        {
+            if (reroll.NumberObject == null || !reroll.NumberObject.activeInHierarchy) return null;
+            string left = GameText.Of(reroll.NumberText);
+            string max = GameText.Of(reroll.MaxNumberText)?.TrimStart('/').Trim();
+            if (left == null) return null;
+            return int.TryParse(left, out int l) && int.TryParse(max, out int m) ? Strings.Position(l, m) : left;
+        }
+
         /// <summary>Doom, Stars and Deck, one stop.</summary>
         public static void Status(GraphBuilder b, CampaignSceneController c, string key)
         {

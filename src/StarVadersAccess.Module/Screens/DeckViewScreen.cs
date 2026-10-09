@@ -43,12 +43,12 @@ namespace StarVadersAccess.Module.Screens
             b.BeginStop("deckview:cards");
             b.PushContext(Title(cards));
             foreach (var card in cards)
-                b.AddItem(ControlId.Structural("deckview:card:" + card.GetInstanceID()), Card(card));
+                b.AddItem(ControlId.Structural("deckview:card:" + card.GetInstanceID()), CardNodes.Card(card.CardModel, card));
             foreach (var grid in new[] { c._artifactGrid, c._artifactPilotUniqueGrid })
             {
                 if (grid == null || !grid.gameObject.activeInHierarchy) continue;
                 foreach (var artifact in grid.GetComponentsInChildren<DeckArtifactView>(false))
-                    if (artifact != null) b.AddItem(ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()), Artifact(artifact));
+                    if (artifact != null) b.AddItem(ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()), CardNodes.Artifact(artifact.ArtifactModel, artifact));
             }
             b.PopContext();
             // Back on its own stop (Tab), so the list's positions count the cards alone.
@@ -101,48 +101,6 @@ namespace StarVadersAccess.Module.Screens
                 catch (Exception e) { CoreLog.Warning("DeckView: finding the pile failed: " + e.Message); }
             }
             return GameLoc.Get("Deck_Misc");
-        }
-
-        private static NodeVtable Card(DeckCardView view)
-        {
-            var card = view.CardModel;
-            Func<string> name = () => FightState.CardName(card);
-            return new NodeVtable
-            {
-                ControlType = ControlTypes.Text,
-                Announcements = new List<NodeAnnouncement>
-                {
-                    GameNodes.LabelPart(name),
-                    new NodeAnnouncement(() => EncounterScreen.Cost(card), kind: AnnouncementKinds.Value),
-                    GameNodes.TooltipPart(() => FightState.CardDescription(card)),
-                },
-                SearchText = name,
-                OnFocus = () => ViewNodes.Hover(view),
-                OnActivate = () => ViewNodes.Click(view),
-                Details = () => FightState.InfoLines(card.MoreInfoWordNames),
-                OnSecondary = () =>
-                {
-                    var lines = FightState.InfoLines(card.MoreInfoWordNames);
-                    Speech.Say(lines.Count > 0 ? string.Join(" ", lines) : Strings.NoDetails, interrupt: true);
-                },
-            };
-        }
-
-        private static NodeVtable Artifact(DeckArtifactView view)
-        {
-            var model = view.ArtifactModel;
-            Func<string> name = () => model != null ? GameLoc.ArtifactName(model.ArtifactName) : null;
-            return new NodeVtable
-            {
-                ControlType = ControlTypes.Text,
-                Announcements = new List<NodeAnnouncement>
-                {
-                    GameNodes.LabelPart(name),
-                    GameNodes.TooltipPart(() => model != null ? GameLoc.ArtifactDescription(model.ArtifactName) : null),
-                },
-                SearchText = name,
-                OnFocus = () => ViewNodes.Hover(view),
-            };
         }
     }
 }
