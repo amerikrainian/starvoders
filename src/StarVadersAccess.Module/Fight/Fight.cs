@@ -81,9 +81,8 @@ namespace StarVadersAccess.Module.Fight
                 if (Upgrade(card) != null && Upgrade(card).SkipNormalDescription) return null;
                 string raw = LocalizationUtils.LocalizeSynchronous(card.CardName + "_CardDesc");
                 if (string.IsNullOrEmpty(raw) || raw.StartsWith("No translation for", StringComparison.Ordinal)) return null;
-                var controller = Controller;
-                if (controller != null) raw = LocalizationUtils.GetModifiedDescriptions(raw, card, controller);
-                return GameText.Clean(raw);
+                // As the card's panel: out of a fight, with no encounter, it drops a counter's "([#])".
+                return GameText.Clean(LocalizationUtils.GetModifiedDescriptions(raw, card, Controller));
             }
             catch (Exception e)
             {
