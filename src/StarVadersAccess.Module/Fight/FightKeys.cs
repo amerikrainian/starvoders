@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StarVaders;
 using StarVadersAccess.Core;
+using StarVadersAccess.Core.Fight;
 using StarVadersAccess.Core.Input;
 using StarVadersAccess.Core.Strings;
 using StarVadersAccess.Core.UI;
@@ -19,7 +20,9 @@ namespace StarVadersAccess.Module.Fight
     /// mech) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
     /// bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
-    /// (top row first), moving the cursor; Alt+Backspace jumps back to where a jump left from; E ends
+    /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
+    /// as its targets are announced ("5, 1 to 5, 5, targeted by Shooter 2", the cursor to its first
+    /// tile); Alt+Backspace jumps back to where a jump left from; E ends
     /// the turn; Shift+arrows skip cells that read the same.
     /// </summary>
     internal static class FightKeys
@@ -111,13 +114,14 @@ namespace StarVadersAccess.Module.Fight
 
         private static (int X, int Y)? _back;
 
-        /// <summary>Move the board cursor to the tile (spoken as a move), remembering where it was.</summary>
-        public static void JumpTo((int X, int Y)? tile)
+        /// <summary>Move the board cursor to the tile (spoken as a move, unless <paramref name="speak"/>
+        /// is false: the caller said something else), remembering where it was.</summary>
+        public static void JumpTo((int X, int Y)? tile, bool speak = true)
         {
             if (tile == null) return;
             var from = EncounterScreen.FocusedTile();
-            if (from.HasValue && from.Value.Equals(tile.Value)) { Navigation.AnnounceCurrent(); return; }
-            if (Navigation.Active?.MoveTo(EncounterScreen.TileId(tile.Value.X, tile.Value.Y)) == true)
+            if (from.HasValue && from.Value.Equals(tile.Value)) { if (speak) Navigation.AnnounceCurrent(); return; }
+            if (Navigation.Active?.MoveTo(EncounterScreen.TileId(tile.Value.X, tile.Value.Y), speak) == true)
                 _back = from;
         }
 
@@ -134,10 +138,20 @@ namespace StarVadersAccess.Module.Fight
         private static int _category = -1;
         private static int _item = -1;
 
-        // The tiles of a category, in reading order: top row first, left to right.
-        private static List<(int X, int Y)> Members(FightBoard board, string category)
+        // A category member: the tile the cursor goes to, and for a danger region its line (null:
+        // the move reads the tile).
+        private struct Member
         {
-            var tiles = new List<(int, int)>();
+            public (int X, int Y) Tile;
+            public string Line;
+        }
+
+        // The members of a category, in reading order: top row first, left to right. Danger zones
+        // are regions: per attacker (in the order their tiles first appear), its tiles as shapes.
+        private static List<Member> Members(FightBoard board, string category)
+        {
+            if (category == "danger") return DangerRegions(board);
+            var tiles = new List<Member>();
             for (int y = board.Rows - 1; y >= 0; y--)
                 for (int x = 0; x < board.Columns; x++)
                 {
@@ -149,12 +163,45 @@ namespace StarVadersAccess.Module.Fight
                         case "invaders": member = e?.TryCast<EnemyEntityModel>() != null; break;
                         case "mech": member = e?.TryCast<PlayerEntityModel>() != null; break;
                         case "items": member = e?.TryCast<ItemEntityModel>() != null; break;
-                        case "pickups": member = board.Pickup(x, y) != null; break;
-                        default: member = board.Danger(x, y) != null; break;
+                        default: member = board.Pickup(x, y) != null; break;
                     }
-                    if (member) tiles.Add((x, y));
+                    if (member) tiles.Add(new Member { Tile = (x, y) });
                 }
             return tiles;
+        }
+
+        private static List<Member> DangerRegions(FightBoard board)
+        {
+            var byWho = new List<KeyValuePair<string, List<(int X, int Y)>>>();
+            for (int y = board.Rows - 1; y >= 0; y--)
+                for (int x = 0; x < board.Columns; x++)
+                    foreach (var who in board.Attackers(x, y))
+                    {
+                        var tiles = byWho.Find(kv => kv.Key == who).Value;
+                        if (tiles == null) { tiles = new List<(int X, int Y)>(); byWho.Add(new KeyValuePair<string, List<(int X, int Y)>>(who, tiles)); }
+                        tiles.Add((x + 1, y + 1));
+                    }
+            // The same region from several attackers (two Shooters on one column) is one member.
+            var regions = new List<(TileRanges.Range Range, List<string> Who)>();
+            foreach (var kv in byWho)
+                foreach (var range in TileRanges.Ranges(kv.Value, board.Columns, board.Rows))
+                {
+                    int same = regions.FindIndex(r => r.Range.Text == range.Text);
+                    if (same >= 0) regions[same].Who.Add(kv.Key);
+                    else regions.Add((range, new List<string> { kv.Key }));
+                }
+            string label = GameLoc.Get("DangerZoneText_Misc") ?? "Danger Zone";
+            var members = new List<Member>();
+            foreach (var (range, who) in regions)
+            {
+                who.Remove(label); // the game's label stands in only when nobody is named
+                members.Add(new Member
+                {
+                    Tile = (range.Start.X - 1, range.Start.Y - 1),
+                    Line = range.Text + ", " + (who.Count > 0 ? Strings.FightTargeted(string.Join(", ", who)) : label),
+                });
+            }
+            return members;
         }
 
         // [ and ]: the next category with something in it, wrapping; "Invaders, 2".
@@ -192,7 +239,10 @@ namespace StarVadersAccess.Module.Fight
             }
             var members = Members(board, Categories[_category]);
             _item = _item < 0 ? (step > 0 ? 0 : members.Count - 1) : ((_item + step) % members.Count + members.Count) % members.Count;
-            JumpTo(members[_item]);
+            var m = members[_item];
+            if (m.Line == null) { JumpTo(m.Tile); return; }
+            Speech.Say(m.Line, interrupt: true);
+            JumpTo(m.Tile, speak: false);
         }
 
         // ---- end turn ----

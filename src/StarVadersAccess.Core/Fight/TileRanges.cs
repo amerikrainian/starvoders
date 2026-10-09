@@ -12,6 +12,15 @@ namespace StarVadersAccess.Core.Fight
     /// </summary>
     public static class TileRanges
     {
+        /// <summary>One shape: as spoken, the tile it starts on (its first corner, 1-based), and its
+        /// tiles.</summary>
+        public sealed class Range
+        {
+            public string Text;
+            public (int X, int Y) Start;
+            public List<(int X, int Y)> Tiles;
+        }
+
         private enum Kind { Single, Rect, Diagonal }
 
         private struct Shape
@@ -24,6 +33,14 @@ namespace StarVadersAccess.Core.Fight
         /// <summary>The tiles (1-based, row 1 at the bottom) as spoken parts; <paramref name="columns"/>
         /// and <paramref name="rows"/> are the board's size (0 when unknown: no whole rows or columns).</summary>
         public static List<string> Parts(IEnumerable<(int X, int Y)> tiles, int columns, int rows)
+        {
+            var parts = new List<string>();
+            foreach (var r in Ranges(tiles, columns, rows)) parts.Add(r.Text);
+            return parts;
+        }
+
+        /// <summary>The tiles as shapes, in the order <see cref="Parts"/> says them.</summary>
+        public static List<Range> Ranges(IEnumerable<(int X, int Y)> tiles, int columns, int rows)
         {
             var all = new HashSet<(int, int)>(tiles);
             var left = new HashSet<(int, int)>(all);
@@ -51,9 +68,10 @@ namespace StarVadersAccess.Core.Fight
                 shapes.Add(new Shape { Kind = Kind.Single, X0 = x, Y0 = y, X1 = x, Y1 = y, Size = 1 });
 
             shapes.Sort((a, b) => a.Y0 != b.Y0 ? a.Y0.CompareTo(b.Y0) : a.X0.CompareTo(b.X0));
-            var parts = new List<string>();
-            foreach (var s in shapes) parts.Add(Say(s, columns, rows));
-            return parts;
+            var ranges = new List<Range>();
+            foreach (var s in shapes)
+                ranges.Add(new Range { Text = Say(s, columns, rows), Start = (s.X0, s.Y0), Tiles = new List<(int X, int Y)>(Tiles(s)) });
+            return ranges;
         }
 
         private static string Say(Shape s, int columns, int rows)
@@ -115,7 +133,7 @@ namespace StarVadersAccess.Core.Fight
             return true; // rows below y1 were checked as y1 grew
         }
 
-        private static IEnumerable<(int, int)> Tiles(Shape s)
+        private static IEnumerable<(int X, int Y)> Tiles(Shape s)
         {
             if (s.Kind == Kind.Diagonal)
             {

@@ -72,8 +72,9 @@ namespace StarVadersAccess.Core.UI
         /// <summary>Move focus to a node of the current render right now and announce it as a move
         /// (interrupting, the contexts crossed read as an arrow's are): a screen's own key that lands
         /// somewhere. False when the node is not in the render or is the focused one already, so the
-        /// caller stays silent as at an edge.</summary>
-        public virtual bool MoveTo(Graph.ControlId id) => false;
+        /// caller stays silent as at an edge. With <paramref name="speak"/> false the move is silent
+        /// (its caller says something else) and taken as spoken.</summary>
+        public virtual bool MoveTo(Graph.ControlId id, bool speak = true) => false;
 
         /// <summary>Whether the current render has a focusable node in that Tab-stop: a screen offers
         /// a jump key (Alt+B for the board) only where its stop is on show.</summary>
@@ -148,7 +149,7 @@ namespace StarVadersAccess.Core.UI
 
         public static void FocusStop(object stopKey) => Active?.FocusStop(stopKey);
 
-        public static bool MoveTo(Graph.ControlId id) => Active != null && Active.MoveTo(id);
+        public static bool MoveTo(Graph.ControlId id, bool speak = true) => Active != null && Active.MoveTo(id, speak);
 
         public static object FocusedStopKey => Active?.FocusedStopKey;
 

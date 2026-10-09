@@ -136,7 +136,7 @@ namespace StarVadersAccess.Core.UI
 
         public override object FocusedStopKey => _graph?.CurrentNode?.StopKey;
 
-        public override bool MoveTo(ControlId id)
+        public override bool MoveTo(ControlId id, bool speak = true)
         {
             if (id == null || _graph == null || !_graph.Rerender()) return false;
             var from = _graph.CurrentNode;
@@ -146,7 +146,7 @@ namespace StarVadersAccess.Core.UI
             if (node == null) return false;
             PlayHover(node);
             FireFocus(node);
-            Speak(ComposeMove(from, node, entry: false), interrupt: true);
+            if (speak) Speak(ComposeMove(from, node, entry: false), interrupt: true);
             _lastSpokenKey = node.Id;
             _lastSpokenNode = node;
             return true;

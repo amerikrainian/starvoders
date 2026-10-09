@@ -44,5 +44,15 @@ namespace StarVadersAccess.Tests
         public void A_staircase_takes_its_diagonal_and_lists_the_rest() =>
             Assert.Equal("diagonal 1, 1 to 3, 3; 2, 1; 3, 2; 4, 6; 5, 7",
                 Say((1, 1), (2, 1), (2, 2), (3, 2), (3, 3), (5, 7), (4, 6)));
+
+        [Fact]
+        public void A_range_starts_on_its_first_corner_and_holds_its_tiles()
+        {
+            var ranges = TileRanges.Ranges(new[] { (5, 3), (5, 1), (5, 2), (2, 6) }, 5, 7);
+            Assert.Equal(2, ranges.Count);
+            Assert.Equal((5, 1), ranges[0].Start);
+            Assert.Equal(3, ranges[0].Tiles.Count);
+            Assert.Equal((2, 6), ranges[1].Start);
+        }
     }
 }
