@@ -119,6 +119,10 @@ separately. Host F6 uses the same OS read.
   `ProfilesScreen` (`SaveProfileSceneAdditive`, `SaveProfileSceneController`, layer 10: the page's three
   `SaveProfileGroup` slots, a saved one followed by its `_deleteButton` "Delete File 1", page arrows, Back
   = `OnClickBack`; switching, creating and deleting profiles: never through the driver),
+  `MoreInfoScreen` (`MoreInfoSceneAdditive`, `MoreInfoSceneController`, layer 38, over anything: the
+  `_currentDisplayBoardPanel`'s texts, the keyword lines under `_moreInfoLineParent`, the linked cards
+  and invaders `MoreInfoObjs` (Enter = their click, nested), Back while `PreviousObjects` is non-empty,
+  Close = `ExitScene(0)`; test: a pilot's `PilotSelectArtifactView.OnClick()`),
   `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
