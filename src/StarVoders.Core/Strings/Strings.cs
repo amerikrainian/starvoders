@@ -211,6 +211,10 @@ namespace StarVoders.Core.Strings
             D("pilots.random", "Random pilot"),
             D("pilots.done", "done"),
             D("pilots.notdone", "not done"),
+            // The save profiles: a profile's delete button ({0} the profile, "File 1"), the arrows between pages of profiles.
+            D("profiles.delete", "Delete {0}"),
+            D("profiles.prevpage", "Previous page"),
+            D("profiles.nextpage", "Next page"),
             // A won fight: the loot box, whose click opens the reward.
             D("win.open", "Open reward box"),
             // Run history: which run of how many, and its arrows (no caption of their own).
@@ -481,6 +485,9 @@ namespace StarVoders.Core.Strings
         public static string AlbumPrevious => Get("album.prev");
         public static string AlbumNext => Get("album.next");
         public static string PilotsRandom => Get("pilots.random");
+        public static string ProfilesDelete(string profile) => F("profiles.delete", profile);
+        public static string ProfilesPreviousPage => Get("profiles.prevpage");
+        public static string ProfilesNextPage => Get("profiles.nextpage");
         public static string PilotsDone => Get("pilots.done");
         public static string PilotsNotDone => Get("pilots.notdone");
         public static string CompendiumKind(bool cards, bool artifacts) => Get(cards == artifacts ? "compendium.both" : cards ? "compendium.cards" : "compendium.artifacts");

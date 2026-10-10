@@ -116,6 +116,9 @@ separately. Host F6 uses the same OS read.
   empty while `IsTransitioning`), `DifficultyScreen` (`DifficultySelectionSceneAdditive`, layer 10:
   radio buttons; Enter = `OnLevelNPressed(false)`, select only: the game's click on the selected one
   starts the run; Go! = `OnStartPressed`, never through the driver; seed field mouse-only),
+  `ProfilesScreen` (`SaveProfileSceneAdditive`, `SaveProfileSceneController`, layer 10: the page's three
+  `SaveProfileGroup` slots, a saved one followed by its `_deleteButton` "Delete File 1", page arrows, Back
+  = `OnClickBack`; switching, creating and deleting profiles: never through the driver),
   `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
