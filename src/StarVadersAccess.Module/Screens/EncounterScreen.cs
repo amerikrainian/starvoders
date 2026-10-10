@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StarVaders;
 using StarVadersAccess.Core;
+using StarVadersAccess.Core.Fight;
 using StarVadersAccess.Core.Graph;
 using StarVadersAccess.Core.Input;
 using StarVadersAccess.Core.Strings;
@@ -182,8 +183,8 @@ namespace StarVadersAccess.Module.Screens
             {
                 ControlType = ControlTypes.Text,
                 SpeaksOwnPosition = true,
-                // One part, in speechchem's order: the target mark, the coordinates, the zone when
-                // crossed into, then what is there.
+                // One part, in speechchem's order: the target and strike marks, the coordinates,
+                // the zone when crossed into, then what is there.
                 Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => CellText(x, y)) },
                 SearchText = () => FightBoard.CoordText(x, y),
                 IsSelected = () => IsMech(x, y),
@@ -198,6 +199,7 @@ namespace StarVadersAccess.Module.Screens
         {
             var parts = new List<string>();
             if (IsTarget(x, y)) parts.Add(Strings.FightTarget);
+            if (FightState.Strike(x, y)) parts.Add(Strings.FightStrike);
             parts.Add(FightBoard.CoordText(x, y));
             string zone = ZoneCrossing(x, y);
             if (zone != null) parts.Add(zone);
@@ -317,12 +319,17 @@ namespace StarVadersAccess.Module.Screens
             Navigation.Active?.MoveTo(TileId(nx, ny));
         }
 
-        private static string Signature(FightBoard board, int x, int y) => board.Zone(x, y) + "|" + CellContents(board, x, y);
+        private static string Signature(FightBoard board, int x, int y) =>
+            board.Zone(x, y) + "|" + FightState.Strike(x, y) + "|" + CellContents(board, x, y);
 
         // ---- choosing a target ----
 
         private const string TargetsStop = "fight:targets";
         private bool _wasSelecting;
+        // Frames left to wait for the strike marks of a selection just started (0: said, or none
+        // came): the game's preview can land a few frames after the selection opens.
+        private int _strikeWait;
+        private const int StrikeWaitFrames = 30;
 
         // A selection starting: on the board, its prompt is said (not the play area's) and focus goes to the board (staying
         // where it is if already there, the game's cursor brought to it); otherwise focus goes to the
@@ -344,9 +351,35 @@ namespace StarVadersAccess.Module.Screens
                     else { var tile = Tile(at.Value.X, at.Value.Y); if (tile != null) FightState.Hover(tile); }
                 }
                 else Navigation.Active?.FocusStop(TargetsStop);
+                _strikeWait = StrikeWaitFrames;
+            }
+            if (!selecting) _strikeWait = 0;
+            else if (_strikeWait > 0)
+            {
+                string line = StrikeLine();
+                if (line != null) { Speech.Say(line); _strikeWait = 0; }
+                else _strikeWait--;
             }
             _wasSelecting = selecting;
             if (!(Navigation.Active is GraphNavigator nav) || !Equals(nav.FocusedNode?.StopKey, BoardStop)) _lastZone = null;
+        }
+
+        /// <summary>"Strikes 4, 2; 3, 3 to 5, 3; hits Migo 1, mech": the tiles the game marks as about to
+        /// be struck, merged into shapes, and who stands on them; null when nothing is marked.</summary>
+        private static string StrikeLine()
+        {
+            var marked = FightState.StrikeTiles();
+            var board = FightBoard.Read();
+            if (marked.Count == 0 || board == null) return null;
+            var tiles = new List<(int X, int Y)>();
+            foreach (var (x, y) in marked) tiles.Add((x + 1, y + 1));
+            string where = string.Join("; ", TileRanges.Parts(tiles, board.Columns, board.Rows));
+            // Who is hit, in reading order (top row first).
+            var who = new List<string>();
+            for (int y = board.Rows - 1; y >= 0; y--)
+                for (int x = 0; x < board.Columns; x++)
+                    if (marked.Contains((x, y)) && board.At(x, y) != null) who.Add(board.Name(board.At(x, y)));
+            return Strings.FightStrikes(where, who.Count > 0 ? string.Join(", ", who) : null);
         }
 
         private static NodeVtable Target(AEncounterViewItem item, FightBoard board)

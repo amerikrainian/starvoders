@@ -175,7 +175,7 @@ separately. Host F6 uses the same OS read.
 - The fight (`EncounterScene`, `Fight/*`, `EncounterScreen`): every press is the game's click,
   `EncounterInputHandler.OnHoverViewItemByKey(item)` then `ClickViewItems()` (cards, buttons, and a
   running selection's answer alike). Model: `EncounterController.EncounterModel` (`GridModel`:
-  `GridShape` 5x7, `Coord` 0-based with y UP; `ModelItemDict` holds every model, dead entities
+  `GridShape`, not fixed: 5x7 and 5x9 seen, so read it, `Coord` 0-based with y UP; `ModelItemDict` holds every model, dead entities
   kept; an entity's coord via `GetEntityCoord(model.ID.Cast<EntityID>())`). Spoken tiles are
   "x, y" 1-based, row 1 at the bottom. Stops: Targets (while `SelectionController.IsSelecting`:
   `EncounterView.ViewsItems` filtered by `IsSatisfied`, under `ScreenView.SelectionPrompt`; focus
@@ -201,6 +201,14 @@ separately. Host F6 uses the same OS read.
   `BaseCoord` or the mech, else "not a target"; "target" marks valid tiles and the cells next to
   the origin in a valid direction; a "targets" category). Only selections without grid targets
   (cards) get the Targets list stop. Direction selections are untested (no such card yet).
+- Strike marks (`Fight.StrikeTiles`): tiles whose `TileView._targetPreviewRenderer` (or `Front`) is
+  enabled, set by `EnableTargetTile` from `StrikeTileEffectTask` and kin in preview mode, and by
+  delayed artillery. A card's preview runs on hover only in mouse mode (`OnViewItemHoverEnter`
+  gates on `DeviceManager.IsMouse`/`IsInKeyboardAndMouseMode`), but `SelectionTask` previews as
+  its selection opens in any mode (Flamethrower: the cone is its pre-selection task, the burn its
+  post). Cells say "strike"; a selection's opening says "Strikes <ranges>; hits <names>" once,
+  waiting up to 30 frames for the marks. The card's cost and tasks wait for the pick, so a first,
+  fully cancellable selection backs out with nothing spent.
 - Fight figures: read `EncounterModel.Values[EncounterValue.Doom/Heat/MaxHeat/Power/...]`, never
   the panels: hovering End Turn or a card PREVIEWS on them (Doom panel "5/5" with the model at 3).
   Doom's maximum is the panel's "/5" (a preview leaves it alone).

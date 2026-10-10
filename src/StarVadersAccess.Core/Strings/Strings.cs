@@ -193,6 +193,10 @@ namespace StarVadersAccess.Core.Strings
             D("fight.range.diagonal", "diagonal {0} to {1}"),
             D("fight.row", "row {0}"),
             D("fight.column", "column {0}"),
+            // The tiles the game marks as about to be struck (a card's preview, a delayed strike): a marked cell; said once as a card's choice opens, {0} the tiles, {1} who stands on them.
+            D("fight.strike", "strike"),
+            D("fight.strikes", "Strikes {0}"),
+            D("fight.strikes.hits", "Strikes {0}; hits {1}"),
             // A won fight: the loot box, whose click opens the reward.
             D("win.open", "Open reward box"),
             // Run history: which run of how many, and its arrows (no caption of their own).
@@ -456,6 +460,8 @@ namespace StarVadersAccess.Core.Strings
         public static string FightDiagonalRange(string from, string to) => F("fight.range.diagonal", from, to);
         public static string FightRow(int row) => F("fight.row", row);
         public static string FightColumn(int column) => F("fight.column", column);
+        public static string FightStrike => Get("fight.strike");
+        public static string FightStrikes(string tiles, string who) => who != null ? F("fight.strikes.hits", tiles, who) : F("fight.strikes", tiles);
         public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
         public static string HistoryPrevious => Get("history.prev");
         public static string HistoryNext => Get("history.next");

@@ -445,6 +445,43 @@ namespace StarVadersAccess.Module.Fight
             return set;
         }
 
+        // ---- the game's strike marks ----
+
+        // Read once per frame at most, as the targets.
+        private static int _strikeFrame = -1;
+        private static HashSet<(int X, int Y)> _strike;
+
+        /// <summary>The tiles (0-based) the game marks as about to be struck: what a card's preview will
+        /// strike (Flamethrower's cone while its burn is chosen; <see cref="StrikeTileEffectTask"/> run
+        /// in preview mode calls <see cref="TileView.EnableTargetTile"/>), a delayed artillery strike's
+        /// tiles. The mark is the tile's target overlay being enabled; previews are reset by turning it
+        /// off again.</summary>
+        public static HashSet<(int X, int Y)> StrikeTiles()
+        {
+            int frame = UnityEngine.Time.frameCount;
+            if (frame == _strikeFrame) return _strike;
+            _strikeFrame = frame;
+            var tiles = new HashSet<(int X, int Y)>();
+            var dict = View?.GridView?.TileViewDict;
+            try
+            {
+                if (dict != null)
+                    foreach (var kv in dict)
+                    {
+                        var tile = kv.Value;
+                        if (tile == null) continue;
+                        var back = tile._targetPreviewRenderer;
+                        var front = tile._targetFrontPreviewRenderer;
+                        if ((back != null && back.enabled) || (front != null && front.enabled)) tiles.Add((kv.Key.x, kv.Key.y));
+                    }
+            }
+            catch (Exception e) { CoreLog.Warning("Fight: reading the strike marks failed: " + e.Message); }
+            _strike = tiles;
+            return tiles;
+        }
+
+        public static bool Strike(int x, int y) => StrikeTiles().Contains((x, y));
+
         // The selection's base tile when it has one, else the mech's.
         private static (int X, int Y)? ArrowOrigin()
         {
