@@ -18,7 +18,7 @@ namespace StarVadersAccess.Module.Screens
     /// The Bestiary (<c>InvaderGlossarySceneAdditive</c>, <see cref="InvaderGlossaryController"/>).
     /// Stops: the act tabs (Act 1-3, Chaos read LOCKED while disabled, Other; landing on one shows it,
     /// as its click: <c>OnPressTab</c>); the Advanced Invaders toggle and the boss level chooser
-    /// (Left and Right step it, Enter is its click); the shown act's panels in order, each its
+    /// (a combo box: Enter lists the levels); the shown act's panels in order, each its
     /// invaders and items (one entry per kind: a Swarmer panel draws three) by the game's name and
     /// description, "Unknown" for one not met yet, then its lore: the revealed title and text, or
     /// the defeats still needed (<see cref="InvaderGlossaryPanel.RequirementText"/>: the hidden side
@@ -120,8 +120,11 @@ namespace StarVadersAccess.Module.Screens
             };
         }
 
-        // The boss level ("Simple Bosses"): its own text is its value; Left and Right are its arrows,
-        // Enter its click.
+        // The boss level ("Simple Bosses") as a combo box, as the options' choosers: its own text is
+        // its value (the game draws no label); Enter opens the levels as a list landing on the current
+        // one, where Enter picks and Escape leaves it alone; Left and Right navigate. A pick is what
+        // the game's arrows do: the index, UpdateText, then the chooser's event, on which the
+        // Bestiary reads the level and redraws its panels (OnUpdateBossLevelChooser).
         private static NodeVtable Chooser(SimpleChooser chooser)
         {
             Func<string> value = () => GameText.Of(chooser.CurrentOptionText);
@@ -131,10 +134,47 @@ namespace StarVadersAccess.Module.Screens
                 Announcements = new List<NodeAnnouncement> { new NodeAnnouncement(value, live: true, kind: AnnouncementKinds.Label) },
                 SearchText = value,
                 OnFocus = () => ViewNodes.Hover(chooser),
-                OnActivate = () => chooser.OnClick(),
-                OnAdjust = (sign, large) => { if (sign > 0) chooser.OnRightPressed(); else chooser.OnLeftPressed(); },
-                StateText = value,
+                OnActivate = () => OpenChoices(chooser, value),
             };
+        }
+
+        private static void OpenChoices(SimpleChooser chooser, Func<string> value)
+        {
+            var keys = chooser.OptionKeys;
+            int count = keys != null ? keys.Count : 0;
+            if (count == 0) return;
+            int current = chooser._currentOptionIndex;
+            var choices = new List<Core.Screens.ChoiceOption>();
+            for (int i = 0; i < count; i++)
+            {
+                int index = i;
+                choices.Add(new Core.Screens.ChoiceOption(ChoiceText(chooser, i, current), () =>
+                {
+                    if (chooser._currentOptionIndex == index) return;
+                    try
+                    {
+                        chooser._currentOptionIndex = index;
+                        chooser.UpdateText();
+                        chooser.OnClick();
+                    }
+                    catch (Exception e) { CoreLog.Warning("Bestiary: choosing the boss level failed: " + e.Message); }
+                }));
+            }
+            Core.Screens.ChoiceSubmenuScreen.Open(value(), choices, current, speakTitle: false);
+        }
+
+        // An option as the game draws it: the shown text for the current one, else its key through
+        // the game's "<key>_Misc" when the chooser is localized (UpdateText's LocalizeMisc).
+        private static string ChoiceText(SimpleChooser chooser, int index, int current)
+        {
+            if (index == current)
+            {
+                string shown = GameText.Of(chooser.CurrentOptionText);
+                if (!string.IsNullOrWhiteSpace(shown)) return shown;
+            }
+            string key = chooser.OptionKeys[index];
+            if (!chooser.IsLocalized || string.IsNullOrEmpty(key)) return key;
+            return GameLoc.Get(key + "_Misc") ?? key;
         }
 
         // ---- the panels ----
