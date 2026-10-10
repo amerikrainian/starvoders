@@ -123,7 +123,15 @@ separately. Host F6 uses the same OS read.
   copies" (bought twice), "disabled" while the price is drawn red (`Text.color !=
   originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and
   red button when shown, Exit; buying, tipping, Restock and Exit: never through the driver; the
-  unlock canvas is not read yet), plus guildrun's
+  unlock canvas is not read yet), `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
+  layer 10, exclusive: class tabs (`ClassButtons`, locked = `IsDisabled()` read "LOCKED", landing
+  shows the class), the count panel (Enter = `ArrowRightButton`, the victory view), Filters
+  (`IsFilterPanelActive`: `FilterPanel`'s sections by their `Title`, `FilterButton.IsSelected`), the
+  items by `verticalLayoutGroup` child order with `GlossaryPilotGroup` titles; `IsLockedMode`/
+  `IsUndiscoveredMode` items read only the game's LOCKED/UNDISCOVERED; never bind a
+  `DeckCardView` click there (it is the shop's removal path); search is mouse-only; Escape closes
+  the filters, else `ExitScene`; the count is labelled by class and the Type filter: it counts what
+  is shown; Bestiary, Album and Trophies load scenes not covered yet), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`

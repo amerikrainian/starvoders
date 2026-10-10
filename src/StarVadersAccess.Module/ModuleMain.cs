@@ -144,6 +144,7 @@ namespace StarVadersAccess.Module
             ScreenManager.Register(new PauseScreen());
             ScreenManager.Register(new CampaignEndScreen());
             ScreenManager.Register(new HistoryScreen());
+            ScreenManager.Register(new CompendiumScreen());
             ScreenManager.Register(new SettingsScreen());
             ScreenManager.Register(new ModMenuScreen());
             ScreenManager.Register(new HelpScreen());

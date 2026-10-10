@@ -197,6 +197,12 @@ namespace StarVadersAccess.Core.Strings
             D("fight.strike", "strike"),
             D("fight.strikes", "Strikes {0}"),
             D("fight.strikes.hits", "Strikes {0}; hits {1}"),
+            // The Compendium's count panel, named for what it counts: {0} the class (or "All classes"), {1} what is counted ("Gunner cards and artifacts").
+            D("compendium.scope", "{0} {1}"),
+            D("compendium.allclasses", "All classes"),
+            D("compendium.cards", "cards"),
+            D("compendium.artifacts", "artifacts"),
+            D("compendium.both", "cards and artifacts"),
             // A won fight: the loot box, whose click opens the reward.
             D("win.open", "Open reward box"),
             // Run history: which run of how many, and its arrows (no caption of their own).
@@ -461,6 +467,9 @@ namespace StarVadersAccess.Core.Strings
         public static string FightRow(int row) => F("fight.row", row);
         public static string FightColumn(int column) => F("fight.column", column);
         public static string FightStrike => Get("fight.strike");
+        public static string CompendiumScope(string scope, string kind) => F("compendium.scope", scope, kind);
+        public static string CompendiumAllClasses => Get("compendium.allclasses");
+        public static string CompendiumKind(bool cards, bool artifacts) => Get(cards == artifacts ? "compendium.both" : cards ? "compendium.cards" : "compendium.artifacts");
         public static string FightStrikes(string tiles, string who) => who != null ? F("fight.strikes.hits", tiles, who) : F("fight.strikes", tiles);
         public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
         public static string HistoryPrevious => Get("history.prev");
