@@ -150,6 +150,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new TrophiesScreen());
             ScreenManager.Register(new NewsScreen());
             ScreenManager.Register(new CreditsScreen());
+            ScreenManager.Register(new GuideScreen());
             ScreenManager.Register(new SettingsScreen());
             ScreenManager.Register(new ModMenuScreen());
             ScreenManager.Register(new HelpScreen());

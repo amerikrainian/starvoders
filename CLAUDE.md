@@ -115,7 +115,7 @@ separately. Host F6 uses the same OS read.
   the driver), Skip = `ProceedButton`, Reroll and the run status from `UI/CampaignNodes`; card and
   artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
   (`PauseMenuSceneAdditive`, layer 30, exclusive (what it opens sits above it: Options, the Compendium
-  pages 35, the deck viewer 36, the confirm prompt 37; a Compendium page leaving stays up, empty, until
+  pages and the guide 35, the deck viewer 36, the confirm prompt 37; a Compendium page leaving stays up, empty, until
   its scene unloads, else the pause menu is announced twice around the scene change): "Paused", its buttons by object name, the run's
   difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
   Save & Exit and Skip Tutorial/Abandon Run: never through the driver), `WorkshopScreen`
@@ -152,7 +152,11 @@ separately. Host F6 uses the same OS read.
   `CreditsController`, also after the ending: the scroll as a list in `ScrollingPanel` hierarchy order;
   a title pairs with the childless text drawn nearest below it (the nesting is uneven: Fund Manager
   holds the next roles), multi-line name lists joined by commas; Toggle Speed, Back =
-  `OnBackButtonPressed`, down while `IsTransitioning`), plus guildrun's
+  `OnBackButtonPressed`, down while `IsTransitioning`), `GuideScreen` (`GuideSceneAdditive`, the pause
+  menu's Show Guide, layer 35: tabs from `LeftSide` (General/Gunner/Stinger/Keeper = pages 0-3, the
+  `*Locked` twins read LOCKED, never clicked), `GuidePages[currentPageIndex]`'s prose = the TMPs named
+  `Line1..4` (the rest label pictures: a mock HeatView, "New!", "Will whiff!"), a demo artifact;
+  `LeaveScene`, empty while `IsEndingScene` as the Compendium pages), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
