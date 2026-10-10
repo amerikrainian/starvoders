@@ -146,7 +146,11 @@ separately. Host F6 uses the same OS read.
   `NewsScreen` (`NewsSceneAdditive`, `NewsSceneController`, layer 10, exclusive: `MainPanel`'s
   `NewsArea` texts ordered by drawn height (the signature is second in the hierarchy, drawn last),
   split into lines; the two link buttons open the browser; `OnExitPressed` fades unguarded, so the
-  screen stands down for that controller once left), plus guildrun's
+  screen stands down for that controller once left), `CreditsScreen` (`CreditsScene`, a full scene,
+  `CreditsController`, also after the ending: the scroll as a list in `ScrollingPanel` hierarchy order;
+  a title pairs with the childless text drawn nearest below it (the nesting is uneven: Fund Manager
+  holds the next roles), multi-line name lists joined by commas; Toggle Speed, Back =
+  `OnBackButtonPressed`, down while `IsTransitioning`), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
