@@ -203,6 +203,10 @@ namespace StarVadersAccess.Core.Strings
             D("compendium.cards", "cards"),
             D("compendium.artifacts", "artifacts"),
             D("compendium.both", "cards and artifacts"),
+            // The Bestiary: a panel's lore still hidden, {0} the defeats so far over those needed ("39/50"). The Album's buttons turning to the previous and next pilot.
+            D("bestiary.lore.hidden", "Lore hidden, {0} defeated"),
+            D("album.prev", "Previous pilot"),
+            D("album.next", "Next pilot"),
             // A won fight: the loot box, whose click opens the reward.
             D("win.open", "Open reward box"),
             // Run history: which run of how many, and its arrows (no caption of their own).
@@ -469,6 +473,9 @@ namespace StarVadersAccess.Core.Strings
         public static string FightStrike => Get("fight.strike");
         public static string CompendiumScope(string scope, string kind) => F("compendium.scope", scope, kind);
         public static string CompendiumAllClasses => Get("compendium.allclasses");
+        public static string BestiaryLoreHidden(string progress) => F("bestiary.lore.hidden", progress);
+        public static string AlbumPrevious => Get("album.prev");
+        public static string AlbumNext => Get("album.next");
         public static string CompendiumKind(bool cards, bool artifacts) => Get(cards == artifacts ? "compendium.both" : cards ? "compendium.cards" : "compendium.artifacts");
         public static string FightStrikes(string tiles, string who) => who != null ? F("fight.strikes.hits", tiles, who) : F("fight.strikes", tiles);
         public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
