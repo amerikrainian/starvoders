@@ -13,9 +13,6 @@ alternative: extract the release zip over the game folder (the one holding `Star
 The first launch after installing generates the loader's interop assemblies and can take a few
 minutes; the mod says "StarVoders loaded" once the game is up.
 
-The zip ships a small loader fix (`BepInEx\patchers\StarVoders`). Without it the mod loader
-crashes this game a few seconds after launch, so keep it with the mod.
-
 ## Keys
 
 Press F1, anywhere. It lists the keys that do something right where you are; Enter on a row runs
