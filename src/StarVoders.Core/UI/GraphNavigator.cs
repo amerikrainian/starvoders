@@ -672,6 +672,9 @@ namespace StarVoders.Core.UI
                 else
                     return true; // at the end; consume, no wrap
             }
+            // A screen of one stop has nothing to wrap to: consume the key and stay silent, rather than
+            // re-landing on the stop (which moves the cursor to its landing and speaks it again).
+            if (ni == idx) return true;
             return LandOnStop(stops[ni]);
         }
 
