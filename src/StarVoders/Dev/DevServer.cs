@@ -99,6 +99,9 @@ namespace StarVoders.Dev
                 + (string.IsNullOrEmpty(source) ? "" : "[" + source + "] ")
                 + text);
 
+            // Before any Roslyn type is touched: bind its 7.0 dependencies to the runtime's own copies.
+            CSharpEvaluator.InstallDependencyResolver(_log);
+
             // Mirror every BepInEx log event into the /log ring so the driver reads the log in-band.
             _logListener = new DevLogListener(_logLines);
             Logger.Listeners.Add(_logListener);
@@ -123,10 +126,12 @@ namespace StarVoders.Dev
                 return;
             if (!_warmedUp)
             {
-                // The first Roslyn compile loads its deps through a one-time cold assembly resolve that
-                // fails the first eval. Absorb it here on the main thread so the first real /eval is clean.
+                // Compile once up front on the main thread, so the first real /eval does not pay for
+                // Roslyn's loading. A failure here is real (the dependency resolver should prevent the
+                // old cold-load one), so it is a warning.
                 _warmedUp = true;
-                _evaluator.Eval("1");
+                try { _evaluator.Eval("1"); }
+                catch (Exception e) { _log.LogWarning("Dev server: eval warm-up failed: " + e); }
             }
             while (_jobs.TryDequeue(out Job job))
             {

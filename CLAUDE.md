@@ -254,7 +254,10 @@ separately. Host F6 uses the same OS read.
 ## Dev driver (Debug only; `SVO_NO_DEV=1` disables, `SVO_DEV_PORT` sets the port, default 8772)
 Guildrun's server unchanged: `/input`, `/nav`, `/gui`, `/speech`, `/log`, `/eval` (Roslyn, every
 interop proxy referenced), `/wait`, `/typeinfo`, `/screenshot`, `/reload`, `/module`, `/health`.
-`SVO_NO_SPEECH=1` skips Prism. **Never press a control that starts a tutorial or a run, or changes
+`SVO_NO_SPEECH=1` skips Prism. Roslyn 4.8 wants System.Collections.Immutable and
+System.Reflection.Metadata 7.0, the game's runtime has 6.0: `CSharpEvaluator.InstallDependencyResolver`
+(Default context `Resolving`) binds them to 6.0 before the LoadFrom handler tries the plugin folder's
+7.0 copies and throws on the first eval or two. **Never press a control that starts a tutorial or a run, or changes
 the save, through the driver without asking**: verify screens by reading them.
 
 ## Keys

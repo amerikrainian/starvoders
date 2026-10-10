@@ -23,6 +23,35 @@ namespace StarVoders.Dev
         private ScriptState<object> _state;
         private ScriptOptions _options;
 
+        private static bool _resolverInstalled;
+
+        /// <summary>
+        /// Roslyn 4.8 references System.Collections.Immutable and System.Reflection.Metadata 7.0; the
+        /// game's .NET 6 runtime has 6.0 of both on its trusted platform list, which Roslyn runs on fine.
+        /// Left alone, a 7.0 request misses the platform list and reaches the runtime's LoadFrom handler
+        /// (Roslyn came in by LoadFrom), which tries the 7.0 copy beside us in the plugin folder, and the
+        /// default context refuses a second copy of a platform assembly: a FileLoadException on entering
+        /// Eval, once or twice before the binding settles on 6.0 anyway. The default context's Resolving
+        /// event runs before that handler, so answer there with the platform copy. Call before any
+        /// Roslyn type is touched (this method references none).
+        /// </summary>
+        public static void InstallDependencyResolver(BepInEx.Logging.ManualLogSource log)
+        {
+            if (_resolverInstalled) return;
+            _resolverInstalled = true;
+            System.Runtime.Loader.AssemblyLoadContext.Default.Resolving += (context, name) =>
+            {
+                if (name.Name != "System.Collections.Immutable" && name.Name != "System.Reflection.Metadata")
+                    return null;
+                try { return context.LoadFromAssemblyName(new AssemblyName(name.Name)); }
+                catch (Exception e)
+                {
+                    log.LogWarning("Dev server: binding " + name + " to the runtime's copy failed: " + e.Message);
+                    return null;
+                }
+            };
+        }
+
         /// <summary>Drop REPL state so the next Eval rebuilds it.</summary>
         public void Reset()
         {
