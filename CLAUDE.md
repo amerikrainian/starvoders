@@ -81,7 +81,7 @@ version in `Directory.Build.props` alone, notes from `CHANGELOG.md`).
   unit-tested: key graph, navigator, buffers, input manager, screens, strings), **Module** (net6.0,
   reloadable, engine-coupled: day-to-day work), **Patcher** (net6.0, preloader, permanent), **Tests**.
 - Not ported from guildrun yet: audio cues, `TextEdit`/`NumberEdit` (legacy-input text fields),
-  the update checker (wire it once the GitHub repo has releases), `ScreenAudit`, `BufferKeys`'
+  `ScreenAudit`, `BufferKeys`'
   guildrun buffer names (hero, quest... are placeholders; the ui buffer is the only one).
 
 ## Input (the port's one real redesign)
@@ -268,7 +268,11 @@ separately. Host F6 uses the same OS read.
 ## Dev driver (Debug only; `SVO_NO_DEV=1` disables, `SVO_DEV_PORT` sets the port, default 8772)
 Guildrun's server unchanged: `/input`, `/nav`, `/gui`, `/speech`, `/log`, `/eval` (Roslyn, every
 interop proxy referenced), `/wait`, `/typeinfo`, `/screenshot`, `/reload`, `/module`, `/health`.
-`SVO_NO_SPEECH=1` skips Prism. Roslyn 4.8 wants System.Collections.Immutable and
+`SVO_NO_SPEECH=1` skips Prism. Launch update check (`Module/UpdateChecker`, `Core/UpdateCheck`, from
+guildrun): GitHub `releases/latest` on a pool thread, "update X available" only when strictly newer;
+404 (no release yet), up to date, no tag, offline: silent, a log line. `SVO_UPDATE_URL` replaces the
+URL (set it in the game with `Environment.SetEnvironmentVariable` through `/eval`, then `reload`; e.g.
+guildrun-access's latest, or a local `http.server` serving `{"tag_name":"v0.0.1"}`). Roslyn 4.8 wants System.Collections.Immutable and
 System.Reflection.Metadata 7.0, the game's runtime has 6.0: `CSharpEvaluator.InstallDependencyResolver`
 (Default context `Resolving`) binds them to 6.0 before the LoadFrom handler tries the plugin folder's
 7.0 copies and throws on the first eval or two. **Never press a control that starts a tutorial or a run, or changes

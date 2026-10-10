@@ -30,6 +30,11 @@ namespace StarVoders.Module
         public static IModHost Host { get; private set; }
         private Harmony _harmony;
 
+        // The launch update check: asked once the module is up, its line spoken from Tick when the
+        // request lands, after the language is in place (so it is worded, and after "loaded").
+        private readonly UpdateChecker _updateCheck = new UpdateChecker();
+        private bool _updateAnnounced;
+
         public void Load(IModHost host)
         {
             _host = host;
@@ -68,6 +73,7 @@ namespace StarVoders.Module
             catch (Exception e) { host.LogError("Harmony patching failed: " + e); }
 
             FocusMode.Set(host.Settings.FocusModeOnLaunch);
+            _updateCheck.Start(host.ModVersion);
             host.LogInfo("Module loaded: " + ScreenManager.Registered.Count + " screens, "
                 + InputManager.Actions.Count + " input actions, focus " + (FocusMode.Active ? "on" : "off"));
         }
@@ -168,6 +174,11 @@ namespace StarVoders.Module
             Safe(Later.Tick, "later");
             Safe(Readers.PopupReader.Tick, "popups");
             Safe(Buffers.Tick, "buffers");
+            if (!_updateAnnounced && LanguageSync.Resolved && _updateCheck.NewerVersion != null)
+            {
+                _updateAnnounced = true;
+                Speech.Say(Strings.UpdateAvailable(_updateCheck.NewerVersion));
+            }
         }
 
         // A reader that throws must not take the whole tick (and every other reader) down with it.
