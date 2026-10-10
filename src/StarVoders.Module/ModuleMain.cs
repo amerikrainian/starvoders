@@ -162,6 +162,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new ProfilesScreen());
             ScreenManager.Register(new MoreInfoScreen());
             ScreenManager.Register(new ModifiersScreen());
+            ScreenManager.Register(new QuickGuideScreen());
             ScreenManager.Register(new SettingsScreen());
             ScreenManager.Register(new ModMenuScreen());
             ScreenManager.Register(new HelpScreen());

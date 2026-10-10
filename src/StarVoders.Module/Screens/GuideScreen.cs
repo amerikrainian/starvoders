@@ -76,17 +76,7 @@ namespace StarVoders.Module.Screens
             int index = c.currentPageIndex;
             if (pages != null && index >= 0 && index < pages.Count && pages[index] != null)
             {
-                int i = 0;
-                foreach (var entry in PageEntries(pages[index].transform))
-                {
-                    if (entry.Artifact != null)
-                    {
-                        b.AddItem(ControlId.Structural("guide:artifact" + i++), CardNodes.Artifact(entry.Artifact.ArtifactModel, entry.Artifact));
-                        continue;
-                    }
-                    string text = entry.Text;
-                    b.AddItem(ControlId.Structural("guide:line" + i++), GameNodes.Text(() => text));
-                }
+                GuidePages.AddPage(b, pages[index].transform, "guide");
             }
             var back = c.MainPanel != null ? c.MainPanel.Find("BackButton (5)")?.GetComponent<AViewItem>() : null;
             if (ViewNodes.IsShown(back))
@@ -110,41 +100,6 @@ namespace StarVoders.Module.Screens
                 OnActivate = pick,
                 OnFocus = () => { ViewNodes.Hover(tab); pick(); },
             };
-        }
-
-        private struct Entry
-        {
-            public string Text;
-            public DeckArtifactView Artifact;
-        }
-
-        // The page's shown texts in hierarchy order, a line per text line, and its demo artifacts.
-        private static List<Entry> PageEntries(Transform page)
-        {
-            var entries = new List<Entry>();
-            Walk(page, entries);
-            return entries;
-        }
-
-        private static void Walk(Transform t, List<Entry> entries)
-        {
-            if (!t.gameObject.activeInHierarchy) return;
-            var artifact = t.GetComponent<DeckArtifactView>();
-            if (artifact != null)
-            {
-                if (artifact.ArtifactModel != null) entries.Add(new Entry { Artifact = artifact });
-                return;
-            }
-            // The prose is the texts named Line1..Line4; the rest label the pictures (a mock Heat panel's
-            // "Heat", "+1", "New!", "Will whiff!" on the example cards), meaningless read alone.
-            var tmp = t.name.StartsWith("Line", StringComparison.Ordinal) ? t.GetComponent<TMP_Text>() : null;
-            if (tmp != null && !string.IsNullOrEmpty(tmp.text))
-                foreach (var raw in tmp.text.Split('\n'))
-                {
-                    string line = GameText.Clean(raw)?.Trim();
-                    if (!string.IsNullOrEmpty(line)) entries.Add(new Entry { Text = line });
-                }
-            for (int i = 0; i < t.childCount; i++) Walk(t.GetChild(i), entries);
         }
     }
 }
