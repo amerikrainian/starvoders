@@ -24,7 +24,7 @@ namespace StarVoders.Module.Screens
     public sealed class ConfirmPromptScreen : Screen
     {
         public override string Key => "confirm";
-        public override int Layer => 20;
+        public override int Layer => 37;
         public override bool Exclusive => true;
         public override bool AllowsTypeahead => false;
         public override object InitialFocusStop => "buttons";

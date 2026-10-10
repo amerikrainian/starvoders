@@ -114,7 +114,9 @@ separately. Host F6 uses the same OS read.
   `ArtifactRewardBoards` left to right by x, Enter takes one (`AddRewardToDeck`: never through
   the driver), Skip = `ProceedButton`, Reroll and the run status from `UI/CampaignNodes`; card and
   artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
-  (`PauseMenuSceneAdditive`, layer 30, exclusive: "Paused", its buttons by object name, the run's
+  (`PauseMenuSceneAdditive`, layer 30, exclusive (what it opens sits above it: Options, the Compendium
+  pages 35, the deck viewer 36, the confirm prompt 37; a Compendium page leaving stays up, empty, until
+  its scene unloads, else the pause menu is announced twice around the scene change): "Paused", its buttons by object name, the run's
   difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
   Save & Exit and Skip Tutorial/Abandon Run: never through the driver), `WorkshopScreen`
   (`WorkshopScene`, `ShopController`, named by `ShopTitle_Misc`: one stop of the wares, cards
@@ -124,14 +126,14 @@ separately. Host F6 uses the same OS read.
   originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and
   red button when shown, Exit; buying, tipping, Restock and Exit: never through the driver; the
   unlock canvas is not read yet), `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
-  layer 10, exclusive: class tabs (`ClassButtons`, locked = `IsDisabled()` read "LOCKED", landing
+  layer 35, exclusive: class tabs (`ClassButtons`, locked = `IsDisabled()` read "LOCKED", landing
   shows the class), the count panel (Enter = `ArrowRightButton`, the victory view), Filters
   (`IsFilterPanelActive`: `FilterPanel`'s sections by their `Title`, `FilterButton.IsSelected`), the
   items by `verticalLayoutGroup` child order with `GlossaryPilotGroup` titles; `IsLockedMode`/
   `IsUndiscoveredMode` items read only the game's LOCKED/UNDISCOVERED; never bind a
   `DeckCardView` click there (it is the shop's removal path); search is mouse-only; Escape closes
   the filters, else `ExitScene`; the count is labelled by class and the Type filter: it counts what
-  is shown), the other Compendium pages (each its own additive scene, layer 10, exclusive; their
+  is shown), the other Compendium pages (each its own additive scene, layer 35, exclusive; their
   bottom row and Back in `UI/GlossaryNodes`; Escape = `ExitScene`): `BestiaryScreen`
   (`InvaderGlossaryController`: act tabs (`_currentTab` indexes `InvaderGroups`, the shown group's
   Canvas enabled), Advanced Invaders `ToggleButton`, boss `SimpleChooser`; each `InvaderGlossaryPanel`'s

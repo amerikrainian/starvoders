@@ -10,6 +10,11 @@ namespace StarVoders.Module.UI
     /// What the four Compendium pages share (the Codex, Bestiary, Album and Trophies, each its own
     /// additive scene over the main menu): the row of buttons between them along the bottom, each the
     /// game's click (it loads that page's scene in place of this one), and Back.
+    /// <para>Leaving (Back, Escape, another page): each page's screen stays up, empty, until its scene
+    /// unloads. The controller's IsEndingScene is set at the press, a frame before the scene change
+    /// (SceneLoader.IsTransitioning, during which no game screen is up) begins; standing down at the
+    /// press would land on the screen beneath (the pause menu, the main menu), then land on it again
+    /// once the change is over.</para>
     /// </summary>
     internal static class GlossaryNodes
     {

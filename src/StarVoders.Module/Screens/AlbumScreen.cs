@@ -25,17 +25,15 @@ namespace StarVoders.Module.Screens
     public sealed class AlbumScreen : Screen
     {
         public override string Key => "album";
-        public override int Layer => 10;
+        public override int Layer => 35;
         public override bool Exclusive => true;
         public override string ScreenName => GameLoc.Get("Album_Misc");
 
         private static PilotGlossaryController Controller => GameScenes.Controller<PilotGlossaryController>();
 
-        public override bool IsActive()
-        {
-            var c = Controller;
-            return c != null && !c.IsEndingScene;
-        }
+        // Up until the scene is gone, empty once leaving (see GlossaryNodes): dropping it at
+        // the press would land on the screen beneath, then land there again after the scene change.
+        public override bool IsActive() => Controller != null;
 
         public override IEnumerable<ElementAction> GetActions()
         {
@@ -51,7 +49,7 @@ namespace StarVoders.Module.Screens
         public override void Build(GraphBuilder b)
         {
             var c = Controller;
-            if (c == null) return;
+            if (c == null || c.IsEndingScene) return;
             b.BeginStop("album:page");
             b.PushContext(null, positions: false);
             b.AddItem(ControlId.Structural("album:pilot"), Pilot(c));

@@ -24,17 +24,15 @@ namespace StarVoders.Module.Screens
     public sealed class TrophiesScreen : Screen
     {
         public override string Key => "trophies";
-        public override int Layer => 10;
+        public override int Layer => 35;
         public override bool Exclusive => true;
         public override string ScreenName => GameLoc.Get("Trophies_Misc");
 
         private static AchievementGlossaryController Controller => GameScenes.Controller<AchievementGlossaryController>();
 
-        public override bool IsActive()
-        {
-            var c = Controller;
-            return c != null && !c.IsEndingScene;
-        }
+        // Up until the scene is gone, empty once leaving (see GlossaryNodes): dropping it at
+        // the press would land on the screen beneath, then land there again after the scene change.
+        public override bool IsActive() => Controller != null;
 
         public override IEnumerable<ElementAction> GetActions()
         {
@@ -50,7 +48,7 @@ namespace StarVoders.Module.Screens
         public override void Build(GraphBuilder b)
         {
             var c = Controller;
-            if (c == null) return;
+            if (c == null || c.IsEndingScene) return;
 
             b.BeginStop("trophies:stats");
             b.PushContext(null, positions: false);

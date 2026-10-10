@@ -24,7 +24,7 @@ namespace StarVoders.Module.Screens
     public sealed class DeckViewScreen : Screen
     {
         public override string Key => "deckview";
-        public override int Layer => 25;
+        public override int Layer => 36;
         public override bool Exclusive => true;
 
         private static DeckViewSceneController Controller => GameScenes.Controller<DeckViewSceneController>();

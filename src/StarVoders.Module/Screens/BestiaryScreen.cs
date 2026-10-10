@@ -29,7 +29,7 @@ namespace StarVoders.Module.Screens
     public sealed class BestiaryScreen : Screen
     {
         public override string Key => "bestiary";
-        public override int Layer => 10;
+        public override int Layer => 35;
         public override bool Exclusive => true;
         public override object InitialFocusStop => TabsStop;
         public override string ScreenName => GameLoc.Get("Bestiary_Misc");
@@ -38,11 +38,9 @@ namespace StarVoders.Module.Screens
 
         private static InvaderGlossaryController Controller => GameScenes.Controller<InvaderGlossaryController>();
 
-        public override bool IsActive()
-        {
-            var c = Controller;
-            return c != null && !c.IsEndingScene;
-        }
+        // Up until the scene is gone, empty once leaving (see GlossaryNodes): dropping it at
+        // the press would land on the screen beneath, then land there again after the scene change.
+        public override bool IsActive() => Controller != null;
 
         public override IEnumerable<ElementAction> GetActions()
         {
@@ -58,7 +56,7 @@ namespace StarVoders.Module.Screens
         public override void Build(GraphBuilder b)
         {
             var c = Controller;
-            if (c == null) return;
+            if (c == null || c.IsEndingScene) return;
 
             b.BeginStop(TabsStop);
             b.PushContext(null);

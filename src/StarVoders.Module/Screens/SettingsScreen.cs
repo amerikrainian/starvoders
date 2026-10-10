@@ -31,7 +31,7 @@ namespace StarVoders.Module.Screens
                 return tmp != null && !string.IsNullOrWhiteSpace(tmp.text) ? tmp.text : Strings.ScreenSettings;
             }
         }
-        public override int Layer => 10;
+        public override int Layer => 35;
         public override bool Exclusive => true;
         public override object InitialFocusStop => "tabs";
 
