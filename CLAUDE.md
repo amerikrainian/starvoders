@@ -123,7 +123,9 @@ separately. Host F6 uses the same OS read.
   `_currentDisplayBoardPanel`'s texts, the keyword lines under `_moreInfoLineParent`, the linked cards
   and invaders `MoreInfoObjs` (Enter = their click, nested), Back while `PreviousObjects` is non-empty,
   Close = `ExitScene(0)`; test: a pilot's `PilotSelectArtifactView.OnClick()`),
-  `TutorialSelectionScreen`
+  `ModifiersScreen` (`CheckModifiersSceneAdditive`, the pause menu's MODIFIERS, layer 35: the pilot by
+  its name sprite (`T_RoxyName`), the lines under `ModVerticalLayoutGroup`, `ArtifactModHolder`'s
+  artifacts, Back = `OnClickBack`), `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
   `EncounterWinScreen` (`EncounterWinSceneAdditive`: "Victory", the stars earned, the loot box
@@ -134,7 +136,7 @@ separately. Host F6 uses the same OS read.
   the driver), Skip = `ProceedButton`, Reroll and the run status from `UI/CampaignNodes`; card and
   artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
   (`PauseMenuSceneAdditive`, layer 30, exclusive (what it opens sits above it: Options, the Compendium
-  pages and the guide 35, the deck viewer 36, the confirm prompt 37; a Compendium page leaving stays up, empty, until
+  pages, the guide and Modifiers 35, the deck viewer 36, the confirm prompt 37; a Compendium page leaving stays up, empty, until
   its scene unloads, else the pause menu is announced twice around the scene change): "Paused", its buttons by object name, the run's
   difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
   Save & Exit and Skip Tutorial/Abandon Run: never through the driver), `WorkshopScreen`
