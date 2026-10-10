@@ -142,7 +142,11 @@ separately. Host F6 uses the same OS read.
   locked page reads only `LockedObject`, the page under it is placeholder Lorem ipsum; Memories
   play cutscenes: never through the driver), `TrophiesScreen` (`AchievementGlossaryController`:
   completion, Global Stats rows as label + child figures, fave card and artifact, `_achBlocks` by
-  their shown side; a counter's `LeftCounter` is a hidden template, read the active one), plus guildrun's
+  their shown side; a counter's `LeftCounter` is a hidden template, read the active one),
+  `NewsScreen` (`NewsSceneAdditive`, `NewsSceneController`, layer 10, exclusive: `MainPanel`'s
+  `NewsArea` texts ordered by drawn height (the signature is second in the hierarchy, drawn last),
+  split into lines; the two link buttons open the browser; `OnExitPressed` fades unguarded, so the
+  screen stands down for that controller once left), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
