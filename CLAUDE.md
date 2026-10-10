@@ -125,7 +125,12 @@ separately. Host F6 uses the same OS read.
   Close = `ExitScene(0)`; test: a pilot's `PilotSelectArtifactView.OnClick()`),
   `ModifiersScreen` (`CheckModifiersSceneAdditive`, the pause menu's MODIFIERS, layer 35: the pilot by
   its name sprite (`T_RoxyName`), the lines under `ModVerticalLayoutGroup`, `ArtifactModHolder`'s
-  artifacts, Back = `OnClickBack`), `TutorialSelectionScreen`
+  artifacts, Back = `OnClickBack`), `QuickGuideScreen` (`QuickGuideSceneAdditive`, the tutorial
+  choice's Quick Guide, a new profile's: `Pages[_currentPage]`, "1/3" with Left/Right =
+  `OnClickNext/PreviousPage`, prose by `UI/GuidePages` (shared with the guide), Next/Previous/Back/START
+  by name; START begins a run, never through the driver; leaving unloads it before the tutorial choice
+  reloads, so it is held, empty, until `TutorialSelectionController` is back, 2 s at most),
+  `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
   `EncounterWinScreen` (`EncounterWinSceneAdditive`: "Victory", the stars earned, the loot box
