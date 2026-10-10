@@ -1,19 +1,19 @@
-# StarVaders Access
+# StarVoders
 
 A [StarVaders](https://store.steampowered.com/app/2097570/) mod that makes the game playable by
 blind users.
 
 ## Install
 
-Download `StarVadersAccessInstaller.exe` from the
-[latest release](https://github.com/amerikrainian/starvaders-access/releases) and run it. It finds
+Download `StarVodersInstaller.exe` from the
+[latest release](https://github.com/amerikrainian/starvoders/releases) and run it. It finds
 your Steam install, downloads the mod, and can later update, repair, or uninstall it. Manual
 alternative: extract the release zip over the game folder (the one holding `StarVaders.exe`).
 
 The first launch after installing generates the loader's interop assemblies and can take a few
-minutes; the mod says "StarVaders Access loaded" once the game is up.
+minutes; the mod says "StarVoders loaded" once the game is up.
 
-The zip ships a small loader fix (`BepInEx\patchers\StarVadersAccess`). Without it the mod loader
+The zip ships a small loader fix (`BepInEx\patchers\StarVoders`). Without it the mod loader
 crashes this game a few seconds after launch, so keep it with the mod.
 
 ## Keys
@@ -29,8 +29,8 @@ Ctrl+Right switch review buffers, Ctrl+Up and Ctrl+Down step through one.
 ## Building from source
 
 ```
-dotnet build StarVadersAccess.slnx -c Debug                                # builds and deploys into the game
-dotnet test src/StarVadersAccess.Tests/StarVadersAccess.Tests.csproj       # unit tests
+dotnet build StarVoders.slnx -c Debug                                # builds and deploys into the game
+dotnet test src/StarVoders.Tests/StarVoders.Tests.csproj       # unit tests
 ```
 
 Run `setup-bepinex.ps1` once first, then launch the game once through Steam so the interop

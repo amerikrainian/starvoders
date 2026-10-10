@@ -1,8 +1,8 @@
-# StarVaders Access: Japanese (ja). The words the mod itself speaks, for the game's
+# StarVoders: Japanese (ja). The words the mod itself speaks, for the game's
 # Japanese setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0} を読み込みました
-app.module_failed=StarVaders Access の機能を読み込めませんでした
+app.loaded=StarVoders {0} を読み込みました
+app.module_failed=StarVoders の機能を読み込めませんでした
 app.update_available=アップデート {0} があります
 app.focus_on=ナビゲーション オン
 app.focus_off=ナビゲーション オフ
@@ -168,7 +168,7 @@ bind.fight.item.next=カテゴリの次
 bind.fight.item.prev=カテゴリの前
 bind.fight.jumpback=元の位置へ戻る
 bind.fight.endturn=ターン終了
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=設定
 mod.key_help=すべてのキー
 mod.close=閉じる

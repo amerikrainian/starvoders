@@ -1,10 +1,10 @@
-# StarVaders Access: the words the mod itself speaks (the game's own text is the game's).
+# StarVoders: the words the mod itself speaks (the game's own text is the game's).
 # This file is the template, generated from the mod's strings table: copy it to
 # <language>.txt, named for the code of the game's selected locale (de, fr, es, ja, ko,
 # ru, tr, pt-BR, ...), and translate the values. key=value, one per line; keep every {0} slot (their
 # order is free); a missing key is spoken in English. The mod follows the game's language.
-app.loaded=StarVaders Access {0} loaded
-app.module_failed=StarVaders Access features failed to load
+app.loaded=StarVoders {0} loaded
+app.module_failed=StarVoders features failed to load
 app.update_available=update {0} available
 app.focus_on=navigation on
 app.focus_off=navigation off
@@ -170,7 +170,7 @@ bind.fight.item.next=Next in category
 bind.fight.item.prev=Previous in category
 bind.fight.jumpback=Jump back
 bind.fight.endturn=End turn
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=Settings
 mod.key_help=All keys
 mod.close=Close

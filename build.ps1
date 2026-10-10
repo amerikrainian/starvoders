@@ -1,5 +1,5 @@
-# build.ps1 - Build StarVaders Access and deploy it into the game. Deploy itself is the host project's
-# Debug post-build target (plugin + Core + Module into BepInEx\plugins\StarVadersAccess, prism.dll next
+# build.ps1 - Build StarVoders and deploy it into the game. Deploy itself is the host project's
+# Debug post-build target (plugin + Core + Module into BepInEx\plugins\StarVoders, prism.dll next
 # to StarVaders.exe); this script checks BepInEx is set up and runs the build. Close the game first for a
 # HOST change (its DLL is locked while the game runs); Core/Module changes deploy fine with the game
 # running and take effect on POST /reload or F6.
@@ -36,9 +36,9 @@ if (-not (Test-Path "$Game\BepInEx\interop")) {
 }
 
 if ($ModuleOnly) {
-    dotnet build "$PSScriptRoot\src\StarVadersAccess.Module\StarVadersAccess.Module.csproj" -c Debug
+    dotnet build "$PSScriptRoot\src\StarVoders.Module\StarVoders.Module.csproj" -c Debug
 } else {
-    dotnet build "$PSScriptRoot\StarVadersAccess.slnx" -c Debug
+    dotnet build "$PSScriptRoot\StarVoders.slnx" -c Debug
 }
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Build FAILED." -ForegroundColor Red

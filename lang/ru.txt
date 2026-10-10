@@ -1,8 +1,8 @@
-# StarVaders Access: Russian (ru). The words the mod itself speaks, for the game's
+# StarVoders: Russian (ru). The words the mod itself speaks, for the game's
 # Russian setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0} загружен
-app.module_failed=StarVaders Access: не удалось загрузить функции
+app.loaded=StarVoders {0} загружен
+app.module_failed=StarVoders: не удалось загрузить функции
 app.update_available=доступно обновление {0}
 app.focus_on=навигация включена
 app.focus_off=навигация выключена
@@ -168,7 +168,7 @@ bind.fight.item.next=Следующий в категории
 bind.fight.item.prev=Предыдущий в категории
 bind.fight.jumpback=Вернуться
 bind.fight.endturn=Закончить ход
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=Настройки
 mod.key_help=Все клавиши
 mod.close=Закрыть

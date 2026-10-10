@@ -2,7 +2,7 @@
 // https://github.com/rashadnaqeeb/NonVisualCalculus
 
 //! Installer UI strings. The language follows the Windows display language;
-//! STARVADERS_ACCESS_INSTALLER_LANG (a tag like "de" or "pt-br") overrides it. The mod
+//! STARVODERS_INSTALLER_LANG (a tag like "de" or "pt-br") overrides it. The mod
 //! speaks English; a translation adds a table here and a
 //! match arm in `pick`, keyed off the tag.
 //!
@@ -77,7 +77,7 @@ pub struct Strings {
 }
 
 pub fn get() -> &'static Strings {
-    if let Ok(tag) = std::env::var("STARVADERS_ACCESS_INSTALLER_LANG") {
+    if let Ok(tag) = std::env::var("STARVODERS_INSTALLER_LANG") {
         return pick(&tag);
     }
     let locale = sys_locale::get_locale().unwrap_or_default();
@@ -103,8 +103,8 @@ pub fn fill(template: &str, args: &[(&str, &str)]) -> String {
 }
 
 pub static EN: Strings = Strings {
-    app_title: "StarVaders Access Installer",
-    cli_header: "=== StarVaders Access Installer ===",
+    app_title: "StarVoders Installer",
+    cli_header: "=== StarVoders Installer ===",
     game_dir_label: "Game directory:",
     browse: "Browse...",
     btn_install: "Install",
@@ -124,7 +124,7 @@ pub static EN: Strings = Strings {
     log_connected: "Connected to GitHub.",
     log_github_error: "Could not check GitHub releases: {error}",
     log_latest_asset: "Latest release file: {name}",
-    log_no_asset: "No mod release zip (StarVadersAccess-vX.Y.Z.zip) was found on the latest release.",
+    log_no_asset: "No mod release zip (StarVoders-vX.Y.Z.zip) was found on the latest release.",
     log_detected_dir: "Detected game directory: {path}",
     log_could_not_detect: "Could not auto-detect the game directory.",
     log_damaged_state: "Damaged installer state: {reason}",
@@ -141,7 +141,7 @@ pub static EN: Strings = Strings {
     err_close_game_install: "Close StarVaders before installing.",
     err_close_game_uninstall: "Close StarVaders before uninstalling.",
     err_uninstall_managed_only: "Uninstall is only available for installs managed by this installer.",
-    confirm_uninstall: "Remove StarVaders Access from this game directory?",
+    confirm_uninstall: "Remove StarVoders from this game directory?",
     confirm_uninstall_title: "Confirm Uninstall",
     msg_uninstall_complete: "Uninstall complete.",
     msg_uninstall_failed: "Uninstall failed:\n{error}",
@@ -162,7 +162,7 @@ pub static EN: Strings = Strings {
     cli_invalid_option: "Invalid option.",
     cli_use_path: "Use this path? (Y/n): ",
     cli_type_path: "Type the game directory path: ",
-    cli_confirm_uninstall: "Remove StarVaders Access? (y/N): ",
+    cli_confirm_uninstall: "Remove StarVoders? (y/N): ",
     cli_error: "Error: {error}",
     cli_yes_key: "y",
     cli_no_key: "n",

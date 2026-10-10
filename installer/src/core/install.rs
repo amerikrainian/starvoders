@@ -288,7 +288,7 @@ pub fn temp_session_dir() -> PathBuf {
         .map(|d| d.as_nanos())
         .unwrap_or(0);
     std::env::temp_dir()
-        .join("StarVadersAccessInstaller")
+        .join("StarVodersInstaller")
         .join(format!("{}-{nanos}", std::process::id()))
 }
 
@@ -319,7 +319,7 @@ mod tests {
         assert!(safe_zip_entry_name("../../evil.dll").is_none());
         assert!(safe_zip_entry_name("C:/evil.dll").is_none());
         assert!(safe_zip_entry_name("/evil.dll").is_none());
-        assert!(safe_zip_entry_name("BepInEx/plugins/StarVadersAccess/StarVadersAccess.dll").is_some());
+        assert!(safe_zip_entry_name("BepInEx/plugins/StarVoders/StarVoders.dll").is_some());
     }
 
     #[test]
@@ -358,8 +358,8 @@ mod tests {
             &zip_path,
             &[
                 (paths::PLUGIN_REL, "plugin"),
-                ("BepInEx/plugins/StarVadersAccess/lang/en.txt", "strings"),
-                ("BepInEx/plugins/StarVadersAccess/prism.dll", "speech"),
+                ("BepInEx/plugins/StarVoders/lang/en.txt", "strings"),
+                ("BepInEx/plugins/StarVoders/prism.dll", "speech"),
                 ("winhttp.dll", "loader"),
             ],
         );
@@ -375,7 +375,7 @@ mod tests {
 
         assert!(manifest.backups.is_empty());
         assert!(dir.path().join(paths::PLUGIN_REL).exists());
-        assert!(dir.path().join("BepInEx/plugins/StarVadersAccess/prism.dll").exists());
+        assert!(dir.path().join("BepInEx/plugins/StarVoders/prism.dll").exists());
         assert!(matches!(
             classify_install(dir.path()),
             InstallState::Managed(_)
@@ -521,7 +521,7 @@ mod tests {
             &zip1,
             &[
                 (paths::PLUGIN_REL, "plugin"),
-                ("BepInEx/plugins/StarVadersAccess/StarVadersAccess.Module.dll", "module"),
+                ("BepInEx/plugins/StarVoders/StarVoders.Module.dll", "module"),
             ],
         );
         let m1 = install_from_zip(
@@ -544,7 +544,7 @@ mod tests {
         )
         .unwrap();
 
-        assert!(!dir.path().join("BepInEx/plugins/StarVadersAccess/StarVadersAccess.Module.dll").exists());
+        assert!(!dir.path().join("BepInEx/plugins/StarVoders/StarVoders.Module.dll").exists());
         assert_eq!(
             fs::read_to_string(dir.path().join(paths::PLUGIN_REL)).unwrap(),
             "plugin v2"
@@ -592,7 +592,7 @@ mod tests {
 
     fn test_asset() -> Asset {
         Asset {
-            name: "StarVadersAccess-v1.2.3.zip".to_string(),
+            name: "StarVoders-v1.2.3.zip".to_string(),
             browser_download_url: "https://example.invalid/release.zip".to_string(),
             digest: None,
         }

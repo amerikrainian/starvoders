@@ -1,4 +1,4 @@
-# StarVadersAccess — Accessibility Mod for StarVaders
+# StarVoders — Accessibility Mod for StarVaders
 
 Screen-reader accessibility mod for blind players. Port of the guildrun_access architecture
 (`C:\Users\CRNTJR3\cs\guildrun_access`): host/module hot reload, the engine-free key-graph Core, Prism
@@ -41,8 +41,8 @@ one-target shim it rescans past the ret and takes the SECOND target. Here GetMet
 directly follows the shim, so the pick is GetMethod's first call, a pool allocator (0x389570,
 `Alloc(pool, 0x50)`); the `(gmethod, bool)` detour passes 0x50 as `true` = 1 and the heap corrupts
 (crashes in `memset`, or `Class::Init` filling a vtable with garbage during URP's
-`VolumeManager.ReloadBaseTypes`). **`src/StarVadersAccess.Patcher`** (a preloader patcher in
-`BepInEx\patchers\StarVadersAccess`; patchers' `Initialize` runs before Il2CppInterop installs its
+`VolumeManager.ReloadBaseTypes`). **`src/StarVoders.Patcher`** (a preloader patcher in
+`BepInEx\patchers\StarVoders`; patchers' `Initialize` runs before Il2CppInterop installs its
 hooks on the first type registration) Harmony-postfixes `FindTargetMethod` and corrects exactly that
 layout; the log line "Il2CppInterop picked 0x..., a call inside 0x...; hooking 0x..." confirms it.
 It must ship in every release zip (`build_release.ps1` does). Worth an upstream PR to Il2CppInterop.
@@ -55,7 +55,7 @@ It must ship in every release zip (`build_release.ps1` does). Worth an upstream 
 
 ## Tools (`tools/python/`, standard library; `uv run python tools/python/<tool>.py`)
 Ported from guildrun, retargeted in `gamelib.py` (app id, folder, `GAME_ASSEMBLY_PREFIXES =
-ScriptAssembly, Assembly-CSharp, PixelCrushers, PowerTools`, `SVA_DEV_URL`/`SVA_DEV_PORT`):
+ScriptAssembly, Assembly-CSharp, PixelCrushers, PowerTools`, `SVO_DEV_URL`/`SVO_DEV_PORT`):
 `show.py Type`, `holders.py Type`, `census.py --report`, `disasm.py Type.Method --calls` (with
 `uv run --with capstone`), `dump_game.py`, `dump_diff.py`, `check_members.py`, and `dev.py`
 (`launch`, `kill`, `reload`, `nav`, `input ui.down`, `speech --tail N`, `log --grep X`, `gui`,
@@ -64,19 +64,19 @@ StarVaders.exe <dir>` before launching, then `cdb -z <dmp> -c ".ecxr; kn 40; q"`
 `script.json` (managed) or the hook addresses Il2CppInterop logs at Debug level (runtime).
 
 ## Build & deploy
-`dotnet build StarVadersAccess.slnx` (or `.\build.ps1`) builds all six projects and deploys host +
-Contracts + Roslyn deps + Core + Module to `<game>\BepInEx\plugins\StarVadersAccess\`, the patcher to
-`<game>\BepInEx\patchers\StarVadersAccess\`, `prism.dll` next to `StarVaders.exe`. A host, Contracts
+`dotnet build StarVoders.slnx` (or `.\build.ps1`) builds all six projects and deploys host +
+Contracts + Roslyn deps + Core + Module to `<game>\BepInEx\plugins\StarVoders\`, the patcher to
+`<game>\BepInEx\patchers\StarVoders\`, `prism.dll` next to `StarVaders.exe`. A host, Contracts
 or patcher change needs the game closed; Core/Module: `dotnet build
-src/StarVadersAccess.Module/StarVadersAccess.Module.csproj` then `dev.py reload` (or F6 in game).
+src/StarVoders.Module/StarVoders.Module.csproj` then `dev.py reload` (or F6 in game).
 First-time setup: `.\setup-bepinex.ps1`, launch once through Steam (interop generates), build.
 Launch: `dev.py launch` (Steam `-applaunch 2097570`, waits for the dev server). Tests:
-`dotnet test src/StarVadersAccess.Tests/StarVadersAccess.Tests.csproj` (Core + Contracts, no game).
+`dotnet test src/StarVoders.Tests/StarVoders.Tests.csproj` (Core + Contracts, no game).
 Release: `build_release.ps1`, `build-installer.ps1`, `create-release.ps1 vX.Y.Z` (guildrun's flow;
 version in `Directory.Build.props` alone, notes from `CHANGELOG.md`).
 
 ## Architecture (guildrun's, see its CLAUDE.md for the long form)
-- **Contracts** (netstandard2.0, permanent), **host** `StarVadersAccess` (net6.0, permanent: Plugin,
+- **Contracts** (netstandard2.0, permanent), **host** `StarVoders` (net6.0, permanent: Plugin,
   Prism, `HostPump`, `ModuleLoader`, dev server), **Core** (netstandard2.0, reloadable, engine-free,
   unit-tested: key graph, navigator, buffers, input manager, screens, strings), **Module** (net6.0,
   reloadable, engine-coupled: day-to-day work), **Patcher** (net6.0, preloader, permanent), **Tests**.
@@ -251,10 +251,10 @@ separately. Host F6 uses the same OS read.
   (read as percent), animation speeds 0-4 whole. Key binding rows are read only (rebinding listens
   on the keyboard focus mode disables, and the game's bindings matter only with focus mode off).
 
-## Dev driver (Debug only; `SVA_NO_DEV=1` disables, `SVA_DEV_PORT` sets the port, default 8772)
+## Dev driver (Debug only; `SVO_NO_DEV=1` disables, `SVO_DEV_PORT` sets the port, default 8772)
 Guildrun's server unchanged: `/input`, `/nav`, `/gui`, `/speech`, `/log`, `/eval` (Roslyn, every
 interop proxy referenced), `/wait`, `/typeinfo`, `/screenshot`, `/reload`, `/module`, `/health`.
-`SVA_NO_SPEECH=1` skips Prism. **Never press a control that starts a tutorial or a run, or changes
+`SVO_NO_SPEECH=1` skips Prism. **Never press a control that starts a tutorial or a run, or changes
 the save, through the driver without asking**: verify screens by reading them.
 
 ## Keys

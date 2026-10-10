@@ -2,7 +2,7 @@
 
     uv run python tools/python/check_members.py [--verbose]
 
-Scans src/StarVadersAccess.Module for the game types it names (every identifier that is a type in a
+Scans src/StarVoders.Module for the game types it names (every identifier that is a type in a
 game assembly per types.tsv) and every serialized-field access (`_camelCase` identifiers), then
 checks them against the current dump.cs. A type that vanished, or a field name that exists on no
 game type any more, is printed with the files that use it. It is a first pass to point at what an
@@ -23,7 +23,7 @@ import gamelib  # noqa: E402
 IDENT_RE = re.compile(r"\b([A-Z][A-Za-z0-9]+)\b")
 FIELD_RE = re.compile(r"\._([a-z][A-Za-z0-9]*)\b")
 # Our own identifiers that look like game types and would only add noise.
-OWN_PREFIXES = ("StarVadersAccess",)
+OWN_PREFIXES = ("StarVoders",)
 
 
 def main() -> int:

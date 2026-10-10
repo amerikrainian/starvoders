@@ -1,8 +1,0 @@
-<Solution>
-  <Project Path="src/StarVadersAccess.Contracts/StarVadersAccess.Contracts.csproj" />
-  <Project Path="src/StarVadersAccess.Core/StarVadersAccess.Core.csproj" />
-  <Project Path="src/StarVadersAccess.Module/StarVadersAccess.Module.csproj" />
-  <Project Path="src/StarVadersAccess/StarVadersAccess.csproj" />
-  <Project Path="src/StarVadersAccess.Patcher/StarVadersAccess.Patcher.csproj" />
-  <Project Path="src/StarVadersAccess.Tests/StarVadersAccess.Tests.csproj" />
-</Solution>

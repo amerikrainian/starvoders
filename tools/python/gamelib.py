@@ -20,9 +20,9 @@ DUMP_CS = DUMP_DIR / "dump.cs"
 ANALYSIS_DIR = REPO / "game" / "analysis"
 TYPES_TSV = ANALYSIS_DIR / "types.tsv"
 VERSION_JSON = ANALYSIS_DIR / "version.json"
-MODULE_SRC = REPO / "src" / "StarVadersAccess.Module"
+MODULE_SRC = REPO / "src" / "StarVoders.Module"
 STEAM_APP_ID = "2097570"
-DEV_URL = os.environ.get("SVA_DEV_URL", "http://127.0.0.1:" + os.environ.get("SVA_DEV_PORT", "8772"))
+DEV_URL = os.environ.get("SVO_DEV_URL", "http://127.0.0.1:" + os.environ.get("SVO_DEV_PORT", "8772"))
 
 GAME_ASSEMBLY_PREFIXES = ("Assembly-CSharp", "ScriptAssembly", "PixelCrushers", "PowerTools")
 

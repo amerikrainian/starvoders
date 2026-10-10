@@ -2,14 +2,14 @@
 # https://github.com/rashadnaqeeb/NonVisualCalculus
 
 [package]
-name = "starvaders-access-installer"
-version = "0.1.0"
+name = "starvoders-installer"
+version = "0.0.1"
 edition = "2024"
 
 # test = false: the exe embeds a requireAdministrator manifest, so a test
 # harness built from it cannot run unelevated. Tests live in the lib target.
 [[bin]]
-name = "starvaders-access-installer"
+name = "starvoders-installer"
 path = "src/main.rs"
 test = false
 

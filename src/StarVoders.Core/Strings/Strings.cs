@@ -1,0 +1,503 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace StarVoders.Core.Strings
+{
+    /// <summary>
+    /// Central table for text the MOD itself authors and speaks (never game content, which is read live
+    /// and already localized). Every authored word lives in <see cref="Defaults"/> as a key and its
+    /// English value; typed accessors read through the loaded translation, so a lang/&lt;language&gt;.txt
+    /// file overrides any value at speak time. Word order lives in "{0}"-style templates, never in code.
+    /// Values are spoken by a screen reader: terse, lowercase unless shown otherwise, no decorative
+    /// punctuation. Keys follow the wotr-access locale vocabulary (role.*, state.*, nav.*, screen.*).
+    /// </summary>
+    public static class Strings
+    {
+        private static KeyValuePair<string, string> D(string key, string value)
+            => new KeyValuePair<string, string>(key, value);
+
+        /// <summary>Every authored string, in template order: the key a translation file addresses and
+        /// its English default.</summary>
+        internal static readonly KeyValuePair<string, string>[] Defaults =
+        {
+            // Spoken once when the mod finishes loading; {0} = the mod version.
+            D("app.loaded", "StarVoders {0} loaded"),
+            // Spoken at launch instead when the feature module fails to load (the mod is then dead).
+            D("app.module_failed", "StarVoders features failed to load"),
+            // Follows the loaded line when the newest release outranks the running build; {0} = that
+            // newer version. Up to date (or ahead, a dev build) stays silent.
+            D("app.update_available", "update {0} available"),
+            // Spoken when the focus-mode toggle engages / releases our keyboard navigation.
+            D("app.focus_on", "navigation on"),
+            D("app.focus_off", "navigation off"),
+
+            // Control role words, spoken after the label ("Continue, button").
+            D("role.button", "button"),
+            D("role.toggle", "toggle"),
+            D("role.slider", "slider"),
+            D("role.radio button", "radio button"),
+            D("role.combo box", "combo box"),
+            D("role.tab", "tab"),
+            D("role.key binding", "key binding"),
+            D("role.item", "item"),
+            D("role.heading", "heading"),
+            D("role.table", "table"),
+            D("role.link", "link"),
+            D("role.edit", "edit"),
+
+            // Control states.
+            D("state.disabled", "disabled"),
+            D("state.selected", "selected"),
+            D("state.on", "on"),
+            D("state.off", "off"),
+            D("state.expanded", "expanded"),
+            D("state.collapsed", "collapsed"),
+            D("value.blank", "blank"),
+            D("value.space", "space"),
+            // A 0 to 1 slider's value (the volumes). {0} = the whole percent.
+            D("value.percent", "{0} percent"),
+            D("edit.begin", "editing"),
+            D("edit.selected", "{0} selected"),
+            D("edit.unselected", "{0} unselected"),
+            // The mod's own number entry: the decimal point as typed, a character erased with Backspace.
+            D("edit.point", "point"),
+            D("edit.deleted", "{0} deleted"),
+
+            // Navigation feedback. {0} = index, {1} = count.
+            D("nav.position", "{0}/{1}"),
+            D("nav.no_tooltip", "no description"),
+            D("nav.no_details", "no details"),
+            // Buffer review (Ctrl plus arrows): the buffer names, the "name: line" readout on switching,
+            // and the words when every buffer is empty.
+            D("buffer.ui", "control"),
+            D("buffer.none", "no buffer lines"),
+            // {0} = the buffer's name, {1} = its current line.
+            D("buffer.line", "{0}: {1}"),
+            D("drag.no_target", "nothing to drag"),
+            D("delete.no_target", "nothing to remove"),
+            D("nav.minimum", "minimum"),
+            D("nav.maximum", "maximum"),
+
+            // Type-ahead search. {0} = the typed text.
+            D("search.no_match", "no match for {0}"),
+            D("search.cleared", "search cleared"),
+
+            // Input action labels (for a key-help reader). Short imperative phrases.
+            D("bind.ui.up", "Navigate up"),
+            D("bind.ui.down", "Navigate down"),
+            D("bind.ui.left", "Navigate left"),
+            D("bind.ui.right", "Navigate right"),
+            D("bind.ui.next", "Next control group"),
+            D("bind.ui.prev", "Previous control group"),
+            D("bind.ui.activate", "Activate"),
+            D("bind.ui.secondary", "Secondary action"),
+            D("bind.ui.back", "Back"),
+            D("bind.ui.home", "Jump to first"),
+            D("bind.ui.end", "Jump to last"),
+            D("bind.ui.tooltip", "Read description"),
+            D("bind.ui.regionPrev", "Previous section"),
+            D("bind.ui.regionNext", "Next section"),
+            D("bind.ui.readFocus", "Read current control"),
+            // Buffer review (Ctrl plus arrows): switch between the review lists, step through one.
+            D("bind.buffer.next", "Next buffer"),
+            D("bind.buffer.prev", "Previous buffer"),
+            D("bind.buffer.line.next", "Next buffer line"),
+            D("bind.buffer.line.prev", "Previous buffer line"),
+            D("bind.mod.focus", "Toggle navigation"),
+            D("bind.mod.reload", "Reload mod code"),
+
+            // Screen names, spoken on entry.
+            D("screen.main_menu", "Main menu"),
+            D("screen.settings", "Settings"),
+            D("screen.confirm", "Confirm"),
+            // The boot scene's title screen (the arcade machine), before its own prompt.
+            D("screen.title", "Title screen"),
+            // The main menu's controls that carry no caption of their own (icons, a bare dropdown).
+            D("main.language", "Language"),
+            D("main.news", "News"),
+            D("main.discord", "Discord"),
+            D("main.credits", "Credits"),
+            // The role word for a modal dialog context.
+            D("role.dialog", "dialog"),
+            // A cutscene's line with its speaker ("Roxy: Wait."): {0} the speaker, {1} the line.
+            D("cutscene.line", "{0}: {1}"),
+            // The act timeline's nodes: one already played, and the one the run stands at.
+            D("map.cleared", "cleared"),
+            D("map.current", "current"),
+            // The fight: the turn as x/y, a card's cost ("1 Heat": {0} the amount, {1} the game's word), the digit keys.
+            D("fight.turn", "Turn {0}/{1}"),
+            D("fight.turn_open", "Turn {0}"),
+            D("fight.cost", "{0} {1}"),
+            D("shop.was", "was {0}"),
+            D("shop.copies", "{0} copies"),
+            D("bind.fight.card1", "Play card 1"),
+            D("bind.fight.card2", "Play card 2"),
+            D("bind.fight.card3", "Play card 3"),
+            D("bind.fight.card4", "Play card 4"),
+            D("bind.fight.card5", "Play card 5"),
+            D("bind.fight.card6", "Play card 6"),
+            D("bind.fight.card7", "Play card 7"),
+            D("bind.fight.card8", "Play card 8"),
+            D("bind.fight.card9", "Play card 9"),
+            D("bind.fight.card10", "Play card 10"),
+            // Choosing a target: the play area ("Play"), the arrows' directions, a tile ("x, y", 1-based, row 1 at the bottom).
+            D("fight.play", "Play"),
+            D("fight.dir.n", "up"),
+            D("fight.dir.s", "down"),
+            D("fight.dir.w", "left"),
+            D("fight.dir.e", "right"),
+            D("fight.dir.nw", "up left"),
+            D("fight.dir.ne", "up right"),
+            D("fight.dir.sw", "down left"),
+            D("fight.dir.se", "down right"),
+            D("fight.coord", "{0}, {1}"),
+            // Your mech on the board.
+            D("fight.mech", "mech"),
+            // The board: a valid target tile, an entity's health and charge, the zones (the bottom 3 rows where invaders add Doom, the rows they spawn in; the rows between are unnamed), "label: value" (Danger Zone: Migo 1).
+            D("fight.target", "target"),
+            D("fight.health", "{0} health"),
+            D("fight.charge", "charge {0}"),
+            D("fight.zone.doom", "doom rows"),
+            D("fight.zone.spawn", "spawn rows"),
+            D("fight.danger", "{0}: {1}"),
+            // A Danger Zone tile: {0} who will strike it ("targeted by Shooter 1, Migo 3").
+            D("fight.targeted", "targeted by {0}"),
+            // The board's categories ([ ] and , .): their names, "Invaders, 2"; "nothing" for a key with nothing to say. Then the fight keys' names for F1.
+            D("fight.cat.invaders", "Invaders"),
+            D("fight.cat.mech", "Mech"),
+            D("fight.cat.items", "Bombs and items"),
+            D("fight.cat.pickups", "Pickups"),
+            D("fight.cat.danger", "Danger zones"),
+            D("fight.cat.line", "{0}, {1}"),
+            // Choosing a target on the board: Enter on a cell the selection does not accept; the category of the valid tiles.
+            D("fight.nottarget", "not a target"),
+            D("fight.cat.targets", "Targets"),
+            D("fight.nothing", "nothing"),
+            // Fight events, spoken and logged: {0} a name, {1} a tile "x, y" or a row or column number. The combat buffer's name.
+            D("fight.ev.enemyturn", "Enemy turn"),
+            D("fight.ev.appears", "{0} appears at {1}"),
+            D("fight.ev.moves", "{0} to {1}"),
+            D("fight.ev.moves.row", "{0} to row {1}"),
+            D("fight.ev.moves.column", "{0} to column {1}"),
+            D("fight.ev.destroyed", "{0} destroyed"),
+            D("fight.ev.shielded", "{0} shielded"),
+            D("fight.ev.unshielded", "{0} loses its shield"),
+            D("fight.ev.shocked", "{0} shocked"),
+            D("fight.ev.unshocked", "{0} no longer shocked"),
+            D("fight.ev.drew", "Drew {0}"),
+            // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
+            D("fight.ev.targets", "{0} targets {1}"),
+            // The tiles of those targets, merged: a rectangle or a straight run by its corners ({0} and {1} are tiles, "5, 1 to 5, 5"), a diagonal run, a whole row or column ({0} its number).
+            D("fight.range", "{0} to {1}"),
+            D("fight.range.diagonal", "diagonal {0} to {1}"),
+            D("fight.row", "row {0}"),
+            D("fight.column", "column {0}"),
+            // The tiles the game marks as about to be struck (a card's preview, a delayed strike): a marked cell; said once as a card's choice opens, {0} the tiles, {1} who stands on them.
+            D("fight.strike", "strike"),
+            D("fight.strikes", "Strikes {0}"),
+            D("fight.strikes.hits", "Strikes {0}; hits {1}"),
+            // The Compendium's count panel, named for what it counts: {0} the class (or "All classes"), {1} what is counted ("Gunner cards and artifacts").
+            D("compendium.scope", "{0} {1}"),
+            D("compendium.allclasses", "All classes"),
+            D("compendium.cards", "cards"),
+            D("compendium.artifacts", "artifacts"),
+            D("compendium.both", "cards and artifacts"),
+            // The Bestiary: a panel's lore still hidden, {0} the defeats so far over those needed ("39/50"). The Album's buttons turning to the previous and next pilot.
+            D("bestiary.lore.hidden", "Lore hidden, {0} defeated"),
+            D("album.prev", "Previous pilot"),
+            D("album.next", "Next pilot"),
+            // A won fight: the loot box, whose click opens the reward.
+            D("win.open", "Open reward box"),
+            // Run history: which run of how many, and its arrows (no caption of their own).
+            D("history.run", "Run {0}/{1}"),
+            D("history.prev", "Previous run"),
+            D("history.next", "Next run"),
+            D("buffer.combat", "combat"),
+            D("bind.fight.skip.up", "Skip up"),
+            D("bind.fight.skip.down", "Skip down"),
+            D("bind.fight.skip.left", "Skip left"),
+            D("bind.fight.skip.right", "Skip right"),
+            D("bind.fight.coords", "Coordinates"),
+            D("bind.fight.turn", "Turn"),
+            D("bind.fight.doom", "Doom"),
+            D("bind.fight.heat", "Heat"),
+            D("bind.fight.objective", "Objective"),
+            D("bind.fight.mech", "Mech"),
+            D("bind.fight.mech.jump", "Go to the mech"),
+            D("bind.fight.cat.next", "Next category"),
+            D("bind.fight.cat.prev", "Previous category"),
+            D("bind.fight.item.next", "Next in category"),
+            D("bind.fight.item.prev", "Previous in category"),
+            D("bind.fight.jumpback", "Jump back"),
+            D("bind.fight.endturn", "End turn"),
+
+            D("screen.mod_menu", "StarVoders"),
+            D("mod.settings", "Settings"),
+            // The mod menu's list of every key the mod binds, whatever the screen.
+            D("mod.key_help", "All keys"),
+            D("mod.close", "Close"),
+            D("mod.speak_positions", "Speak list positions"),
+            D("mod.focus_on_launch", "Keyboard navigation on at launch"),
+            // {0} = the key category, one of the three names below.
+            D("mod.key_category", "{0} keys"),
+            // The key categories of the "All keys" list: live everywhere, on the focused screen, in a run.
+            D("mod.category.global", "Global"),
+            D("mod.category.ui", "UI"),
+            D("mod.category.game", "Game"),
+            D("bind.mod.menu", "Mod menu"),
+            // The context-sensitive key help (F1): the keys that do something on this screen, on this
+            // control. Enter on a row runs it.
+            D("bind.mod.help", "Keys here"),
+            D("screen.help", "Keys here"),
+            D("help.none", "no keys here"),
+            // {0} = what the key does, {1} = the keys bound to it.
+            D("help.row", "{0}: {1}"),
+        };
+
+        private static readonly Dictionary<string, string> _defaults = BuildDefaults();
+        private static Dictionary<string, string> _overrides = new Dictionary<string, string>();
+
+        private static Dictionary<string, string> BuildDefaults()
+        {
+            var d = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var kv in Defaults) d[kv.Key] = kv.Value;
+            return d;
+        }
+
+        /// <summary>The value for a key: the loaded translation, else the English default, else the
+        /// key itself (a missing key is then audible rather than silent).</summary>
+        public static string Get(string key)
+        {
+            if (_overrides.TryGetValue(key, out var o)) return o;
+            if (_defaults.TryGetValue(key, out var v)) return v;
+            CoreLog.Warning("Strings: missing key " + key);
+            return key;
+        }
+
+        /// <summary>Whether a key exists in the defaults (for optional lookups like role words).</summary>
+        public static bool Has(string key) => _defaults.ContainsKey(key) || _overrides.ContainsKey(key);
+
+        /// <summary>The value for a key with "{0}"-style slots filled.</summary>
+        public static string F(string key, params object[] args)
+        {
+            string template = Get(key);
+            try { return string.Format(template, args); }
+            catch (FormatException) { return template; }
+        }
+
+        /// <summary>Install a translation, replacing any previous one whole (a language switch never
+        /// blends two files): "key=value" lines split at the first '=' ("#" comments and blanks
+        /// ignored, a written-out "\n" a line break); missing keys fall back to English. Pass null to
+        /// return to the defaults. What the file got wrong is set aside, never applied, and comes
+        /// back in the report for the caller to log: a line without a key, a key this table does not
+        /// define (a typo, a file for a newer mod), an empty value (it would silence information), a
+        /// value with a slot its English has not ("{2}" where the code fills two: the line would be
+        /// spoken as the raw template).</summary>
+        public static TranslationReport LoadTranslation(IEnumerable<string> lines)
+        {
+            var report = new TranslationReport();
+            var map = new Dictionary<string, string>(StringComparer.Ordinal);
+            if (lines != null)
+            {
+                int n = 0;
+                foreach (var raw in lines)
+                {
+                    n++;
+                    if (raw == null) continue;
+                    string line = raw.Trim().TrimStart('\uFEFF');
+                    if (line.Length == 0 || line.StartsWith("#", StringComparison.Ordinal)) continue;
+                    int eq = line.IndexOf('=');
+                    if (eq <= 0) { report.Malformed.Add(n); continue; }
+                    string key = line.Substring(0, eq).Trim();
+                    string value = line.Substring(eq + 1).Trim().Replace("\\n", "\n");
+                    if (!_defaults.TryGetValue(key, out var english)) { report.UnknownKeys.Add(key); continue; }
+                    if (value.Length == 0) { report.EmptyKeys.Add(key); continue; }
+                    if (!SlotsFit(value, english)) { report.BadSlots.Add(key); continue; }
+                    map[key] = value;
+                }
+            }
+            _overrides = map;
+            report.Applied = map.Count;
+            return report;
+        }
+
+        // Whether a translated template formats with the arguments its English takes: every "{n}" of
+        // it one the English has, and the braces well formed.
+        public static bool SlotsFit(string value, string english)
+        {
+            int max = -1;
+            foreach (int slot in Slots(english)) if (slot > max) max = slot;
+            try { string.Format(value, new object[Math.Max(max + 1, 0)]); }
+            catch (FormatException) { return false; }
+            return true;
+        }
+
+        /// <summary>The "{n}" slots a template uses, for the translation checks.</summary>
+        public static HashSet<int> Slots(string template)
+        {
+            var slots = new HashSet<int>();
+            if (template == null) return slots;
+            for (int i = 0; i < template.Length - 2; i++)
+            {
+                if (template[i] != '{' || !char.IsDigit(template[i + 1])) continue;
+                int j = i + 1, slot = 0;
+                while (j < template.Length && char.IsDigit(template[j])) slot = slot * 10 + (template[j++] - '0');
+                if (j < template.Length && (template[j] == '}' || template[j] == ':' || template[j] == ',')) slots.Add(slot);
+            }
+            return slots;
+        }
+
+        /// <summary>Every key of the table, in template order (the translation tests walk it).</summary>
+        public static IEnumerable<string> Keys
+        {
+            get { foreach (var kv in Defaults) yield return kv.Key; }
+        }
+
+        /// <summary>A key's English default, or null.</summary>
+        public static string Default(string key) => _defaults.TryGetValue(key, out var v) ? v : null;
+
+        private const string TemplateHeader =
+            "# StarVoders: the words the mod itself speaks (the game's own text is the game's).\n" +
+            "# This file is the template, generated from the mod's strings table: copy it to\n" +
+            "# <language>.txt, named for the code of the game's selected locale (de, fr, es, ja, ko,\n" +
+            "# ru, tr, pt-BR, ...), and translate the values. key=value, one per line; keep every {0} slot (their\n" +
+            "# order is free); a missing key is spoken in English. The mod follows the game's language.\n";
+
+        /// <summary>The translator template (lang/en.txt): every key with its English default, one per
+        /// line, under a header that tells a translator what to do with it.</summary>
+        public static string DumpTemplate()
+        {
+            var sb = new StringBuilder();
+            sb.Append(TemplateHeader);
+            foreach (var kv in Defaults)
+                sb.Append(kv.Key).Append('=').Append(kv.Value.Replace("\n", "\\n")).Append('\n');
+            return sb.ToString();
+        }
+
+        // ---- typed accessors ----
+
+        public static string ModLoaded(string version) => F("app.loaded", version);
+        public static string ModuleFailed => Get("app.module_failed");
+        public static string UpdateAvailable(string version) => F("app.update_available", version);
+        public static string FocusOn => Get("app.focus_on");
+        public static string FocusOff => Get("app.focus_off");
+
+        /// <summary>The role word for a control type key ("button" -> "button"); null when none.</summary>
+        public static string Role(string word) => Has("role." + word) ? Get("role." + word) : null;
+        public static string RoleTable => Get("role.table");
+        public static string RoleHeading => Get("role.heading");
+
+        public static string StateDisabled => Get("state.disabled");
+        public static string StateSelected => Get("state.selected");
+        public static string StateOn => Get("state.on");
+        public static string StateOff => Get("state.off");
+        public static string ExpandedState(bool expanded) => Get(expanded ? "state.expanded" : "state.collapsed");
+        public static string ValueBlank => Get("value.blank");
+        public static string ValueSpace => Get("value.space");
+        public static string Percent(int percent) => F("value.percent", percent);
+        public static string EditBegin => Get("edit.begin");
+        public static string EditSelected(string text) => F("edit.selected", text);
+        public static string EditUnselected(string text) => F("edit.unselected", text);
+        public static string EditPoint => Get("edit.point");
+        public static string EditDeleted(string text) => F("edit.deleted", text);
+
+        public static string Position(int index, int count) => F("nav.position", index, count);
+        public static string NoTooltip => Get("nav.no_tooltip");
+        public static string NoDetails => Get("nav.no_details");
+        public static string BufferUi => Get("buffer.ui");
+        public static string BufferNone => Get("buffer.none");
+        public static string BufferLine(string name, string line) => F("buffer.line", name, line);
+        public static string NoDragTarget => Get("drag.no_target");
+        public static string NoDeleteTarget => Get("delete.no_target");
+        public static string Minimum => Get("nav.minimum");
+        public static string Maximum => Get("nav.maximum");
+
+        public static string SearchNoMatch(string text) => F("search.no_match", text);
+        public static string SearchCleared => Get("search.cleared");
+
+        /// <summary>The spoken label of an input action ("bind.ui.down" -> "Navigate down"); the
+        /// registration label when no entry exists.</summary>
+        public static string BindLabel(string actionKey, string fallback)
+            => Has("bind." + actionKey) ? Get("bind." + actionKey) : fallback;
+
+        public static string ScreenMainMenu => Get("screen.main_menu");
+        public static string ScreenSettings => Get("screen.settings");
+        public static string ScreenConfirm => Get("screen.confirm");
+        public static string ScreenTitle => Get("screen.title");
+        public static string MainLanguage => Get("main.language");
+        public static string MainNews => Get("main.news");
+        public static string MainDiscord => Get("main.discord");
+        public static string MainCredits => Get("main.credits");
+        public static string RoleDialog => Get("role.dialog");
+        public static string CutsceneLine(string speaker, string line) => F("cutscene.line", speaker, line);
+        public static string MapCleared => Get("map.cleared");
+        public static string MapCurrent => Get("map.current");
+        /// <summary>"Turn 3/8"; "Turn 3" in a fight with no turn limit (the game's MaxTurns is -1).</summary>
+        public static string FightTurn(int turn, int turns) => turns > 0 ? F("fight.turn", turn, turns) : F("fight.turn_open", turn);
+        public static string FightCost(int amount, string resource) => F("fight.cost", amount, resource);
+        /// <summary>A sale's crossed-out price: "was 5700".</summary>
+        public static string ShopWas(string price) => F("shop.was", price);
+        /// <summary>A bundle's card count: "2 copies".</summary>
+        public static string ShopCopies(int count) => F("shop.copies", count);
+        public static string FightPlay => Get("fight.play");
+        public static string FightDirection(string compass) => Get("fight.dir." + compass.ToLowerInvariant());
+        public static string FightCoord(int column, int row) => F("fight.coord", column, row);
+        public static string FightMech => Get("fight.mech");
+        public static string FightTarget => Get("fight.target");
+        public static string FightHealth(int health) => F("fight.health", health);
+        public static string FightCharge(int charge) => F("fight.charge", charge);
+        public static string FightZone(string zone) => Get("fight.zone." + zone);
+        public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
+        public static string FightCategory(string category) => Get("fight.cat." + category);
+        public static string FightCategoryLine(string category, int count) => F("fight.cat.line", category, count);
+        public static string FightNotTarget => Get("fight.nottarget");
+        public static string FightNothing => Get("fight.nothing");
+        public static string FightEnemyTurn => Get("fight.ev.enemyturn");
+        public static string FightAppears(string name, string where) => F("fight.ev.appears", name, where);
+        public static string FightMoves(string name, string where) => F("fight.ev.moves", name, where);
+        public static string FightMovesRow(string name, int row) => F("fight.ev.moves.row", name, row);
+        public static string FightMovesColumn(string name, int column) => F("fight.ev.moves.column", name, column);
+        public static string FightDestroyed(string name) => F("fight.ev.destroyed", name);
+        public static string FightShielded(string name) => F("fight.ev.shielded", name);
+        public static string FightUnshielded(string name) => F("fight.ev.unshielded", name);
+        public static string FightShocked(string name) => F("fight.ev.shocked", name);
+        public static string FightUnshocked(string name) => F("fight.ev.unshocked", name);
+        public static string FightDrew(string cards) => F("fight.ev.drew", cards);
+        public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
+        public static string FightTargeted(string who) => F("fight.targeted", who);
+        public static string FightRange(string from, string to) => F("fight.range", from, to);
+        public static string FightDiagonalRange(string from, string to) => F("fight.range.diagonal", from, to);
+        public static string FightRow(int row) => F("fight.row", row);
+        public static string FightColumn(int column) => F("fight.column", column);
+        public static string FightStrike => Get("fight.strike");
+        public static string CompendiumScope(string scope, string kind) => F("compendium.scope", scope, kind);
+        public static string CompendiumAllClasses => Get("compendium.allclasses");
+        public static string BestiaryLoreHidden(string progress) => F("bestiary.lore.hidden", progress);
+        public static string AlbumPrevious => Get("album.prev");
+        public static string AlbumNext => Get("album.next");
+        public static string CompendiumKind(bool cards, bool artifacts) => Get(cards == artifacts ? "compendium.both" : cards ? "compendium.cards" : "compendium.artifacts");
+        public static string FightStrikes(string tiles, string who) => who != null ? F("fight.strikes.hits", tiles, who) : F("fight.strikes", tiles);
+        public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
+        public static string HistoryPrevious => Get("history.prev");
+        public static string HistoryNext => Get("history.next");
+        public static string BufferCombat => Get("buffer.combat");
+
+
+        public static string ScreenModMenu => Get("screen.mod_menu");
+        public static string ModSettings => Get("mod.settings");
+        public static string ModKeyHelp => Get("mod.key_help");
+        public static string ScreenHelp => Get("screen.help");
+        public static string HelpNone => Get("help.none");
+        public static string HelpRow(string label, string keys) => F("help.row", label, keys);
+        public static string ModClose => Get("mod.close");
+        public static string ModSpeakPositions => Get("mod.speak_positions");
+        public static string ModFocusOnLaunch => Get("mod.focus_on_launch");
+        public static string ModKeyCategory(string category)
+        {
+            string name = "mod.category." + (category ?? "").ToLowerInvariant();
+            return F("mod.key_category", Has(name) ? Get(name) : category);
+        }
+    }
+}
+

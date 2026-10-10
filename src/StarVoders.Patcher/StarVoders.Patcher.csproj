@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    A BepInEx 6 preloader patcher: the one piece that must run BEFORE Il2CppInterop installs its
+    runtime hooks (they go in on the first type registration, inside IL2CPPChainloader.Initialize,
+    after the patchers' Initialize). It corrects Il2CppInterop's GenericMethod::GetMethod lookup on
+    this game's GameAssembly (see GetMethodHookFix); without it the game crashes on startup with
+    BepInEx installed, plugins or not. Patches no assemblies. Deployed to BepInEx\patchers.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>StarVoders.Patcher</AssemblyName>
+    <RootNamespace>StarVoders.Patcher</RootNamespace>
+    <Nullable>disable</Nullable>
+    <PatcherDeployDir>$(BepInExDir)\patchers\StarVoders</PatcherDeployDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(BepInExDir)\core\BepInEx.Core.dll" Private="false" />
+    <Reference Include="$(BepInExDir)\core\BepInEx.Preloader.Core.dll" Private="false" />
+    <Reference Include="$(BepInExDir)\core\0Harmony.dll" Private="false" />
+    <Reference Include="$(BepInExDir)\core\Il2CppInterop.Common.dll" Private="false" />
+  </ItemGroup>
+
+  <Target Name="DeployPatcher" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+    <MakeDir Directories="$(PatcherDeployDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PatcherDeployDir)" ContinueOnError="true" />
+    <Message Importance="high" Text="StarVoders.Patcher deployed -> $(PatcherDeployDir)" />
+  </Target>
+
+</Project>

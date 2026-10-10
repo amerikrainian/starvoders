@@ -1,8 +1,8 @@
-# StarVaders Access: Brazilian Portuguese (pt-BR). The words the mod itself speaks, for the game's
+# StarVoders: Brazilian Portuguese (pt-BR). The words the mod itself speaks, for the game's
 # Brazilian Portuguese setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0} carregado
-app.module_failed=StarVaders Access: falha ao carregar os recursos
+app.loaded=StarVoders {0} carregado
+app.module_failed=StarVoders: falha ao carregar os recursos
 app.update_available=atualização {0} disponível
 app.focus_on=navegação ativada
 app.focus_off=navegação desativada
@@ -168,7 +168,7 @@ bind.fight.item.next=Próximo da categoria
 bind.fight.item.prev=Anterior da categoria
 bind.fight.jumpback=Voltar
 bind.fight.endturn=Encerrar turno
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=Configurações
 mod.key_help=Todas as teclas
 mod.close=Fechar

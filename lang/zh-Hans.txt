@@ -1,8 +1,8 @@
-# StarVaders Access: Simplified Chinese (zh-Hans). The words the mod itself speaks, for the game's
+# StarVoders: Simplified Chinese (zh-Hans). The words the mod itself speaks, for the game's
 # Simplified Chinese setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0}已加载
-app.module_failed=StarVaders Access 功能加载失败
+app.loaded=StarVoders {0}已加载
+app.module_failed=StarVoders 功能加载失败
 app.update_available=新版本{0}可用
 app.focus_on=导航已开启
 app.focus_off=导航已关闭
@@ -168,7 +168,7 @@ bind.fight.item.next=类别中的下一个
 bind.fight.item.prev=类别中的上一个
 bind.fight.jumpback=跳回
 bind.fight.endturn=结束回合
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=设置
 mod.key_help=所有按键
 mod.close=关闭

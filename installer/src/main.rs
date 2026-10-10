@@ -3,7 +3,7 @@
 
 #![windows_subsystem = "windows"]
 
-use starvaders_access_installer::{cli, gui};
+use starvoders_installer::{cli, gui};
 
 fn main() {
     if std::env::args().any(|a| a == "--cli") {

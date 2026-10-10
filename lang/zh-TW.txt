@@ -1,8 +1,8 @@
-# StarVaders Access: Traditional Chinese (zh-TW). The words the mod itself speaks, for the game's
+# StarVoders: Traditional Chinese (zh-TW). The words the mod itself speaks, for the game's
 # Traditional Chinese setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0} 已載入
-app.module_failed=StarVaders Access 功能載入失敗
+app.loaded=StarVoders {0} 已載入
+app.module_failed=StarVoders 功能載入失敗
 app.update_available=可用更新 {0}
 app.focus_on=導覽開啟
 app.focus_off=導覽關閉
@@ -168,7 +168,7 @@ bind.fight.item.next=類別中的下一個
 bind.fight.item.prev=類別中的上一個
 bind.fight.jumpback=跳回
 bind.fight.endturn=結束回合
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=設定
 mod.key_help=所有按鍵
 mod.close=關閉

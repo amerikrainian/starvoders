@@ -1,8 +1,8 @@
-# StarVaders Access: Spanish (es). The words the mod itself speaks, for the game's
+# StarVoders: Spanish (es). The words the mod itself speaks, for the game's
 # Spanish setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0} cargado
-app.module_failed=StarVaders Access: no se han podido cargar las funciones
+app.loaded=StarVoders {0} cargado
+app.module_failed=StarVoders: no se han podido cargar las funciones
 app.update_available=actualización {0} disponible
 app.focus_on=navegación activada
 app.focus_off=navegación desactivada
@@ -168,7 +168,7 @@ bind.fight.item.next=Siguiente de la categoría
 bind.fight.item.prev=Anterior de la categoría
 bind.fight.jumpback=Volver atrás
 bind.fight.endturn=Terminar turno
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=Ajustes
 mod.key_help=Todas las teclas
 mod.close=Cerrar

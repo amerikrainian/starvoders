@@ -5,7 +5,7 @@
   health                      is the dev server up
   launch                      start the game through Steam and wait for the dev server
   kill                        kill StarVaders.exe (a host DLL change needs this before a build)
-  reload                      hot-reload Core + Module (after `dotnet build src/StarVadersAccess.Module/...`)
+  reload                      hot-reload Core + Module (after `dotnet build src/StarVoders.Module/...`)
   module                      generation, DLL write times, Harmony patches
   nav                         our navigator: screen stack, focused node, every node in the render
   input VERB [VERB ...]       dispatch inputs (ui.down, ui.next, ui.activate, ui.back, ui.tooltip, mod.menu...)
@@ -20,7 +20,7 @@
   click [X Y]                 an OS-level click at Unity screen coordinates (default: window centre);
                               for prompts the mod does not cover yet (the synthetic mouse is preferred)
 
-Environment: SVA_DEV_URL or SVA_DEV_PORT override the server address.
+Environment: SVO_DEV_URL or SVO_DEV_PORT override the server address.
 """
 from __future__ import annotations
 

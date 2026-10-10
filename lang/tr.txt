@@ -1,8 +1,8 @@
-# StarVaders Access: Turkish (tr). The words the mod itself speaks, for the game's
+# StarVoders: Turkish (tr). The words the mod itself speaks, for the game's
 # Turkish setting. key=value; lang/en.txt is the template. Keep every {0} slot (their
 # order is free). Corrections welcome: a missing or broken line is spoken in English.
-app.loaded=StarVaders Access {0} yüklendi
-app.module_failed=StarVaders Access özellikleri yüklenemedi
+app.loaded=StarVoders {0} yüklendi
+app.module_failed=StarVoders özellikleri yüklenemedi
 app.update_available={0} güncellemesi mevcut
 app.focus_on=gezinme açık
 app.focus_off=gezinme kapalı
@@ -168,7 +168,7 @@ bind.fight.item.next=Kategoride sonraki
 bind.fight.item.prev=Kategoride önceki
 bind.fight.jumpback=Geri dön
 bind.fight.endturn=Turu bitir
-screen.mod_menu=StarVaders Access
+screen.mod_menu=StarVoders
 mod.settings=Ayarlar
 mod.key_help=Tüm tuşlar
 mod.close=Kapat

@@ -1,9 +1,9 @@
 # Build the distributable mod zip: the vendored BepInEx 6 game-folder layout (BepInEx\, dotnet\,
 # winhttp.dll, doorstop_config.ini) plus the Release plugin output under
-# BepInEx\plugins\StarVadersAccess (the host, Contracts, Core and Module dlls, lang files), the
-# preloader patcher under BepInEx\patchers\StarVadersAccess (without it BepInEx alone crashes the
-# game: see src\StarVadersAccess.Patcher\GetMethodHookFix.cs), prism.dll next to StarVaders.exe, a BepInEx.cfg that keeps the loader's console window closed, and the
-# rendered mdbook manual under StarVadersAccessDocs when docs_src exists. The zip root IS the game
+# BepInEx\plugins\StarVoders (the host, Contracts, Core and Module dlls, lang files), the
+# preloader patcher under BepInEx\patchers\StarVoders (without it BepInEx alone crashes the
+# game: see src\StarVoders.Patcher\GetMethodHookFix.cs), prism.dll next to StarVaders.exe, a BepInEx.cfg that keeps the loader's console window closed, and the
+# rendered mdbook manual under StarVodersDocs when docs_src exists. The zip root IS the game
 # folder, so the installer (and a manual user) extracts it straight into the game dir.
 #
 # The Roslyn scripting assemblies in the host's output are the Debug-only dev server's and are not
@@ -32,13 +32,13 @@ $version = $versionNode.InnerText.Trim()
 $bepinexZip = Get-ChildItem (Join-Path $scriptDir "third_party\bepinex\BepInEx-Unity.IL2CPP-win-x64-*.zip") |
     Select-Object -First 1
 $prismDll = Join-Path $scriptDir "third_party\prism\prism.dll"
-$hostOutDir = Join-Path $scriptDir "src\StarVadersAccess\bin\Release\net6.0"
-$coreOutDir = Join-Path $scriptDir "src\StarVadersAccess.Core\bin\Release\netstandard2.0"
-$moduleOutDir = Join-Path $scriptDir "src\StarVadersAccess.Module\bin\Release\net6.0"
-$patcherOutDir = Join-Path $scriptDir "src\StarVadersAccess.Patcher\bin\Release\net6.0"
+$hostOutDir = Join-Path $scriptDir "src\StarVoders\bin\Release\net6.0"
+$coreOutDir = Join-Path $scriptDir "src\StarVoders.Core\bin\Release\netstandard2.0"
+$moduleOutDir = Join-Path $scriptDir "src\StarVoders.Module\bin\Release\net6.0"
+$patcherOutDir = Join-Path $scriptDir "src\StarVoders.Patcher\bin\Release\net6.0"
 $docsDir = Join-Path $scriptDir "docs_src"
 $langDir = Join-Path $scriptDir "lang"
-$zipPath = Join-Path $releaseDir "StarVadersAccess-v$version.zip"
+$zipPath = Join-Path $releaseDir "StarVoders-v$version.zip"
 
 if ($null -eq $bepinexZip) {
     throw "Vendored BepInEx zip not found under third_party\bepinex"
@@ -57,7 +57,7 @@ try {
         }
     }
 
-    dotnet build StarVadersAccess.slnx -c Release -v:minimal
+    dotnet build StarVoders.slnx -c Release -v:minimal
     if ($LASTEXITCODE -ne 0) {
         throw "Release build failed with exit code $LASTEXITCODE"
     }
@@ -71,12 +71,12 @@ try {
     }
 
     $modDlls = @(
-        (Join-Path $hostOutDir "StarVadersAccess.dll"),
-        (Join-Path $hostOutDir "StarVadersAccess.Contracts.dll"),
-        (Join-Path $coreOutDir "StarVadersAccess.Core.dll"),
-        (Join-Path $moduleOutDir "StarVadersAccess.Module.dll")
+        (Join-Path $hostOutDir "StarVoders.dll"),
+        (Join-Path $hostOutDir "StarVoders.Contracts.dll"),
+        (Join-Path $coreOutDir "StarVoders.Core.dll"),
+        (Join-Path $moduleOutDir "StarVoders.Module.dll")
     )
-    $patcherDll = Join-Path $patcherOutDir "StarVadersAccess.Patcher.dll"
+    $patcherDll = Join-Path $patcherOutDir "StarVoders.Patcher.dll"
     foreach ($required in $modDlls + @($patcherDll)) {
         if (-not (Test-Path $required)) {
             throw "Release build output not found: $required"
@@ -108,12 +108,12 @@ try {
     [IO.File]::WriteAllText((Join-Path $configDir "BepInEx.cfg"), "[Logging.Console]`r`nEnabled = false`r`n")
 
     # The same file set the Debug post-build targets deploy, minus the dev server's Roslyn deps.
-    $pluginDir = Join-Path $stageDir "BepInEx\plugins\StarVadersAccess"
+    $pluginDir = Join-Path $stageDir "BepInEx\plugins\StarVoders"
     New-Item -ItemType Directory -Force $pluginDir | Out-Null
     foreach ($dll in $modDlls) {
         Copy-Item -LiteralPath $dll -Destination $pluginDir
     }
-    $patcherDir = Join-Path $stageDir "BepInEx\patchers\StarVadersAccess"
+    $patcherDir = Join-Path $stageDir "BepInEx\patchers\StarVoders"
     New-Item -ItemType Directory -Force $patcherDir | Out-Null
     Copy-Item -LiteralPath $patcherDll -Destination $patcherDir
     Copy-Item -LiteralPath $prismDll -Destination $stageDir
@@ -129,7 +129,7 @@ try {
 
     if ($hasDocs) {
         # Packaging pattern adapted from SayTheSpire2: https://github.com/bradjrenshaw/say-the-spire2
-        Copy-Item -Path (Join-Path $docsDir "book") -Destination (Join-Path $stageDir "StarVadersAccessDocs") -Recurse
+        Copy-Item -Path (Join-Path $docsDir "book") -Destination (Join-Path $stageDir "StarVodersDocs") -Recurse
     }
 
     if (Test-Path $zipPath) {

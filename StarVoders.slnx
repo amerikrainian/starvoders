@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="src/StarVoders.Contracts/StarVoders.Contracts.csproj" />
+  <Project Path="src/StarVoders.Core/StarVoders.Core.csproj" />
+  <Project Path="src/StarVoders.Module/StarVoders.Module.csproj" />
+  <Project Path="src/StarVoders/StarVoders.csproj" />
+  <Project Path="src/StarVoders.Patcher/StarVoders.Patcher.csproj" />
+  <Project Path="src/StarVoders.Tests/StarVoders.Tests.csproj" />
+</Solution>
