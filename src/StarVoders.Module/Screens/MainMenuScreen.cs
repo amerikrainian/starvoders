@@ -14,7 +14,8 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// The main menu. The game's own column (<c>VerticalViewItemList</c>: Start or Resume, Daily
     /// Run, Options, Compendium, Run History, Quit, whichever are shown) is the first list, in the
-    /// game's order; then the save file, the language, and the three icon buttons along the edge
+    /// game's order, Resume followed by the run's delete icon ("Delete Current Run", the game's
+    /// words; it asks first); then the save file, the language, and the three icon buttons along the edge
     /// (News, Discord, Credits), which carry no caption of their own and so read by the mod's words.
     /// </summary>
     public sealed class MainMenuScreen : Screen
@@ -40,7 +41,16 @@ namespace StarVoders.Module.Screens
             if (column != null)
                 foreach (var item in column)
                     if (ViewNodes.IsShown(item))
+                    {
                         b.AddItem(ControlId.Structural("main:" + item.gameObject.name), ViewNodes.Button(item));
+                        // The run's delete icon sits on the Resume button, outside the column: right after it.
+                        if (item.gameObject.name == "ResumeButton")
+                        {
+                            var delete = item.transform.Find("Background/Delet/ButtonTemplate")?.GetComponent<AViewItem>();
+                            if (ViewNodes.IsShown(delete))
+                                b.AddItem(ControlId.Structural("main:deleterun"), ViewNodes.Button(delete, () => GameLoc.Get("DeleteCurrentRun_Misc")));
+                        }
+                    }
             b.PopContext();
 
             b.PushContext(null);

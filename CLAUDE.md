@@ -104,7 +104,19 @@ separately. Host F6 uses the same OS read.
   skipped); `describeFrom` reads a panel's other texts as the spoken description.
 - Screens so far: `BootScreen` (title: `BootupController.OnPressAnything`, up while
   `IsFinishedLoadingGame && !IsEndingScene`), `MainMenuScreen` (the game's `VerticalViewItemList`,
-  then profile, language dropdown, News/Discord/Credits by mod words), `TutorialSelectionScreen`
+  then profile, language dropdown, News/Discord/Credits by mod words; Resume is followed by the run's
+  delete icon, `ResumeButton/Background/Delet/ButtonTemplate` = `DeleteRunButtonPressed`, read "Delete
+  Current Run", which asks first), `PilotSelectScreen` (`CharacterSelectionScene`,
+  `MechSelectionController`: the classes by panel (`GunnerPanel`/`MeleePanel`/`MysticPanel`, locked
+  while `MeleeLockImage`/`MysticLockImage` show, with their condition and checklist), Random, Back; in a
+  class (`IsInPilotSelection`, `CurrentPilotSelectionController`) the pilot "Roxy, 1/4" with Left/Right
+  = the arrows, the panel by CanvasGroup alpha (open: complexity = count of "=" glyphs, description,
+  starter deck and artifact, Go!; locked: its condition or checklist and its own `SelectPip`; Go! is
+  slid off screen, not faded, so it is offered only with the open panel), the class level, Guide;
+  empty while `IsTransitioning`), `DifficultyScreen` (`DifficultySelectionSceneAdditive`, layer 10:
+  radio buttons; Enter = `OnLevelNPressed(false)`, select only: the game's click on the selected one
+  starts the run; Go! = `OnStartPressed`, never through the driver; seed field mouse-only),
+  `TutorialSelectionScreen`
   (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
   `EncounterWinScreen` (`EncounterWinSceneAdditive`: "Victory", the stars earned, the loot box

@@ -207,6 +207,10 @@ namespace StarVoders.Core.Strings
             D("bestiary.lore.hidden", "Lore hidden, {0} defeated"),
             D("album.prev", "Previous pilot"),
             D("album.next", "Next pilot"),
+            // Choosing a pilot: the button that picks a random class and pilot (drawn as an icon); an unlock checklist entry's state (the game draws a check or an X).
+            D("pilots.random", "Random pilot"),
+            D("pilots.done", "done"),
+            D("pilots.notdone", "not done"),
             // A won fight: the loot box, whose click opens the reward.
             D("win.open", "Open reward box"),
             // Run history: which run of how many, and its arrows (no caption of their own).
@@ -476,6 +480,9 @@ namespace StarVoders.Core.Strings
         public static string BestiaryLoreHidden(string progress) => F("bestiary.lore.hidden", progress);
         public static string AlbumPrevious => Get("album.prev");
         public static string AlbumNext => Get("album.next");
+        public static string PilotsRandom => Get("pilots.random");
+        public static string PilotsDone => Get("pilots.done");
+        public static string PilotsNotDone => Get("pilots.notdone");
         public static string CompendiumKind(bool cards, bool artifacts) => Get(cards == artifacts ? "compendium.both" : cards ? "compendium.cards" : "compendium.artifacts");
         public static string FightStrikes(string tiles, string who) => who != null ? F("fight.strikes.hits", tiles, who) : F("fight.strikes", tiles);
         public static string HistoryRun(int run, int runs) => F("history.run", run, runs);
