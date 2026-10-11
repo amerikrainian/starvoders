@@ -14,8 +14,10 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// The end of a run (<c>CampaignLoseScene</c>, <c>CampaignWinScene</c>; one
     /// <see cref="CampaignEndController"/>). Its heading ("Defeat..?") names the screen; then the
-    /// mech's level and experience as the panel draws them ("Gunner, lv 0, Exp: 10/500", read live
-    /// while the bar fills); then the buttons that show: Unlock when there is something to unlock,
+    /// mech's level ("Gunner, lv 0", where focus lands) and its experience ("Exp: 10/500", or the max
+    /// line at the top level) as the panel draws them, two items read live: the experience counts up
+    /// while the bar fills, so landing on the level keeps the count quiet until it is asked for; then
+    /// the buttons that show: Unlock when there is something to unlock,
     /// Proceed, View Stats, Quick Restart, each the game's click. While an unlock card is up
     /// (<see cref="UnlockCanvas"/>), it is the one node: its texts, Enter continues as its click does.
     /// </summary>
@@ -74,12 +76,11 @@ namespace StarVoders.Module.Screens
 
             var level = c.MechLevelView;
             if (level != null && level.gameObject.activeInHierarchy)
-                b.AddItem(ControlId.Structural("campaignend:level"), new NodeVtable
-                {
-                    ControlType = ControlTypes.Text,
-                    Announcements = new List<NodeAnnouncement> { new NodeAnnouncement(() => LevelText(level), live: true, kind: AnnouncementKinds.Label) },
-                    SearchText = () => LevelText(level),
-                });
+            {
+                b.AddItem(ControlId.Structural("campaignend:level"), Live(() => LevelText(level)));
+                if (!string.IsNullOrEmpty(ExpText(level)))
+                    b.AddItem(ControlId.Structural("campaignend:exp"), Live(() => ExpText(level)));
+            }
 
             b.PushContext(null, positions: false);
             foreach (var name in new[] { "UnlockButton", "ProceedButton", "StatsButton", "RestartButton" })
@@ -93,8 +94,14 @@ namespace StarVoders.Module.Screens
             b.PopContext();
         }
 
-        // "Gunner, lv 0, Exp: 10/500", in the panel's own words; its "max" line once the mech is at
-        // the top level.
+        private static NodeVtable Live(Func<string> text) => new NodeVtable
+        {
+            ControlType = ControlTypes.Text,
+            Announcements = new List<NodeAnnouncement> { new NodeAnnouncement(text, live: true, kind: AnnouncementKinds.Label) },
+            SearchText = text,
+        };
+
+        // "Gunner, lv 0", in the panel's own words.
         private static string LevelText(MechLevelView level)
         {
             var parts = new List<string>();
@@ -103,6 +110,13 @@ namespace StarVoders.Module.Screens
             string lvWord = lv != null ? GameText.Of(lv.GetComponent<TMP_Text>()) : null;
             string number = GameText.Of(level.LevelNumberText);
             Add(parts, lvWord != null && number != null ? lvWord + " " + number : number);
+            return string.Join(", ", parts);
+        }
+
+        // "Exp: 10/500", in the panel's own words; its "max" line once the mech is at the top level.
+        private static string ExpText(MechLevelView level)
+        {
+            var parts = new List<string>();
             if (level.MaxReachedHolder != null && level.MaxReachedHolder.activeInHierarchy)
             {
                 foreach (var tmp in level.MaxReachedHolder.GetComponentsInChildren<TMP_Text>(false)) Add(parts, GameText.Of(tmp));
