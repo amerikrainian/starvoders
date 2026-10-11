@@ -182,7 +182,28 @@ separately. Host F6 uses the same OS read.
   menu's Show Guide, layer 35: tabs from `LeftSide` (General/Gunner/Stinger/Keeper = pages 0-3, the
   `*Locked` twins read LOCKED, never clicked), `GuidePages[currentPageIndex]`'s prose = the TMPs named
   `Line1..4` (the rest label pictures: a mock HeatView, "New!", "Will whiff!"), a demo artifact;
-  `LeaveScene`, empty while `IsEndingScene` as the Compendium pages), plus guildrun's
+  `LeaveScene`, empty while `IsEndingScene` as the Compendium pages), `DialogueScreen` (layer 20,
+  exclusive: any Dialogue System conversation, `CutsceneConvManager.PlayConversation`: the Chaos God, pilot
+  backstories, Min; the one `DialogueManager.standardDialogueUI` in DontDestroyOnLoad; up while
+  `isConversationActive`, empty between lines; the line = the open subtitle panel whose `currentSubtitle`
+  is the state's entry, "speaker: line" (drawn `portraitName`, else `speakerInfo.Name`, actor "None" =
+  narration), id by conversation:entry; Enter finishes the typewriter then clicks `continueButton` (a
+  `DialogueButtonView`; its listener `OnFastForward` only finishes a typing line and ignores clicks while
+  the panel animates); responses = the open menu panel's `ViewItemUIResponseButton.dialogueButtonView`s,
+  focus jumps to them, the line said first if focus never reached it; only the Chaos God's one-line
+  conversation seen live), `ChaosGodScreen` (`ChaosGodScene` after the conversation: the `UnlockCanvas`
+  dialog, "Timeline Divergence", its `ChaosUnlocks` left to right by x (the list is Mid, Left, Right),
+  hover text + name, Proceed = `ProceedButton`, leaves the scene: never through the driver;
+  `ShowCampaignUnlocks(LevelUp(...))` pairs the list with icons by index and the list is never stored,
+  so `ChaosGodScreen.Names` Harmony-prefixes `ChaosUnlock.InitializeEnemy`/`InitializeRoom` to record
+  the name: `<Enemy>_EntityTitle`, rooms `BossTitle_<Room>_Misc` or Cloudy/Holes!/Void Zone
+  `*Encounter_Misc`; panel not yet seen live, names tested by calling the initializers on the hidden
+  icons), `AchievementScreen` (layer 45, exclusive, mod-made: "Achievement unlocked, dialog", the
+  game popup's title and description, OK = `OK_Misc`, Escape too, queued; fed by `PopupReader`: the
+  popup blocks under `AchievementPopupManager.Instance._popupHolder` (DontDestroyOnLoad) are slid in
+  and out and never destroyed, and lose their `AchievementBlock` component, so new = a new child
+  pointer, those present at module load taken as seen; never `AddToPopupQueue` to test, it earns the
+  Steam achievement: clone a block under the holder), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`
