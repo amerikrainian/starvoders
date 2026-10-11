@@ -131,7 +131,13 @@ separately. Host F6 uses the same OS read.
   by name; START begins a run, never through the driver; leaving unloads it before the tutorial choice
   reloads, so it is held, empty, until `TutorialSelectionController` is back, 2 s at most),
   `TutorialSelectionScreen`
-  (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `CutsceneScreen`,
+  (layer 10, exclusive; Escape is `OnClickBack`), `SettingsScreen` (below), `SandboxScreen`
+  (`SandboxSceneAdditive`, `SandboxSceneController`, the Extras page's SANDBOX SETTINGS, layer 36,
+  exclusive: the intro line, then the `VerticalLayoutGroup`'s rows in order under contexts from its
+  headers (one text = a section; `Banned (1)` = a ban list's column title, `PackDesc` its rule as a
+  line); ban-list checkboxes read banned/allowed (checked = `DisabledPacks`/`DisabledBosses`), locked
+  ones only the game's LOCKED; Reset to Default (confirm prompt), Apply & Exit = `SaveAndExit`, also
+  the game's cancel, so Escape; empty while `IsEndingScene`), `CutsceneScreen`,
   `ConfirmPromptScreen`, `GlobeScreen`, `TipScreen`, `EncounterScreen` (all below),
   `EncounterWinScreen` (`EncounterWinSceneAdditive`: "Victory", the stars earned, the loot box
   `Box (1)` whose click is `GoToRewardScene`, up while `!IsEndingScene`; opening it leaves the

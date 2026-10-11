@@ -51,6 +51,9 @@ namespace StarVoders.Core.Strings
             D("state.selected", "selected"),
             D("state.on", "on"),
             D("state.off", "off"),
+            // A ban list's checkbox (the sandbox's packs and bosses): checked = banned.
+            D("state.banned", "banned"),
+            D("state.allowed", "allowed"),
             D("state.expanded", "expanded"),
             D("state.collapsed", "collapsed"),
             D("value.blank", "blank"),
@@ -404,6 +407,8 @@ namespace StarVoders.Core.Strings
         public static string StateSelected => Get("state.selected");
         public static string StateOn => Get("state.on");
         public static string StateOff => Get("state.off");
+        public static string StateBanned => Get("state.banned");
+        public static string StateAllowed => Get("state.allowed");
         public static string ExpandedState(bool expanded) => Get(expanded ? "state.expanded" : "state.collapsed");
         public static string ValueBlank => Get("value.blank");
         public static string ValueSpace => Get("value.space");

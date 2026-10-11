@@ -59,11 +59,19 @@ namespace StarVoders.Module.UI
             };
         }
 
-        /// <summary>A toggle row: "label, toggle, on/off[, disabled]"; Enter is the row's click.</summary>
-        public static NodeVtable Toggle(OptionToggle row)
+        /// <summary>A toggle row: "label, toggle, on/off[, disabled]"; Enter is the row's click.
+        /// <paramref name="onText"/> and <paramref name="offText"/> replace on and off where the
+        /// checkbox means something else (the sandbox's ban lists). A locked row (its caption the
+        /// game's LOCKED) has no state.</summary>
+        public static NodeVtable Toggle(OptionToggle row, Func<string> onText = null, Func<string> offText = null)
         {
             Func<string> label = () => Label(row);
-            Func<string> state = () => row.Toggle != null && row.Toggle.isOn ? Strings.StateOn : Strings.StateOff;
+            Func<string> state = () =>
+            {
+                if (row._isLocked) return null;
+                if (row.Toggle != null && row.Toggle.isOn) return onText != null ? onText() : Strings.StateOn;
+                return offText != null ? offText() : Strings.StateOff;
+            };
             return Row(row, ControlTypes.Toggle, label, state, () => !row._isLocked, onActivate: () => row.OnClick());
         }
 
