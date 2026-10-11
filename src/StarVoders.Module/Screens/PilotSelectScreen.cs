@@ -245,10 +245,9 @@ namespace StarVoders.Module.Screens
                 var view = p.PilotView;
                 if (view == null) return null;
                 string name = GameText.Of(view.PilotNameText);
-                // Each panel draws its own counter; PipText is the open one's.
-                var panel = Shown(view.LockedPanelCanvasGroup) ? view.LockedPanelCanvasGroup.transform : null;
-                var pipText = panel != null ? panel.Find("SelectPip/PipText")?.GetComponent<TMP_Text>() : view.PipText;
-                string pip = GameText.Of(pipText);
+                // The counter as the game counts it ("2/4"): each panel (open, locked) draws its own,
+                // and the one fading in still shows the previous pilot's for a moment.
+                string pip = Position(p);
                 return name != null && pip != null ? name + ", " + pip : name ?? pip;
             };
             return new NodeVtable
@@ -262,6 +261,17 @@ namespace StarVoders.Module.Screens
                     catch (Exception e) { CoreLog.Warning("Pilots: turning the pilot failed: " + e.Message); }
                 },
             };
+        }
+
+        // "3/4": the current pilot's place in the class's list.
+        private static string Position(PilotSelectionController p)
+        {
+            var pilots = p.PlayerDataSOs;
+            var current = p.CurrentPlayerData;
+            if (pilots == null || current == null) return null;
+            for (int i = 0; i < pilots.Count; i++)
+                if (pilots[i] != null && pilots[i].Pointer == current.Pointer) return (i + 1) + "/" + pilots.Count;
+            return null;
         }
 
         // The shown panel: open = "Complexity: 2", the description's lines, the victories; locked =
