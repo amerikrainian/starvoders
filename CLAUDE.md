@@ -205,7 +205,15 @@ separately. Host F6 uses the same OS read.
   popup blocks under `AchievementPopupManager.Instance._popupHolder` (DontDestroyOnLoad) are slid in
   and out and never destroyed, and lose their `AchievementBlock` component, so new = a new child
   pointer, those present at module load taken as seen; never `AddToPopupQueue` to test, it earns the
-  Steam achievement: clone a block under the holder), plus guildrun's
+  Steam achievement: clone a block under the holder), `UnlockCardScreen` (the run end's Unlock:
+  `CampaignEndController._currUnlockCanvas`, layer 15, exclusive, a dialog named by the card's title;
+  kinds = the active `Single`/`Set`/`Misc`/`PackUnlockCanvas`; the pilot by `UnlockCardScreen.Pilots`, a
+  Harmony prefix on `PilotFrontPortraitView.SetPortraitView` (no localized pilot names; + the game's
+  `<Pilot>_Subtitle_Misc`), set/pack card and artifact views as their drawn texts (untested), the
+  description lines, OK = `OK_Misc` = the card's `OnClick` (next card or back), Escape too; holds
+  until faded in and a description line has text (it arrives by callback), 3 s at most;
+  `Initialize` takes `First` of `LevelUnlocks`, else `AchievementUnlocks`, and REMOVES it, so the
+  lists hold the cards still to come, not the one shown; the prefab's portrait is Min/Max), plus guildrun's
   `HelpScreen` and `ModMenuScreen`.
 - Cutscenes (`OpeningScene` = Full Tutorial's start, `EndingScene`): a `PlayableDirector` that
   pauses on `CutsceneDialogueBubble`s; the live one is `_dialogueBubbleHandler._currBubble`

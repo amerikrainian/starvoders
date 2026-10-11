@@ -19,7 +19,7 @@ namespace StarVoders.Module.Screens
     /// while the bar fills, so landing on the level keeps the count quiet until it is asked for; then
     /// the buttons that show: Unlock when there is something to unlock,
     /// Proceed, View Stats, Quick Restart, each the game's click. While an unlock card is up
-    /// (<see cref="UnlockCanvas"/>), it is the one node: its texts, Enter continues as its click does.
+    /// (<see cref="UnlockCanvas"/>) it is <see cref="UnlockCardScreen"/>'s, and this screen is empty.
     /// </summary>
     public sealed class CampaignEndScreen : Screen
     {
@@ -62,17 +62,7 @@ namespace StarVoders.Module.Screens
             if (c == null) return;
 
             var unlock = c._currUnlockCanvas;
-            if (unlock != null && unlock.gameObject.activeInHierarchy)
-            {
-                b.AddItem(ControlId.Structural("campaignend:unlock:" + unlock.GetInstanceID()), new NodeVtable
-                {
-                    ControlType = ControlTypes.Text,
-                    Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => UnlockText(unlock)) },
-                    SearchText = () => UnlockText(unlock),
-                    OnActivate = () => ViewNodes.Click(unlock),
-                });
-                return;
-            }
+            if (unlock != null && unlock.gameObject.activeInHierarchy) return;
 
             var level = c.MechLevelView;
             if (level != null && level.gameObject.activeInHierarchy)
@@ -130,14 +120,6 @@ namespace StarVoders.Module.Screens
                 Add(parts, word != null && figure != null ? word + " " + figure : figure);
             }
             return string.Join(", ", parts);
-        }
-
-        // An unlock card's texts, in order, as one line.
-        private static string UnlockText(UnlockCanvas unlock)
-        {
-            var parts = new List<string>();
-            foreach (var tmp in unlock.GetComponentsInChildren<TMP_Text>(false)) Add(parts, GameText.Of(tmp));
-            return string.Join(" ", parts);
         }
 
         private static void Add(List<string> parts, string text)
