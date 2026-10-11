@@ -16,7 +16,7 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// The difficulty for a new run (<c>DifficultySelectionSceneAdditive</c>,
     /// <see cref="DifficultySelectionController"/>, over the pilot choice), titled "Select Difficulty".
-    /// One stop: the three difficulties as radio buttons ("First Contact, selected", its description
+    /// One stop: the three difficulties as a row of radio buttons ("First Contact, selected", its description
     /// lines after; a locked one LOCKED and disabled, with "Unlocked by beating previous difficulty");
     /// Challenges when the game shows it; Go! (the run starts); Back. Enter on a difficulty only
     /// selects it (<c>OnLevel1Pressed(allowStart: false)</c>): the game's own click on the selected
@@ -35,6 +35,17 @@ namespace StarVoders.Module.Screens
 
         public override bool IsActive() => Controller != null;
 
+        // The selected difficulty's index (0-2), -1 when none.
+        private static int SelectedIndex(DifficultySelectionController c)
+        {
+            var selected = c.SelectedChallengeData;
+            if (selected == null) return -1;
+            var challenges = new[] { c.Level1Challenge, c.Level2Challenge, c.Level3Challenge };
+            for (int i = 0; i < challenges.Length; i++)
+                if (challenges[i] != null && challenges[i].Pointer == selected.Pointer) return i;
+            return -1;
+        }
+
         public override IEnumerable<ElementAction> GetActions()
         {
             yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ =>
@@ -52,9 +63,17 @@ namespace StarVoders.Module.Screens
             if (c == null || c.IsTransitioning) return;
             b.BeginStop("difficulty");
             b.PushContext(null);
+            // The difficulties side by side, as drawn: a row (Left/Right), coming up into it on the
+            // selected one.
             var panels = new[] { c.Difficulty1Panel, c.Difficulty2Panel, c.Difficulty3Panel };
-            for (int i = 0; i < panels.Length; i++)
-                if (ViewNodes.IsShown(panels[i])) b.AddItem(ControlId.Structural("difficulty:" + i), Difficulty(c, panels[i], i));
+            var shown = new List<int>();
+            for (int i = 0; i < panels.Length; i++) if (ViewNodes.IsShown(panels[i])) shown.Add(i);
+            if (shown.Count > 0)
+            {
+                b.StartRow("difficulty:levels", () => Math.Max(0, shown.IndexOf(SelectedIndex(c))));
+                foreach (int i in shown) b.AddItem(ControlId.Structural("difficulty:" + i), Difficulty(c, panels[i], i));
+                b.EndRow();
+            }
             b.PopContext();
             b.PushContext(null, positions: false);
             if (ViewNodes.IsShown(c.CustomButton)) b.AddItem(ControlId.Structural("difficulty:challenges"), ViewNodes.Button(c.CustomButton));
