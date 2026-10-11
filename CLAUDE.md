@@ -151,7 +151,13 @@ separately. Host F6 uses the same OS read.
   copies" (bought twice), "disabled" while the price is drawn red (`Text.color !=
   originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and
   red button when shown, Exit; buying, tipping, Restock and Exit: never through the driver; the
-  unlock canvas is not read yet), `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
+  unlock canvas is not read yet), `PackmasterScreen` (Bud's Factory, `PackmasterScene`,
+  `PackmasterController`, a `CampaignSceneController`: the belt's `CardViews` under "Pick 2 Cards", Enter =
+  the card's click `OnPressSelectCardButton` (toggles `_isSelected`, "selected" live), Proceed (enabled at
+  2; adds them and leaves: never through the driver), Reroll; the `PackViews` by `<Pack>_Misc` and
+  `<Pack>_Desc_Misc` (drawn only as pictures), Enter = their click (the Compendium via
+  `GlossaryTransitionSceneAdditive`), the frame's PACK SYSTEM tooltip; status, map; holds its arrival
+  until every shown card is `_interactable` (they ride in on the belt), 3 s at most), `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
   layer 35, exclusive: class tabs (`ClassButtons`, locked = `IsDisabled()` read "LOCKED", landing
   shows the class), the count panel (Enter = `ArrowRightButton`, the victory view), Filters
   (`IsFilterPanelActive`: `FilterPanel`'s sections by their `Title`, `FilterButton.IsSelected`), the

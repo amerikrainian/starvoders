@@ -150,6 +150,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new EncounterWinScreen());
             ScreenManager.Register(new RewardScreen());
             ScreenManager.Register(new WorkshopScreen());
+            ScreenManager.Register(new PackmasterScreen());
             ScreenManager.Register(new PauseScreen());
             ScreenManager.Register(new CampaignEndScreen());
             ScreenManager.Register(new UnlockCardScreen());
