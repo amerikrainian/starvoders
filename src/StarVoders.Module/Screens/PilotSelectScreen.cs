@@ -98,7 +98,7 @@ namespace StarVoders.Module.Screens
             }
             b.PopContext();
 
-            b.BeginStop("pilots:classbuttons");
+            // Random and Back follow the classes in the same stop, unnumbered.
             b.PushContext(null, positions: false);
             if (ViewNodes.IsShown(c.RandomButtonView))
                 b.AddItem(ControlId.Structural("pilots:random"), ViewNodes.Button(c.RandomButtonView, () => Strings.PilotsRandom));
