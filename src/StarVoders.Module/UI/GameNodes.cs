@@ -229,6 +229,7 @@ namespace StarVoders.Module.UI
                     if (!dropdown.interactable || dropdown.value == index) return;
                     dropdown.value = index;
                     dropdown.RefreshShownValue();
+                    LanguageSync.Refresh(); // the main menu's language: our strings switch before the readback
                 }));
             }
             // The combo box just read its own label: the list speaks only the option landed on.

@@ -15,8 +15,8 @@ namespace StarVoders.Module
     /// which the settings screen's language dropdown sets and Unity's own PlayerPrefs selector restores
     /// at boot), not the system's: lang/&lt;locale code&gt;.txt beside the plugin, English (the defaults)
     /// when there is no file for it. Nothing is polled. A switch arrives through
-    /// <c>LocalizationSettings.SelectedLocaleChanged</c>, which Unity raises inside the setter, so the
-    /// table has changed before the control that committed the switch is read back. The first read
+    /// <c>LocalizationSettings.SelectedLocaleChanged</c>, which can come after the control that committed the switch is
+    /// read back, so a dropdown pick also calls <see cref="Refresh"/>. The first read
     /// is retried from <see cref="Tick"/> until the selected locale is known: at plugin load the
     /// engine has no localization settings to ask yet, and Unity Localization selects its locale
     /// asynchronously once the first scene is up (null until then).
@@ -57,6 +57,17 @@ namespace StarVoders.Module
             _nextTry = Time.frameCount + RetryFrames;
             if (!_hookTried) { _hookTried = true; Hook(); }
             Apply(CurrentCode());
+        }
+
+        /// <summary>Apply the game's selected locale now, if it differs from the strings in effect: a
+        /// control that may have switched the language (a dropdown pick) calls it before it is read
+        /// back. The locale setter itself is synchronous, but Unity can raise its change event later
+        /// (seen: Russian to English read back "Язык, комбинированный список, English (en)").</summary>
+        public static void Refresh()
+        {
+            if (_langDir == null || !Resolved) return;
+            try { Apply(CurrentCode()); }
+            catch (Exception e) { CoreLog.Error("LanguageSync: refreshing the language failed: " + e); }
         }
 
         /// <summary>Drop the locale hook (module teardown; a successor has its own).</summary>
