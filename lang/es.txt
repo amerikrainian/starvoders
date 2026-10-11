@@ -76,6 +76,7 @@ main.credits=Créditos
 role.dialog=diálogo
 cutscene.line={0}: {1}
 achievement.unlocked=Logro desbloqueado
+unlock.named={0}: {1}
 map.cleared=completado
 map.current=actual
 fight.turn=Turno {0}/{1}

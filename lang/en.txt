@@ -78,6 +78,7 @@ main.credits=Credits
 role.dialog=dialog
 cutscene.line={0}: {1}
 achievement.unlocked=Achievement unlocked
+unlock.named={0}: {1}
 map.cleared=cleared
 map.current=current
 fight.turn=Turn {0}/{1}

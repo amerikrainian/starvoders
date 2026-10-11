@@ -76,6 +76,7 @@ main.credits=Mitwirkende
 role.dialog=Dialogfeld
 cutscene.line={0}: {1}
 achievement.unlocked=Erfolg freigeschaltet
+unlock.named={0}: {1}
 map.cleared=abgeschlossen
 map.current=aktuell
 fight.turn=Zug {0}/{1}

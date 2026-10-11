@@ -76,6 +76,7 @@ main.credits=クレジット
 role.dialog=ダイアログ
 cutscene.line={0}：{1}
 achievement.unlocked=実績解除
+unlock.named={0}：{1}
 map.cleared=クリア済み
 map.current=現在地
 fight.turn=ターン {0}/{1}

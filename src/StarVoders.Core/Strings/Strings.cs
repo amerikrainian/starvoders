@@ -124,6 +124,8 @@ namespace StarVoders.Core.Strings
             D("cutscene.line", "{0}: {1}"),
             // The achievement modal's name (the game's popup has no heading of its own).
             D("achievement.unlocked", "Achievement unlocked"),
+            // An unlock the game draws as a picture, named: {0} its caption ("New Act 1 Invader"), {1} what it unlocks.
+            D("unlock.named", "{0}: {1}"),
             // The act timeline's nodes: one already played, and the one the run stands at.
             D("map.cleared", "cleared"),
             D("map.current", "current"),
@@ -442,6 +444,7 @@ namespace StarVoders.Core.Strings
         public static string RoleDialog => Get("role.dialog");
         public static string CutsceneLine(string speaker, string line) => F("cutscene.line", speaker, line);
         public static string AchievementUnlocked => Get("achievement.unlocked");
+        public static string UnlockNamed(string caption, string name) => F("unlock.named", caption, name);
         public static string MapCleared => Get("map.cleared");
         public static string MapCurrent => Get("map.current");
         /// <summary>"Turn 3/8"; "Turn 3" in a fight with no turn limit (the game's MaxTurns is -1).</summary>

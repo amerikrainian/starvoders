@@ -76,6 +76,7 @@ main.credits=Emeği geçenler
 role.dialog=iletişim kutusu
 cutscene.line={0}: {1}
 achievement.unlocked=Başarım kazanıldı
+unlock.named={0}: {1}
 map.cleared=tamamlandı
 map.current=şu anki
 fight.turn=Tur {0}/{1}
