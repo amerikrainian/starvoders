@@ -129,6 +129,7 @@ fight.ev.moves={0} nach {1}
 fight.ev.moves.row={0} nach Reihe {1}
 fight.ev.moves.column={0} nach Spalte {1}
 fight.ev.destroyed={0} zerstört
+fight.ev.count={0}x {1}
 fight.ev.shielded={0} geschützt
 fight.ev.unshielded={0} verliert den Schild
 fight.ev.shocked={0} geschockt

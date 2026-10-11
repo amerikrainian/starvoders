@@ -6,7 +6,7 @@ namespace StarVoders.Core.Fight
     /// <summary>
     /// What changed between two settled moments of a fight, worded as outcomes (speechchem's way):
     /// "Enemy turn" first when it began, then per entity: arrived, moved (only the coordinate that
-    /// changed: "Migo 1 to row 4"), health, shield, shock, charge, destroyed; new Danger Zones per
+    /// changed: "Migo 1 to row 4"), health, shield, shock, charge; the destroyed, grouped by kind; new Danger Zones per
     /// attacker; then Doom and Heat as their panels read; then the new turn ("Turn 2/8") and the
     /// cards drawn. Terse, one line per fact, in that
     /// order. Engine-free: the module takes the snapshots.
@@ -46,8 +46,10 @@ namespace StarVoders.Core.Fight
                 if (was.Shocked != e.Shocked) lines.Add(e.Shocked ? S.FightShocked(e.Name) : S.FightUnshocked(e.Name));
                 if (was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
             }
+            var gone = new List<EntitySnap>();
             foreach (var e in before.Entities)
-                if (!seen.Contains(e.Key)) lines.Add(S.FightDestroyed(e.Name));
+                if (!seen.Contains(e.Key)) gone.Add(e);
+            lines.AddRange(Destroyed(gone));
 
             // New Danger Zones, per attacker in the order they first appear, their tiles merged into
             // shapes (TileRanges): "Shooter 1 targets 2, 1 to 2, 5". Zones that clear are not said:
@@ -76,6 +78,43 @@ namespace StarVoders.Core.Fight
             foreach (var c in after.Hand)
                 if (!held.Contains(c.Key)) drawn.Add(c.Name);
             if (drawn.Count > 0) lines.Add(S.FightDrew(string.Join(", ", drawn)));
+            return lines;
+        }
+
+        // The destroyed, one line per kind in the order the kinds first fall: the numbered by their
+        // numbers, ascending ("Shooter 1, 7, 8 destroyed"), the unnumbered counted ("2x Web
+        // destroyed"); one alone reads as before ("Shooter 7 destroyed", "Web destroyed").
+        private static List<string> Destroyed(List<EntitySnap> gone)
+        {
+            var kinds = new List<string>();
+            var numbers = new Dictionary<string, List<int>>();
+            var plain = new Dictionary<string, int>();
+            foreach (var e in gone)
+            {
+                string kind = e.Kind ?? e.Name;
+                if (!numbers.ContainsKey(kind))
+                {
+                    kinds.Add(kind);
+                    numbers[kind] = new List<int>();
+                    plain[kind] = 0;
+                }
+                if (e.Kind != null && e.Number > 0) numbers[kind].Add(e.Number);
+                else plain[kind]++;
+            }
+            var lines = new List<string>();
+            foreach (var kind in kinds)
+            {
+                var parts = new List<string>();
+                var nums = numbers[kind];
+                if (nums.Count > 0)
+                {
+                    nums.Sort();
+                    parts.Add(kind + " " + string.Join(", ", nums));
+                }
+                if (plain[kind] == 1) parts.Add(kind);
+                else if (plain[kind] > 1) parts.Add(S.FightCount(plain[kind], kind));
+                lines.Add(S.FightDestroyed(string.Join(", ", parts)));
+            }
             return lines;
         }
     }

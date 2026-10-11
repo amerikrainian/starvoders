@@ -90,15 +90,26 @@ namespace StarVoders.Module.Fight
             var enemy = entity.TryCast<EnemyEntityModel>();
             if (enemy != null)
             {
-                var id = enemy.EnemyID;
-                string name = GameLoc.EnemyName(id.EnemyName) ?? id.EnemyName.ToString();
-                return _kinds.TryGetValue(id.EnemyName, out var numbers) && numbers.Count > 1
-                    ? name + " " + (numbers.IndexOf(id.Number) + 1) : name;
+                var (kind, number) = Kind(entity);
+                return number > 0 ? kind + " " + number : kind;
             }
             var item = entity.TryCast<ItemEntityModel>();
             if (item != null) { var n = item.ItemID.ItemName; return GameLoc.Get(n + "_EntityTitle") ?? n.ToString(); }
             if (entity.TryCast<PlayerEntityModel>() != null) return Strings.FightMech;
             return entity.GetIl2CppType().Name;
+        }
+
+        /// <summary>The entity's name split into its kind and number ("Shooter", 9), the number 0 where
+        /// the name has none: an invader without kin, anything else (its kind is its whole name).</summary>
+        public (string Kind, int Number) Kind(AEntityModel entity)
+        {
+            if (entity == null) return (null, 0);
+            var enemy = entity.TryCast<EnemyEntityModel>();
+            if (enemy == null) return (Name(entity), 0);
+            var id = enemy.EnemyID;
+            string name = GameLoc.EnemyName(id.EnemyName) ?? id.EnemyName.ToString();
+            return _kinds.TryGetValue(id.EnemyName, out var numbers) && numbers.Count > 1
+                ? (name, numbers.IndexOf(id.Number) + 1) : (name, 0);
         }
 
         /// <summary>The entity's state after its name: its named traits (Bomber Mech's "Bomb"), health

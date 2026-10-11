@@ -131,6 +131,7 @@ fight.ev.moves={0} to {1}
 fight.ev.moves.row={0} to row {1}
 fight.ev.moves.column={0} to column {1}
 fight.ev.destroyed={0} destroyed
+fight.ev.count={0}x {1}
 fight.ev.shielded={0} shielded
 fight.ev.unshielded={0} loses its shield
 fight.ev.shocked={0} shocked

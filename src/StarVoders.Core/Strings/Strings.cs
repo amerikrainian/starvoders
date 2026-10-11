@@ -188,6 +188,8 @@ namespace StarVoders.Core.Strings
             D("fight.ev.moves.row", "{0} to row {1}"),
             D("fight.ev.moves.column", "{0} to column {1}"),
             D("fight.ev.destroyed", "{0} destroyed"),
+            // Several of a kind without numbers, as destroyed together: "2x Web". {0} = how many, {1} = the kind.
+            D("fight.ev.count", "{0}x {1}"),
             D("fight.ev.shielded", "{0} shielded"),
             D("fight.ev.unshielded", "{0} loses its shield"),
             D("fight.ev.shocked", "{0} shocked"),
@@ -479,6 +481,7 @@ namespace StarVoders.Core.Strings
         public static string FightMovesRow(string name, int row) => F("fight.ev.moves.row", name, row);
         public static string FightMovesColumn(string name, int column) => F("fight.ev.moves.column", name, column);
         public static string FightDestroyed(string name) => F("fight.ev.destroyed", name);
+        public static string FightCount(int count, string kind) => F("fight.ev.count", count, kind);
         public static string FightShielded(string name) => F("fight.ev.shielded", name);
         public static string FightUnshielded(string name) => F("fight.ev.unshielded", name);
         public static string FightShocked(string name) => F("fight.ev.shocked", name);

@@ -129,6 +129,7 @@ fight.ev.moves={0} a {1}
 fight.ev.moves.row={0} a la fila {1}
 fight.ev.moves.column={0} a la columna {1}
 fight.ev.destroyed={0} destruido
+fight.ev.count={0}x {1}
 fight.ev.shielded={0} con escudo
 fight.ev.unshielded={0} pierde el escudo
 fight.ev.shocked={0} electrocutado

@@ -126,10 +126,13 @@ namespace StarVoders.Module.Fight
                 foreach (var entity in board.Entities)
                 {
                     var c = model.GridModel.GetEntityCoord(entity.ID.Cast<EntityID>(), false);
+                    var kind = board.Kind(entity);
                     snap.Entities.Add(new EntitySnap
                     {
                         Key = Key(entity),
                         Name = board.Name(entity),
+                        Kind = kind.Kind,
+                        Number = kind.Number,
                         X = c.x + 1,
                         Y = c.y + 1,
                         Health = entity.Health,

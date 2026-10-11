@@ -13,6 +13,35 @@ namespace StarVoders.Tests
         private static EntitySnap Migo(int n, int x, int y, int health = 1) =>
             new EntitySnap { Key = "Basic#" + n, Name = "Migo " + n, X = x, Y = y, Health = health };
 
+        private static EntitySnap Shooter(int n, int x, int y) =>
+            new EntitySnap { Key = "Shooter#" + n, Name = "Shooter " + n, Kind = "Shooter", Number = n, X = x, Y = y, Health = 1 };
+
+        private static EntitySnap Web(int n, int x, int y) =>
+            new EntitySnap { Key = "Web#" + n, Name = "Web", Kind = "Web", X = x, Y = y, Health = 1 };
+
+        [Fact]
+        public void The_destroyed_are_grouped_by_kind_numbers_ascending_and_the_unnumbered_counted()
+        {
+            var before = Snap(Shooter(8, 1, 6), Web(1, 2, 3), Shooter(1, 2, 6), Web(2, 4, 3), Shooter(7, 3, 6), Shooter(2, 4, 6));
+            var after = Snap(Shooter(2, 4, 6));
+            Assert.Equal(new[] { "Shooter 1, 7, 8 destroyed", "2x Web destroyed" }, FightDiff.Lines(before, after));
+        }
+
+        [Fact]
+        public void One_destroyed_of_a_kind_reads_as_its_name()
+        {
+            Assert.Equal(new[] { "Shooter 7 destroyed" }, FightDiff.Lines(Snap(Shooter(7, 1, 6), Shooter(2, 2, 6)), Snap(Shooter(2, 2, 6))));
+            Assert.Equal(new[] { "Web destroyed" }, FightDiff.Lines(Snap(Web(1, 2, 3)), Snap()));
+        }
+
+        [Fact]
+        public void Without_a_kind_the_destroyed_group_by_name()
+        {
+            var a = new EntitySnap { Key = "a", Name = "Crate" };
+            var b = new EntitySnap { Key = "b", Name = "Crate" };
+            Assert.Equal(new[] { "2x Crate destroyed" }, FightDiff.Lines(Snap(a, b), Snap()));
+        }
+
         private static FightSnapshot Snap(params EntitySnap[] entities)
         {
             var s = new FightSnapshot { Turn = 1, Turns = 8, PlayerTurn = true, Doom = "Doom 0/5" };

@@ -8,6 +8,11 @@ namespace StarVoders.Core.Fight
     {
         public string Key;
         public string Name;
+        /// <summary>The name without its number ("Shooter" of "Shooter 9") and the number, 0 when
+        /// the name has none (an item, an invader without kin); destructions are grouped by kind.
+        /// A null kind groups by <see cref="Name"/>.</summary>
+        public string Kind;
+        public int Number;
         public int X, Y;
         public int Health;
         public bool Shielded, Shocked;

@@ -129,6 +129,7 @@ fight.ev.moves={0} 到 {1}
 fight.ev.moves.row={0} 到第 {1} 列
 fight.ev.moves.column={0} 到第 {1} 欄
 fight.ev.destroyed={0} 被摧毀
+fight.ev.count={1} ×{0}
 fight.ev.shielded={0} 獲得護盾
 fight.ev.unshielded={0} 失去護盾
 fight.ev.shocked={0} 被電擊
