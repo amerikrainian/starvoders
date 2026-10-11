@@ -140,6 +140,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new TutorialSelectionScreen());
             ScreenManager.Register(new CutsceneScreen());
             ScreenManager.Register(new DialogueScreen());
+            ScreenManager.Register(new AchievementScreen());
             ScreenManager.Register(new ConfirmPromptScreen());
             ScreenManager.Register(new GlobeScreen());
             ScreenManager.Register(new TipScreen());

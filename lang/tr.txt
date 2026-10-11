@@ -75,6 +75,7 @@ main.discord=Discord
 main.credits=Emeği geçenler
 role.dialog=iletişim kutusu
 cutscene.line={0}: {1}
+achievement.unlocked=Başarım kazanıldı
 map.cleared=tamamlandı
 map.current=şu anki
 fight.turn=Tur {0}/{1}

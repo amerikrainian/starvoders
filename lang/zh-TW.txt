@@ -75,6 +75,7 @@ main.discord=Discord
 main.credits=製作群
 role.dialog=對話框
 cutscene.line={0}：{1}
+achievement.unlocked=成就已解鎖
 map.cleared=已完成
 map.current=目前
 fight.turn=回合 {0}/{1}

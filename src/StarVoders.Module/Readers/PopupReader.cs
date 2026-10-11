@@ -17,7 +17,9 @@ namespace StarVoders.Module.Readers
     /// the line's name gives the speaker), and the fight's bomb and puppet counters ("1/3 Bomb", which
     /// the game flashes when one joins the player's: <see cref="BombLimitView.SetBombAmount"/> from
     /// AddToPlayerBombListTask, ShowBombNumberTask and BombRainTask), also logged to the combat
-    /// buffer. Polled from the
+    /// buffer, and the achievement popups (a block spawned under <see cref="AchievementPopupManager"/>'s
+    /// holder, which lives across scenes, slid in and back out, never destroyed; handed to the
+    /// <see cref="Screens.AchievementScreen"/> dialog rather than spoken). Polled from the
     /// module tick over components gathered once per scene change; what was spoken is remembered by
     /// native pointer only while it shows.
     /// </summary>
@@ -30,6 +32,9 @@ namespace StarVoders.Module.Readers
         private static readonly HashSet<IntPtr> s_bubbles = new HashSet<IntPtr>();
         private static readonly HashSet<IntPtr> s_present = new HashSet<IntPtr>();
         private static readonly Dictionary<IntPtr, string> s_counters = new Dictionary<IntPtr, string>();
+        // The holder's blocks already seen; those there when the module loads are taken as seen.
+        private static readonly HashSet<IntPtr> s_achievements = new HashSet<IntPtr>();
+        private static bool s_achievementsPrimed;
 
         public static void Tick()
         {
@@ -44,7 +49,11 @@ namespace StarVoders.Module.Readers
                 if (bombs != null) Counter(bombs.CanvasGroup, bombs.BombLimitText);
             foreach (var puppets in GameScenes.Components<PuppetLimitView>())
                 if (puppets != null) Counter(puppets.CanvasGroup, puppets.PuppetLimitText);
-            if (Time.frameCount % 5 == 0) Bubbles();
+            if (Time.frameCount % 5 == 0)
+            {
+                Bubbles();
+                Achievements();
+            }
         }
 
         public static void Reset()
@@ -114,6 +123,32 @@ namespace StarVoders.Module.Readers
                 if (anchors != null) foreach (var anchor in anchors) if (anchor != null) Scan(anchor);
             }
             s_bubbles.IntersectWith(s_present);
+        }
+
+        // A new block under the holder goes to the achievement dialog once its texts are in: the
+        // title, then the other shown texts (the description). The blocks stay after sliding out (and lose their
+        // AchievementBlock component), so a block is new by pointer, not by being shown.
+        private static void Achievements()
+        {
+            var manager = AchievementPopupManager.Instance;
+            var holder = manager != null ? manager._popupHolder : null;
+            if (holder == null) return;
+            for (int i = 0; i < holder.childCount; i++)
+            {
+                var block = holder.GetChild(i);
+                if (block == null || s_achievements.Contains(block.Pointer)) continue;
+                if (!s_achievementsPrimed) { s_achievements.Add(block.Pointer); continue; }
+                var parts = new List<string>();
+                foreach (var tmp in block.GetComponentsInChildren<TMPro.TMP_Text>(false))
+                {
+                    string text = GameText.Of(tmp);
+                    if (!string.IsNullOrWhiteSpace(text) && !parts.Contains(text)) parts.Add(text);
+                }
+                if (parts.Count == 0) continue;
+                s_achievements.Add(block.Pointer);
+                Screens.AchievementScreen.Show(parts[0], parts.Count > 1 ? string.Join(" ", parts.GetRange(1, parts.Count - 1)) : null);
+            }
+            s_achievementsPrimed = true;
         }
 
         // A character's line is named for them ("Roxy_Excited", "Min_..."); the generic ones

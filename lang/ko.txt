@@ -75,6 +75,7 @@ main.discord=Discord
 main.credits=제작진
 role.dialog=대화 상자
 cutscene.line={0}: {1}
+achievement.unlocked=업적 달성
 map.cleared=완료
 map.current=현재
 fight.turn=턴 {0}/{1}

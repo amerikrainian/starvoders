@@ -75,6 +75,7 @@ main.discord=Discord
 main.credits=Авторы
 role.dialog=диалог
 cutscene.line={0}: {1}
+achievement.unlocked=Достижение получено
 map.cleared=пройдено
 map.current=текущий
 fight.turn=Ход {0}/{1}

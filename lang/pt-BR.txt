@@ -75,6 +75,7 @@ main.discord=Discord
 main.credits=Créditos
 role.dialog=diálogo
 cutscene.line={0}: {1}
+achievement.unlocked=Conquista desbloqueada
 map.cleared=concluído
 map.current=atual
 fight.turn=Turno {0}/{1}
