@@ -22,8 +22,10 @@ namespace StarVoders.Module.Screens
     /// random pilot, shown, nothing started) and Back (to the main menu). A class's pilots
     /// (<see cref="MechSelectionController.CurrentPilotSelectionController"/>): the pilot ("Roxy, 1/4", Left and Right turning as the arrows do); the panel shown (by
     /// its CanvasGroup: open = complexity counted from its "=" glyphs, description, victories,
-    /// the starter deck and artifact; locked = LOCKED and its condition or checklist); Go! while shown
-    /// (difficulty next); the class's level and experience; the class's Guide; the arrows; Back to the classes. Escape is the shown level's
+    /// the starter deck and artifact; locked = LOCKED and its condition or checklist); the class's Guide;
+    /// Back to the classes; Go! while shown (difficulty next); all one stop, the class's level and
+    /// experience on top of it, focus starting on the pilot (the game's arrow buttons are Left and
+    /// Right on the pilot). Escape is the shown level's
     /// Back. While the game slides between the levels (<c>IsTransitioning</c>) the screen is empty.
     /// </summary>
     public sealed class PilotSelectScreen : Screen
@@ -70,7 +72,12 @@ namespace StarVoders.Module.Screens
             var c = Controller;
             if (c == null || c.IsTransitioning) return;
             bool pilots = Pilots(c) != null;
-            if (pilots != _wasPilots) Navigation.Active?.FocusStop(pilots ? "pilots:pilot" : "pilots:classes");
+            if (pilots != _wasPilots)
+            {
+                // The pilot, not the stop's first item (the class's level above it).
+                if (pilots) Navigation.Active?.FocusNode(PilotId);
+                else Navigation.Active?.FocusStop("pilots:classes");
+            }
             _wasPilots = pilots;
         }
 
@@ -167,7 +174,12 @@ namespace StarVoders.Module.Screens
             var view = p.PilotView;
             b.BeginStop("pilots:pilot");
             b.PushContext(null, positions: false);
-            b.AddItem(ControlId.Structural("pilots:name"), Pilot(p));
+            // The class's level and experience on top (the panel beside the pilot, the Guide under it);
+            // focus starts on the pilot below it.
+            if (ViewNodes.IsShown(p.PilotXPView))
+                b.AddItem(ControlId.Structural("pilots:level"), GameNodes.Text(() => Level(p)));
+            b.AddItem(PilotId, Pilot(p));
+            b.SetStart(PilotId);
             int i = 0;
             foreach (var line in PanelLines(view))
             {
@@ -182,26 +194,19 @@ namespace StarVoders.Module.Screens
                 if (ViewNodes.IsShown(artifact) && artifact.ArtifactModel != null)
                     b.AddItem(ControlId.Structural("pilots:artifact"), CardNodes.Artifact(artifact.ArtifactModel, artifact));
             }
-            // Go! for an open pilot only: the game hides it from a locked one by sliding it off screen.
-            if (ViewNodes.IsShown(p.GoButtonView) && Shown(view?.PilotPanelCanvasGroup))
-                b.AddItem(ControlId.Structural("pilots:go"), ViewNodes.Button(p.GoButtonView));
-            if (ViewNodes.IsShown(p.PilotXPView))
-                b.AddItem(ControlId.Structural("pilots:level"), GameNodes.Text(() => Level(p)));
-            b.PopContext();
-
-            b.BeginStop("pilots:pilotbuttons");
-            b.PushContext(null, positions: false);
-            // The class's guide (the guide scene, on its page): beside the level panel, not in it.
+            // The class's guide (the guide scene, on its page; beside the level panel, not in it) and
+            // Back, then Go! for an open pilot only: the game hides it from a locked one by sliding it
+            // off screen. The game's pilot arrows are Left/Right on the pilot's line.
             var guideButton = p.transform.Find("MechPanel/Mediator/GuideButton/GuideButton")?.GetComponent<AViewItem>();
             if (ViewNodes.IsShown(guideButton)) b.AddItem(ControlId.Structural("pilots:guide"), ViewNodes.Button(guideButton));
-            if (ViewNodes.IsShown(p.LeftArrowButton))
-                b.AddItem(ControlId.Structural("pilots:prev"), ViewNodes.Button(p.LeftArrowButton, () => Strings.AlbumPrevious));
-            if (ViewNodes.IsShown(p.RightArrowButton))
-                b.AddItem(ControlId.Structural("pilots:next"), ViewNodes.Button(p.RightArrowButton, () => Strings.AlbumNext));
             if (ViewNodes.IsShown(p.BackButtonView))
                 b.AddItem(ControlId.Structural("pilots:pilotback"), GameNodes.Button(() => Strings.Get("bind.ui.back"), Back));
+            if (ViewNodes.IsShown(p.GoButtonView) && Shown(view?.PilotPanelCanvasGroup))
+                b.AddItem(ControlId.Structural("pilots:go"), ViewNodes.Button(p.GoButtonView));
             b.PopContext();
         }
+
+        private static readonly ControlId PilotId = ControlId.Structural("pilots:name");
 
         private static bool Shown(CanvasGroup group) => group != null && group.gameObject.activeInHierarchy && group.alpha > 0.05f;
 
