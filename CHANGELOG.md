@@ -1,5 +1,13 @@
 # Changelog
 
+## V0.0.4
+
+- Sandbox settings are accessible now. Pack and boss rows read banned or allowed, and locked ones just say locked.
+- Ctrl+B in a fight reads how many bombs you have out of the limit.
+- The bomb count is no longer announced every time you move over a bomb or a target tile. it is still spoken once during previews.
+- Things destroyed together are now grouped.
+- Switching the language from the main menu now switches the mod's own words right away, instead of reading the combo box back in the old language.
+
 ## V0.0.3
 
 - Game-ending scene dialogues are accessible now.
