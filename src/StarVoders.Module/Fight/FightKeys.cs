@@ -16,8 +16,8 @@ namespace StarVoders.Module.Fight
 {
     /// <summary>
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
-    /// card; single letters read one thing (C coordinates, T turn, D Doom, H Heat, O objective, M the
-    /// mech) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
+    /// card; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H Heat, Ctrl+O
+    /// objective, Ctrl+M the mech) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
     /// bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
@@ -46,10 +46,10 @@ namespace StarVoders.Module.Fight
 
             Read("fight.coords", "Coordinates", KeyCode.C, Coords);
             Read("fight.turn", "Turn", KeyCode.T, EncounterScreen.TurnText);
-            Read("fight.doom", "Doom", KeyCode.D, () => Visible(Fight.View?.DoomView) ? Fight.Figure("Doom") : null);
-            Read("fight.heat", "Heat", KeyCode.H, () => Visible(Fight.View?.HeatView) ? Fight.Figure("Heat") : null);
-            Read("fight.objective", "Objective", KeyCode.O, EncounterScreen.Objective);
-            Read("fight.mech", "Mech", KeyCode.M, MechLine);
+            Read("fight.doom", "Doom", KeyCode.D, ctrl: true, line: () => Visible(Fight.View?.DoomView) ? Fight.Figure("Doom") : null);
+            Read("fight.heat", "Heat", KeyCode.H, ctrl: true, line: () => Visible(Fight.View?.HeatView) ? Fight.Figure("Heat") : null);
+            Read("fight.objective", "Objective", KeyCode.O, ctrl: true, line: EncounterScreen.Objective);
+            Read("fight.mech", "Mech", KeyCode.M, ctrl: true, line: MechLine);
             InputManager.Register("fight.mech.jump", "Go to the mech", InputCategory.Game, () => JumpTo(Mech()))
                 .AddBinding(new KeyboardBinding(KeyCode.M, shift: true));
             InputManager.Register("fight.cat.next", "Next category", InputCategory.Game, () => Category(1))
@@ -67,7 +67,7 @@ namespace StarVoders.Module.Fight
         }
 
         // A read key: speaks its line, interrupting; nothing when the line is null.
-        private static void Read(string key, string label, KeyCode code, Func<string> line)
+        private static void Read(string key, string label, KeyCode code, Func<string> line, bool ctrl = false)
         {
             InputManager.Register(key, label, InputCategory.Game, () =>
             {
@@ -75,7 +75,7 @@ namespace StarVoders.Module.Fight
                 try { text = line(); }
                 catch (Exception e) { CoreLog.Warning("FightKeys: " + key + " failed: " + e.Message); }
                 if (!string.IsNullOrEmpty(text)) Speech.Say(text, interrupt: true);
-            }).AddBinding(new KeyboardBinding(code));
+            }).AddBinding(new KeyboardBinding(code, ctrl: ctrl));
         }
 
         private static bool Visible(Component view)
