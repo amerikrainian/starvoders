@@ -18,7 +18,8 @@ namespace StarVoders.Module.Screens
     /// <see cref="DifficultySelectionController"/>, over the pilot choice), titled "Select Difficulty".
     /// One stop: the three difficulties as a row of radio buttons ("First Contact, selected", its description
     /// lines after; a locked one LOCKED and disabled, with "Unlocked by beating previous difficulty");
-    /// Challenges when the game shows it; Go! (the run starts); Back. Enter on a difficulty only
+    /// Challenges when the game shows it; Go! (the run starts; "disabled" while no difficulty is selected,
+    /// and never hovered: the game's keyboard hover on it deselects the difficulty); Back. Enter on a difficulty only
     /// selects it (<c>OnLevel1Pressed(allowStart: false)</c>): the game's own click on the selected
     /// one starts the run, which a second Enter must not do by surprise; Go! starts it. The seed field
     /// is the mouse's (hidden here) and not read. Escape is <see cref="DifficultySelectionController.OnBackPressed"/>;
@@ -77,7 +78,14 @@ namespace StarVoders.Module.Screens
             b.PopContext();
             b.PushContext(null, positions: false);
             if (ViewNodes.IsShown(c.CustomButton)) b.AddItem(ControlId.Structural("difficulty:challenges"), ViewNodes.Button(c.CustomButton));
-            if (c.GoButtonShown && ViewNodes.IsShown(c.GoButton)) b.AddItem(ControlId.Structural("difficulty:go"), ViewNodes.Button(c.GoButton));
+            // Go! starts the run with the selected difficulty, refusing silently without one. It is
+            // not hovered: the game's keyboard hover on it clears the selection.
+            if (c.GoButtonShown && ViewNodes.IsShown(c.GoButton))
+            {
+                var go = c.GoButton;
+                b.AddItem(ControlId.Structural("difficulty:go"), GameNodes.Button(() => ViewNodes.Label(go),
+                    () => ViewNodes.Click(go), () => ViewNodes.IsShown(go) && c.SelectedChallengeData != null));
+            }
             if (ViewNodes.IsShown(c.BackButton))
                 b.AddItem(ControlId.Structural("difficulty:back"), GameNodes.Button(() => Strings.Get("bind.ui.back"), () =>
                 {
