@@ -10,6 +10,7 @@ using StarVoders.Core.UI;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
 using TMPro;
+using UnityEngine;
 using Screen = StarVoders.Core.Screens.Screen;
 
 namespace StarVoders.Module.Screens
@@ -54,6 +55,36 @@ namespace StarVoders.Module.Screens
             }
         }
 
+        // The game switches Proceed on as the panel starts fading in, the icons after it: the screen
+        // holds (declaring nothing) until the fades are done, so it lands on the first unlock, not on
+        // Proceed alone. A panel that stays hidden (Proceed only) settles after a second; an icon that
+        // never finishes (or one named and never shown) is waited for three at most.
+        private const float Settled = 0.99f, Faint = 0.01f, NoPanelWait = 1f, MaxWait = 3f;
+        private float _pushedAt;
+
+        public override void OnPush() => _pushedAt = Time.unscaledTime;
+
+        public override bool HoldsArrival => !IsSettled(Controller);
+
+        private bool IsSettled(ChaosGodController c)
+        {
+            if (c == null) return true;
+            float waited = Time.unscaledTime - _pushedAt;
+            if (waited >= MaxWait) return true;
+            var canvas = c.UnlockCanvas;
+            if (canvas == null || !canvas.gameObject.activeInHierarchy || canvas.alpha < Faint) return waited >= NoPanelWait;
+            if (canvas.alpha < Settled) return false;
+            if (c.ChaosUnlocks == null) return true;
+            foreach (var unlock in c.ChaosUnlocks)
+            {
+                if (unlock == null || !unlock.gameObject.activeInHierarchy || unlock.MainCanvasGroup == null) continue;
+                float alpha = unlock.MainCanvasGroup.alpha;
+                if (alpha >= Settled) continue;
+                if (alpha > Faint || Names.Has(unlock)) return false;
+            }
+            return true;
+        }
+
         private static bool PanelShown(ChaosGodController c)
             => c.UnlockCanvas != null && c.UnlockCanvas.gameObject.activeInHierarchy && c.UnlockCanvas.alpha >= Shown;
 
@@ -67,7 +98,7 @@ namespace StarVoders.Module.Screens
         public override void Build(GraphBuilder b)
         {
             var c = Controller;
-            if (c == null) return;
+            if (c == null || !IsSettled(c)) return;
             b.PushContext(PanelShown(c) ? Title(c) : null, Strings.RoleDialog, positions: false);
             if (PanelShown(c) && c.ChaosUnlocks != null)
             {
@@ -107,6 +138,8 @@ namespace StarVoders.Module.Screens
         internal static class Names
         {
             private static readonly Dictionary<IntPtr, string> s_names = new Dictionary<IntPtr, string>();
+
+            public static bool Has(ChaosUnlock unlock) => unlock != null && s_names.ContainsKey(unlock.Pointer);
 
             public static string Of(ChaosUnlock unlock)
                 => unlock != null && s_names.TryGetValue(unlock.Pointer, out var name) ? name : null;

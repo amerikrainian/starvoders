@@ -193,7 +193,9 @@ separately. Host F6 uses the same OS read.
   focus jumps to them, the line said first if focus never reached it; only the Chaos God's one-line
   conversation seen live), `ChaosGodScreen` (`ChaosGodScene` after the conversation: the `UnlockCanvas`
   dialog, "Timeline Divergence", its `ChaosUnlocks` left to right by x (the list is Mid, Left, Right),
-  hover text + name, Proceed = `ProceedButton`, leaves the scene: never through the driver;
+  hover text + name, Proceed = `ProceedButton`, leaves the scene: never through the driver; the game
+  switches Proceed on before the panel and icons fade in, so the screen holds its arrival (declares
+  nothing) until the canvas and every named or mid-fade icon reach full alpha, 3 s at most;
   `ShowCampaignUnlocks(LevelUp(...))` pairs the list with icons by index and the list is never stored,
   so `ChaosGodScreen.Names` Harmony-prefixes `ChaosUnlock.InitializeEnemy`/`InitializeRoom` to record
   the name: `<Enemy>_EntityTitle`, rooms `BossTitle_<Room>_Misc` or Cloudy/Holes!/Void Zone
