@@ -157,7 +157,19 @@ separately. Host F6 uses the same OS read.
   2; adds them and leaves: never through the driver), Reroll; the `PackViews` by `<Pack>_Misc` and
   `<Pack>_Desc_Misc` (drawn only as pictures), Enter = their click (the Compendium via
   `GlossaryTransitionSceneAdditive`), the frame's PACK SYSTEM tooltip; status, map; holds its arrival
-  until every shown card is `_interactable` (they ride in on the belt), 3 s at most), `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
+  until every shown card is `_interactable` (they ride in on the belt), 3 s at most),
+  `SpecialRewardScreen` (`SpecialRewardScene`, `SpecialRewardController`: title from `TextesObject`, the
+  `SpecialRewardDescription` over `_rewardViewItems` (card/artifact reward boards, display only), Take All =
+  `AcceptRewardViewItem`, Skip = base `ProceedButton` ("+1000", the star glyph "=" dropped), Reroll; status,
+  map; holds until the box has opened; taking/skipping: never through the driver; the kind is the static
+  `CurrentSpecialReward` but the offer follows the run's room data: test by setting it and
+  `SceneLoader.LoadSceneWithTransition(SpecialRewardScene)` from the encounter choice), `DailyRunScreen`
+  (`DailyRunSceneAdditive`, `DailyRunController`, layer 10, exclusive, over the main menu once every pilot
+  is unlocked (`SettingsSceneController.UnlockPilots()` asks first through the confirm prompt; the main
+  menu shows the button from its next load): the pilot by the static `PlayerData.PilotName` + subtitle,
+  `ModVerticalLayoutGroup`'s lines, the pilot and mod artifacts, Start (a run: never through the driver),
+  Back, the reset countdown, Total Completed by `StreakNumber`; the deck its own stop),
+  `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
   layer 35, exclusive: class tabs (`ClassButtons`, locked = `IsDisabled()` read "LOCKED", landing
   shows the class), the count panel (Enter = `ArrowRightButton`, the victory view), Filters
   (`IsFilterPanelActive`: `FilterPanel`'s sections by their `Title`, `FilterButton.IsSelected`), the
@@ -305,6 +317,10 @@ separately. Host F6 uses the same OS read.
   post). Cells say "strike"; a selection's opening says "Strikes <ranges>; hits <names>" once,
   waiting up to 30 frames for the marks. The card's cost and tasks wait for the pick, so a first,
   fully cancellable selection backs out with nothing spent.
+- A lost fight: `LoseEncounterTask` loads `CampaignLoseTransitionAdditive` (scene 30) straight to the run
+  end; nothing in the code loads `EncounterLoseSceneAdditive` (16, `EncounterLoseController` Rewind/Lose) by
+  a fixed number, so it is treated as unused. Test a loss with
+  `EncounterController.TaskEngine.QueueTask(new LoseEncounterTask())` (it ends the run: back up the save).
 - Fight figures: read `EncounterModel.Values[EncounterValue.Doom/Heat/MaxHeat/Power/...]`, never
   the panels: hovering End Turn or a card PREVIEWS on them (Doom panel "5/5" with the model at 3).
   Doom's maximum is the panel's "/5" (a preview leaves it alone).

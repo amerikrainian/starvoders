@@ -149,6 +149,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new DeckViewScreen());
             ScreenManager.Register(new EncounterWinScreen());
             ScreenManager.Register(new RewardScreen());
+            ScreenManager.Register(new SpecialRewardScreen());
             ScreenManager.Register(new WorkshopScreen());
             ScreenManager.Register(new PackmasterScreen());
             ScreenManager.Register(new PauseScreen());
@@ -160,6 +161,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new AlbumScreen());
             ScreenManager.Register(new TrophiesScreen());
             ScreenManager.Register(new NewsScreen());
+            ScreenManager.Register(new DailyRunScreen());
             ScreenManager.Register(new CreditsScreen());
             ScreenManager.Register(new GuideScreen());
             ScreenManager.Register(new PilotSelectScreen());
