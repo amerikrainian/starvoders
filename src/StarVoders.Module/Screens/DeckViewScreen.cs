@@ -7,6 +7,7 @@ using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
+using UnityEngine;
 using FightState = StarVoders.Module.Fight.Fight;
 using Screen = StarVoders.Core.Screens.Screen;
 
@@ -20,6 +21,10 @@ namespace StarVoders.Module.Screens
     /// "name, cost, description" with the keyword explanations in the ui buffer and on Backspace;
     /// then its artifacts; Back is the next Tab stop. Enter is the game's click on a card (nothing in a pile; the
     /// removal in the shop's mode). Escape is Back.
+    ///
+    /// The game creates the artifacts first and the cards over the next frames, so the screen holds
+    /// its arrival (declaring nothing) until the card count has held for a moment, else focus lands on
+    /// the artifact with the cards appearing above it.
     /// </summary>
     public sealed class DeckViewScreen : Screen
     {
@@ -35,10 +40,38 @@ namespace StarVoders.Module.Screens
             return c != null && !c.IsEndingScene;
         }
 
+        // Settled once the count has not changed for StableFor; an empty viewer (a pile with nothing
+        // in it) after EmptyWait; anything after MaxWait.
+        private const float StableFor = 0.15f, EmptyWait = 0.5f, MaxWait = 1.5f;
+        private float _openedAt, _stableSince;
+        private int _lastCount = -1;
+        private bool _settled;
+
+        public override void OnPush()
+        {
+            _openedAt = _stableSince = Time.unscaledTime;
+            _lastCount = -1;
+            _settled = false;
+        }
+
+        public override bool HoldsArrival => !_settled;
+
+        public override void OnUpdate()
+        {
+            if (_settled) return;
+            var c = Controller;
+            if (c == null) return;
+            float now = Time.unscaledTime;
+            int count = Cards(c).Count;
+            if (count != _lastCount) { _lastCount = count; _stableSince = now; }
+            bool steady = now - _stableSince >= StableFor && (count > 0 || now - _openedAt >= EmptyWait);
+            _settled = steady || now - _openedAt >= MaxWait;
+        }
+
         public override void Build(GraphBuilder b)
         {
             var c = Controller;
-            if (c == null) return;
+            if (c == null || !_settled) return;
             var cards = Cards(c);
             b.BeginStop("deckview:cards");
             b.PushContext(Title(cards));
