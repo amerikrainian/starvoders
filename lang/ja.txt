@@ -171,6 +171,7 @@ bind.fight.doom=破滅
 bind.fight.heat=ヒート
 bind.fight.objective=目標
 bind.fight.mech=メカ
+bind.fight.bombs=爆弾
 bind.fight.mech.jump=メカへ移動
 bind.fight.cat.next=次のカテゴリ
 bind.fight.cat.prev=前のカテゴリ

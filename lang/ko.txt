@@ -171,6 +171,7 @@ bind.fight.doom=파멸
 bind.fight.heat=열기
 bind.fight.objective=목표
 bind.fight.mech=메카
+bind.fight.bombs=폭탄
 bind.fight.mech.jump=메카로 이동
 bind.fight.cat.next=다음 분류
 bind.fight.cat.prev=이전 분류

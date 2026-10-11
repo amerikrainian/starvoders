@@ -173,6 +173,7 @@ bind.fight.doom=Doom
 bind.fight.heat=Heat
 bind.fight.objective=Objective
 bind.fight.mech=Mech
+bind.fight.bombs=Bombs
 bind.fight.mech.jump=Go to the mech
 bind.fight.cat.next=Next category
 bind.fight.cat.prev=Previous category

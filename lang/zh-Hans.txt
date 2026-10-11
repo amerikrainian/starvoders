@@ -171,6 +171,7 @@ bind.fight.doom=末日
 bind.fight.heat=热量
 bind.fight.objective=目标
 bind.fight.mech=机甲
+bind.fight.bombs=炸弹
 bind.fight.mech.jump=跳到机甲
 bind.fight.cat.next=下一类别
 bind.fight.cat.prev=上一类别

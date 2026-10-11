@@ -171,6 +171,7 @@ bind.fight.doom=Kıyamet
 bind.fight.heat=Isı
 bind.fight.objective=Hedef
 bind.fight.mech=Mech
+bind.fight.bombs=Bombalar
 bind.fight.mech.jump=Mech'e git
 bind.fight.cat.next=Sonraki kategori
 bind.fight.cat.prev=Önceki kategori

@@ -171,6 +171,7 @@ bind.fight.doom=Malheur
 bind.fight.heat=Chaleur
 bind.fight.objective=Objectif
 bind.fight.mech=Mécha
+bind.fight.bombs=Bombes
 bind.fight.mech.jump=Aller au mécha
 bind.fight.cat.next=Catégorie suivante
 bind.fight.cat.prev=Catégorie précédente

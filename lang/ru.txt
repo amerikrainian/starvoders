@@ -171,6 +171,7 @@ bind.fight.doom=Гибель
 bind.fight.heat=Нагрев
 bind.fight.objective=Цель
 bind.fight.mech=Мех
+bind.fight.bombs=Бомбы
 bind.fight.mech.jump=К меху
 bind.fight.cat.next=Следующая категория
 bind.fight.cat.prev=Предыдущая категория

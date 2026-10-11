@@ -171,6 +171,7 @@ bind.fight.doom=Perdição
 bind.fight.heat=Calor
 bind.fight.objective=Objetivo
 bind.fight.mech=Mech
+bind.fight.bombs=Bombas
 bind.fight.mech.jump=Ir ao mech
 bind.fight.cat.next=Próxima categoria
 bind.fight.cat.prev=Categoria anterior

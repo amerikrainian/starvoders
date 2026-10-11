@@ -339,6 +339,21 @@ namespace StarVoders.Module.Fight
             return title != null ? title + " " + figure : figure;
         }
 
+        /// <summary>The player's bombs on the grid out of the limit, "Bombs 1/3"
+        /// (<see cref="GridModel.PlayerBombList"/>). The limit is the 3 the game writes into its
+        /// counter (<see cref="BombLimitView.SetBombAmount"/>) and tests in AddToPlayerBombListTask,
+        /// both constants.</summary>
+        public static string Bombs()
+        {
+            var bombs = Model?.GridModel?.PlayerBombList;
+            if (bombs == null) return null;
+            string figure = Core.Strings.Strings.Position(bombs.Count, BombLimit);
+            string title = GameLoc.Get("Bombs_Keyword");
+            return title != null ? title + " " + figure : figure;
+        }
+
+        private const int BombLimit = 3;
+
         // ---- target selection ----
 
         /// <summary>Whether the game is asking for a target (a card being played waits on it).</summary>

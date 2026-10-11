@@ -14,10 +14,13 @@ namespace StarVoders.Module.Readers
     /// tip box (<see cref="Tips"/>; one that waits for a click is the tip modal's), the act and Chrono Token overlays
     /// (<see cref="ActOverlay"/>, faded in through CanvasGroups), and the pilot's speech bubbles
     /// (spawned under a <see cref="SpeechBubbleManager"/>, faded out after a while; "Roxy: line" when
-    /// the line's name gives the speaker), and the fight's bomb and puppet counters ("1/3 Bomb", which
-    /// the game flashes when one joins the player's: <see cref="BombLimitView.SetBombAmount"/> from
-    /// AddToPlayerBombListTask, ShowBombNumberTask and BombRainTask), also logged to the combat
-    /// buffer, and the achievement popups (a block spawned under <see cref="AchievementPopupManager"/>'s
+    /// the line's name gives the speaker), and the fight's bomb and puppet counters ("1/3 Bomb": shown
+    /// only in previews, until they reset: <see cref="BombLimitView.SetBombAmount"/> runs from
+    /// AddToPlayerBombListTask and ShowBombNumberTask only while the task engine IsPreviewMode (or
+    /// the task IsSkipView), so placing a bomb shows nothing; a bomb card's target preview shows the
+    /// count to be, said once per target choice; hovering a bomb on the board shows the current
+    /// count, not said: Ctrl+B reads it), also logged to the combat buffer, and the achievement
+    /// popups (a block spawned under <see cref="AchievementPopupManager"/>'s
     /// holder, which lives across scenes, slid in and back out, never destroyed; handed to the
     /// <see cref="Screens.AchievementScreen"/> dialog rather than spoken). Polled from the
     /// module tick over components gathered once per scene change; what was spoken is remembered by
@@ -32,6 +35,10 @@ namespace StarVoders.Module.Readers
         private static readonly HashSet<IntPtr> s_bubbles = new HashSet<IntPtr>();
         private static readonly HashSet<IntPtr> s_present = new HashSet<IntPtr>();
         private static readonly Dictionary<IntPtr, string> s_counters = new Dictionary<IntPtr, string>();
+        // A counter shown by a target's preview, and its last alpha: quiet until it fades in again.
+        private static readonly Dictionary<IntPtr, float> s_previewed = new Dictionary<IntPtr, float>();
+        // What a counter said during the current target choice: once per choice, not once per tile.
+        private static readonly Dictionary<IntPtr, string> s_selectionSaid = new Dictionary<IntPtr, string>();
         // The holder's blocks already seen; those there when the module loads are taken as seen.
         private static readonly HashSet<IntPtr> s_achievements = new HashSet<IntPtr>();
         private static bool s_achievementsPrimed;
@@ -46,7 +53,7 @@ namespace StarVoders.Module.Readers
                 Overlay(overlay._replenishCanvasGroup);
             }
             foreach (var bombs in GameScenes.Components<BombLimitView>())
-                if (bombs != null) Counter(bombs.CanvasGroup, bombs.BombLimitText);
+                if (bombs != null) Counter(bombs.CanvasGroup, bombs.BombLimitText, onlyWhileSelecting: true);
             foreach (var puppets in GameScenes.Components<PuppetLimitView>())
                 if (puppets != null) Counter(puppets.CanvasGroup, puppets.PuppetLimitText);
             if (Time.frameCount % 5 == 0)
@@ -62,6 +69,8 @@ namespace StarVoders.Module.Readers
             s_overlays.Clear();
             s_bubbles.Clear();
             s_counters.Clear();
+            s_previewed.Clear();
+            s_selectionSaid.Clear();
         }
 
         // A new tip is spoken once its text is in; one that waits for a click is read by the tip
@@ -92,13 +101,41 @@ namespace StarVoders.Module.Readers
         }
 
         // A counter fading in speaks its text once half shown, and again when its number changes while
-        // it stays up (two bombs placed in a row); faded out, it forgets.
-        private static void Counter(CanvasGroup group, TMPro.TMP_Text tmp)
+        // it stays up (two bombs placed in a row); faded out, it forgets. The bomb counter speaks only
+        // while a target is chosen: on the board it shows when a bomb is hovered, and the count is
+        // Ctrl+B's (FightKeys).
+        private static void Counter(CanvasGroup group, TMPro.TMP_Text tmp, bool onlyWhileSelecting = false)
         {
             if (group == null) return;
             var ptr = group.Pointer;
             float alpha = group.gameObject.activeInHierarchy ? group.alpha : 0f;
-            if (alpha < Hidden) { s_counters.Remove(ptr); return; }
+            bool selecting = Fight.Fight.Selecting;
+            if (!selecting) s_selectionSaid.Remove(ptr);
+            if (alpha < Hidden) { s_counters.Remove(ptr); s_previewed.Remove(ptr); return; }
+            // Choosing a target previews the card on each tile the cursor is on, and a bomb card's
+            // preview shows the counter with the count to be, the same on every tile, fading out and
+            // in between them: spoken once per choice (again only if its text changes). Once the
+            // choice ends it speaks again only on a fresh fade-in, not while the last preview fades
+            // out.
+            if (selecting)
+            {
+                s_previewed[ptr] = alpha;
+                if (alpha < Shown) return;
+                string shown = GameText.Of(tmp);
+                s_counters[ptr] = shown;
+                if (shown == null || (s_selectionSaid.TryGetValue(ptr, out var once) && once == shown)) return;
+                s_selectionSaid[ptr] = shown;
+                Speech.Say(shown);
+                Fight.FightEvents.Log.Add(shown);
+                return;
+            }
+            if (onlyWhileSelecting) return;
+            if (s_previewed.TryGetValue(ptr, out var last))
+            {
+                if (alpha <= last) { s_previewed[ptr] = alpha; return; }
+                s_previewed.Remove(ptr);
+                s_counters.Remove(ptr);
+            }
             if (alpha < Shown) return;
             string text = GameText.Of(tmp);
             if (text == null || (s_counters.TryGetValue(ptr, out var said) && said == text)) return;

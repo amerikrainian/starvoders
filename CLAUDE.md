@@ -300,7 +300,7 @@ separately. Host F6 uses the same OS read.
   `<CardName>_CardTitle` and `_CardDesc` through `LocalizationUtils.GetModifiedDescriptions`),
   Rack, Status. Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
-  category): digits, Shift+arrows skip, C T, Ctrl+D H O M (Doom, Heat, objective, mech), Shift+M, `[ ] , .` categories (danger zones
+  category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, Heat, objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones
   step by region, "5, 1 to 5, 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
   targets events are), Alt+Backspace, E; Backspace reads details (`*_InfoLine` keywords).
 - Fight events (`Fight/FightEvents`, Core `Fight/FightDiff` with tests): snapshot at settle
