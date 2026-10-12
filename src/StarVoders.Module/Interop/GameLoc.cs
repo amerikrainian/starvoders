@@ -39,6 +39,26 @@ namespace StarVoders.Module.Interop
             }
         }
 
+        private static readonly System.Text.RegularExpressions.Regex KeywordTag =
+            new System.Text.RegularExpressions.Regex(@"\{f\.keyword\}(.*?)\{f\.end\}");
+
+        /// <summary>The first keyword a string marks, in the current language: "Purge" from
+        /// <c>Purge_InfoLine</c>'s "{f.keyword}Purge{f.end}: Temporarily remove...", for the words the
+        /// game has no string of their own for. Read from the raw table entry, since
+        /// <see cref="LocalizationUtils.LocalizeSynchronous"/> expands the tags into rich text.</summary>
+        public static string Keyword(string key)
+        {
+            try
+            {
+                var entry = UnityEngine.Localization.Settings.LocalizationSettings.StringDatabase.GetTable("Everything")?.GetEntry(key);
+                var match = entry != null && entry.Value != null ? KeywordTag.Match(entry.Value) : null;
+                if (match != null && match.Success) return GameText.Clean(match.Groups[1].Value);
+                CoreLog.Warning("GameLoc: no keyword in " + key);
+            }
+            catch (Exception e) { CoreLog.Warning("GameLoc: reading the keyword of " + key + " failed: " + e.Message); }
+            return null;
+        }
+
         public static string Get(string key)
         {
             try

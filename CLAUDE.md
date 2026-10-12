@@ -301,7 +301,11 @@ separately. Host F6 uses the same OS read.
   that needs no target still asks for the `PlayAreaView`, read "Play"), Board (rows top first,
   shared row key, lands on the mech; cell = target mark, coords, zone on crossing, contents),
   Hand (`GetCardsInHandButNotBeingPlayed`, `CardPlayView.GetCardView`; text from
-  `<CardName>_CardTitle` and `_CardDesc` through `LocalizationUtils.GetModifiedDescriptions`),
+  `<CardName>_CardTitle` and `_CardDesc` through `LocalizationUtils.GetModifiedDescriptions`;
+  play modifiers (`CardPlayModel.PlayCardModifiers`, never in the model's `HeatCost`) as the art
+  draws them: the cost icons, a `Minus` icon is a point taken off (only those = Free), the `_repeatText`
+  "x3", Purge/Flow added = modded vs default card args; test: `AddPlayCardModTask` reusing a live
+  mod's `StartCondition`, then `RemovePlayCardModTask`),
   Rack, Status. Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
   category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, Heat, objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones

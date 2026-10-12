@@ -239,8 +239,13 @@ namespace StarVoders.Module.Fight
         private static string Named(string name, string description) => description != null ? name + ": " + description : name;
 
         /// <summary>The cost as a card's art draws it ("1 Jam" for a Broken card the model still costs
-        /// 1 Heat): the cost icons under the view's <see cref="CardImageView"/>, one per point or a
-        /// large one with a number. Null when none is drawn (no cost, or the view not shown).</summary>
+        /// 1 Heat), with every play modifier in: the cost icons under the view's
+        /// <see cref="CardImageView"/>, one per point or a large one with a number.
+        /// <see cref="CardImageView.SetCostIcons"/> draws max(cost, original) small icons, those past the
+        /// modded cost as <see cref="CostIconEffectType.Minus"/> (a point taken off: Chilled, Dark
+        /// Power) and those past the original as Plus (Confusion, Overclock); a large icon carries the
+        /// modded cost. So a Minus icon is not a point, and a card drawn with only those is free ("Free").
+        /// Null when none is drawn (no cost, or the view not shown).</summary>
         public static string DrawnCost(UnityEngine.Component view)
         {
             try
@@ -255,9 +260,14 @@ namespace StarVoders.Module.Fight
                         if (counts[i].Key == type) { counts[i] = new KeyValuePair<CostType, int>(type, counts[i].Value + n); return; }
                     counts.Add(new KeyValuePair<CostType, int>(type, n));
                 }
-                foreach (var icon in group.GetComponentsInChildren<CostIcon>(false)) Count(icon._costType, 1);
+                bool reduced = false;
+                foreach (var icon in group.GetComponentsInChildren<CostIcon>(false))
+                {
+                    if (icon._costIconEffectType == CostIconEffectType.Minus) reduced = true;
+                    else Count(icon._costType, 1);
+                }
                 foreach (var icon in group.GetComponentsInChildren<LargeCostIcon>(false)) Count(icon._costType, icon._number);
-                if (counts.Count == 0) return null;
+                if (counts.Count == 0) return reduced ? GameLoc.Get("Free_Misc") ?? "Free" : null;
                 var parts = new List<string>();
                 foreach (var kv in counts) parts.Add(StarVoders.Core.Strings.Strings.FightCost(kv.Value, CostWord(kv.Key)));
                 return string.Join(", ", parts);
@@ -268,6 +278,52 @@ namespace StarVoders.Module.Fight
                 return null;
             }
         }
+
+        /// <summary>How many times a hand card plays as it draws it beside its art ("x3"), its own
+        /// repeats and the modifiers' (Overclock's +2) together: <see cref="CardView.SetRepeatText"/>
+        /// from the modded <see cref="ArgKey.RepeatAmount"/> + 1, blank for a single play. Null then.</summary>
+        public static string DrawnRepeat(CardView view)
+        {
+            try
+            {
+                var text = view._repeatText;
+                return text != null && text.gameObject.activeInHierarchy ? GameText.Of(text) : null;
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: reading a card's repeat text failed: " + e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>What play modifiers add to a hand card beyond its cost and repeats, which the art
+        /// draws only as a glow (<see cref="CardView.UpdateView"/> drives the purge and flow indicators
+        /// from <see cref="CardModel.GetModdedCardArgs"/>): "Purge" (Chaos Drive), "Flow" (Slide),
+        /// each when the modded args have it and the card's own (<see cref="CardModel.GetDefaultCardArgs"/>)
+        /// do not. Null when a modifier adds neither, or out of a fight.</summary>
+        public static string ModifierTraits(CardModel card)
+        {
+            var engine = Controller?.TaskEngine;
+            if (card == null || engine == null) return null;
+            try
+            {
+                var modded = card.GetModdedCardArgs(engine, false);
+                var own = card.GetDefaultCardArgs();
+                bool Added(ArgKey key) => Flag(modded, key) && !Flag(own, key);
+                var names = new List<string>();
+                if (Added(ArgKey.IsPurged)) names.Add(GameLoc.Keyword("Purge_InfoLine") ?? "Purge");
+                if (Added(ArgKey.IsFlow)) names.Add(GameLoc.Get("Flow_Keyword") ?? "Flow");
+                return names.Count > 0 ? string.Join(", ", names) : null;
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: reading the modifiers of " + card.CardName + " failed: " + e.Message);
+                return null;
+            }
+        }
+
+        private static bool Flag(Il2CppSystem.Collections.Generic.Dictionary<ArgKey, Il2CppSystem.Object> args, ArgKey key) =>
+            args != null && args.ContainsKey(key) && args[key] != null && args[key].Unbox<bool>();
 
         private static string CostWord(CostType type)
         {

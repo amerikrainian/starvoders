@@ -450,6 +450,8 @@ namespace StarVoders.Module.Screens
                     GameNodes.LabelPart(name),
                     new NodeAnnouncement(() => FightState.CardUpgrade(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => Cost(view.CardModel, view), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.DrawnRepeat(view), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.ModifierTraits(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.CardTraits(view.CardModel), kind: AnnouncementKinds.Value),
                     GameNodes.DisabledPart(() => Playable(view)),
                     new NodeAnnouncement(() => Playable(view) ? null : GameText.Of(view._unplayableText), kind: AnnouncementKinds.Value),
