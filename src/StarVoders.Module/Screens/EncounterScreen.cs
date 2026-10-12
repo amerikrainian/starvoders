@@ -327,10 +327,13 @@ namespace StarVoders.Module.Screens
 
         private const string TargetsStop = "fight:targets";
         private bool _wasSelecting;
-        // Frames left to wait for the strike marks of a selection just started (0: said, or none
-        // came): the game's preview can land a few frames after the selection opens.
-        private int _strikeWait;
-        private const int StrikeWaitFrames = 30;
+        // The strike marks while a selection runs: the game previews the strike of the target under
+        // the cursor (a Titan Rocket's area follows it), a few frames after the hover, so the marks are
+        // said once they have held still for StrikeStableFrames, and again whenever they settle on a
+        // different set. _strikeSeen is the marked set as last read, _strikeSaid as last settled.
+        private string _strikeSeen, _strikeSaid;
+        private int _strikeStable;
+        private const int StrikeStableFrames = 3;
 
         // A selection starting: on the board, its prompt is said (not the play area's) and focus goes to the board (staying
         // where it is if already there, the game's cursor brought to it); otherwise focus goes to the
@@ -352,17 +355,35 @@ namespace StarVoders.Module.Screens
                     else { var tile = Tile(at.Value.X, at.Value.Y); if (tile != null) FightState.Hover(tile); }
                 }
                 else Navigation.Active?.FocusStop(TargetsStop);
-                _strikeWait = StrikeWaitFrames;
+                _strikeSeen = _strikeSaid = null;
+                _strikeStable = 0;
             }
-            if (!selecting) _strikeWait = 0;
-            else if (_strikeWait > 0)
-            {
-                string line = StrikeLine();
-                if (line != null) { Speech.Say(line); _strikeWait = 0; }
-                else _strikeWait--;
-            }
+            if (selecting) SayStrikeChanges();
             _wasSelecting = selecting;
             if (!(Navigation.Active is GraphNavigator nav) || !Equals(nav.FocusedNode?.StopKey, BoardStop)) _lastZone = null;
+        }
+
+        // Says the strike marks once they settle on a set other than the last said. Settling on no
+        // marks (a hover that previews nothing) forgets the last set, so coming back to a target says
+        // its area again.
+        private void SayStrikeChanges()
+        {
+            string seen = StrikeSignature();
+            if (seen != _strikeSeen) { _strikeSeen = seen; _strikeStable = 0; return; }
+            if (++_strikeStable != StrikeStableFrames) return;
+            if (seen.Length == 0) { _strikeSaid = null; return; }
+            if (seen == _strikeSaid) return;
+            _strikeSaid = seen;
+            string line = StrikeLine();
+            if (line != null) Speech.Say(line);
+        }
+
+        // The marked tiles in a fixed order, "" when none.
+        private static string StrikeSignature()
+        {
+            var tiles = new List<(int X, int Y)>(FightState.StrikeTiles());
+            tiles.Sort();
+            return string.Join(";", tiles);
         }
 
         /// <summary>"Strikes 4, 2; 3, 3 to 5, 3; hits Migo 1, mech": the tiles the game marks as about to

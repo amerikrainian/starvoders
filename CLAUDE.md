@@ -324,8 +324,10 @@ separately. Host F6 uses the same OS read.
   delayed artillery. A card's preview runs on hover only in mouse mode (`OnViewItemHoverEnter`
   gates on `DeviceManager.IsMouse`/`IsInKeyboardAndMouseMode`), but `SelectionTask` previews as
   its selection opens in any mode (Flamethrower: the cone is its pre-selection task, the burn its
-  post). Cells say "strike"; a selection's opening says "Strikes <ranges>; hits <names>" once,
-  waiting up to 30 frames for the marks. The card's cost and tasks wait for the pick, so a first,
+  post). Cells say "strike"; during a selection "Strikes <ranges>; hits <names>" is said whenever
+  the marks settle (3 frames unchanged) on a set other than the last said: hovering a target
+  re-previews its strike (no mouse gate on that path), so Titan Rocket's area follows the cursor;
+  settling on no marks forgets the last set. The card's cost and tasks wait for the pick, so a first,
   fully cancellable selection backs out with nothing spent.
 - A lost fight: `LoseEncounterTask` loads `CampaignLoseTransitionAdditive` (scene 30) straight to the run
   end; nothing in the code loads `EncounterLoseSceneAdditive` (16, `EncounterLoseController` Rewind/Lose) by
