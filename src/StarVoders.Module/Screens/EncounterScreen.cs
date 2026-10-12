@@ -297,8 +297,9 @@ namespace StarVoders.Module.Screens
             if (pickup != null) yield return pickup;
         }
 
-        /// <summary>Shift+arrow: past the cells that read the same as this one (contents and zone),
-        /// to the first that differs, or to the edge; at the edge, this cell again.</summary>
+        /// <summary>Shift+arrow: past the cells that read the same as this one (contents and strike
+        /// mark; zones do not count, so the spawn and doom rows are crossed), to the first that
+        /// differs, or to the edge; at the edge, this cell again.</summary>
         public static void Skip(int dx, int dy)
         {
             var at = FocusedTile();
@@ -320,7 +321,7 @@ namespace StarVoders.Module.Screens
         }
 
         private static string Signature(FightBoard board, int x, int y) =>
-            board.Zone(x, y) + "|" + FightState.Strike(x, y) + "|" + CellContents(board, x, y);
+            FightState.Strike(x, y) + "|" + CellContents(board, x, y);
 
         // ---- choosing a target ----
 
