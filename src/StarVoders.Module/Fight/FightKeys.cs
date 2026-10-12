@@ -23,7 +23,8 @@ namespace StarVoders.Module.Fight
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
     /// as its targets are announced ("5, 1 to 5, 5, targeted by Shooter 2", the cursor to its first
     /// tile); Alt+Backspace jumps back to where a jump left from; E ends
-    /// the turn; Shift+arrows skip cells that read the same.
+    /// the turn; Shift+arrows skip cells that read the same; Home and End go to the row's ends, Page Up
+    /// and Page Down to the column's.
     /// </summary>
     internal static class FightKeys
     {
@@ -43,6 +44,14 @@ namespace StarVoders.Module.Fight
                 .AddBinding(new KeyboardBinding(KeyCode.LeftArrow, shift: true)).Repeating();
             InputManager.Register("fight.skip.right", "Skip right", InputCategory.Game, () => EncounterScreen.Skip(1, 0))
                 .AddBinding(new KeyboardBinding(KeyCode.RightArrow, shift: true)).Repeating();
+            InputManager.Register("fight.edge.first", "First column", InputCategory.Game, () => Edge(UiActions.Home, (b, x, y) => (0, y)))
+                .AddBinding(new KeyboardBinding(KeyCode.Home));
+            InputManager.Register("fight.edge.last", "Last column", InputCategory.Game, () => Edge(UiActions.End, (b, x, y) => (b.Columns - 1, y)))
+                .AddBinding(new KeyboardBinding(KeyCode.End));
+            InputManager.Register("fight.edge.top", "Top row", InputCategory.Game, () => Edge(null, (b, x, y) => (x, b.Rows - 1)))
+                .AddBinding(new KeyboardBinding(KeyCode.PageUp));
+            InputManager.Register("fight.edge.bottom", "Bottom row", InputCategory.Game, () => Edge(null, (b, x, y) => (x, 0)))
+                .AddBinding(new KeyboardBinding(KeyCode.PageDown));
 
             Read("fight.coords", "Coordinates", KeyCode.C, Coords);
             Read("fight.turn", "Turn", KeyCode.T, EncounterScreen.TurnText);
@@ -109,6 +118,23 @@ namespace StarVoders.Module.Fight
             var board = FightBoard.Read();
             if (at == null || board == null) return null;
             return board.Describe(board.At(at.Value.X, at.Value.Y)) + ", " + FightBoard.CoordText(at.Value.X, at.Value.Y);
+        }
+
+        // Home and End: the row's first and last column; Page Up and Page Down: the column's top and
+        // bottom row; silent when already there. Off the board, Home and End are the navigator's own (these keys shadow them).
+        private static void Edge(string uiKey, Func<FightBoard, int, int, (int X, int Y)> to)
+        {
+            var at = EncounterScreen.FocusedTile();
+            var board = at.HasValue ? FightBoard.Read() : null;
+            if (board == null)
+            {
+                var ui = uiKey != null ? InputManager.Find(uiKey) : null;
+                if (ui != null) Navigation.DispatchJustPressed(ui);
+                return;
+            }
+            var tile = to(board, at.Value.X, at.Value.Y);
+            if (tile.Equals(at.Value)) return; // already there: nothing to say
+            Navigation.Active?.MoveTo(EncounterScreen.TileId(tile.X, tile.Y));
         }
 
         // ---- jumps ----
