@@ -136,6 +136,9 @@ namespace StarVoders.Core.Strings
             D("fight.turn", "Turn {0}/{1}"),
             D("fight.turn_open", "Turn {0}"),
             D("fight.cost", "{0} {1}"),
+            // A Stinger card's payment, {0} the game's word: it will dip into Battery, or Power and Battery together fall short.
+            D("fight.spends", "spends {0}"),
+            D("fight.not_enough", "not enough {0}"),
             D("shop.was", "was {0}"),
             D("shop.copies", "{0} copies"),
             D("bind.fight.card1", "Play card 1"),
@@ -462,6 +465,10 @@ namespace StarVoders.Core.Strings
         /// <summary>"Turn 3/8"; "Turn 3" in a fight with no turn limit (the game's MaxTurns is -1).</summary>
         public static string FightTurn(int turn, int turns) => turns > 0 ? F("fight.turn", turn, turns) : F("fight.turn_open", turn);
         public static string FightCost(int amount, string resource) => F("fight.cost", amount, resource);
+        /// <summary>"spends Battery": playing the card takes Battery (the game marks it while previewing).</summary>
+        public static string FightSpends(string resource) => F("fight.spends", resource);
+        /// <summary>"not enough Power": the card's cost is more than there is (the game darkens its cost).</summary>
+        public static string FightNotEnough(string resource) => F("fight.not_enough", resource);
         /// <summary>A sale's crossed-out price: "was 5700".</summary>
         public static string ShopWas(string price) => F("shop.was", price);
         /// <summary>A bundle's card count: "2 copies".</summary>

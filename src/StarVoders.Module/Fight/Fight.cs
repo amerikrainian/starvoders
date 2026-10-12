@@ -322,6 +322,44 @@ namespace StarVoders.Module.Fight
             }
         }
 
+        /// <summary>How a hand card would pay, where the art marks it. "not enough Power" (or Mana) while
+        /// the game's own <see cref="CardView.WillUnpowered"/> holds: the modded cost is more than Power
+        /// and Battery together (Mana for the Keeper), drawn as darkened cost icons. Else "spends
+        /// Battery" when it would take any, as <see cref="PlayCardCostTask"/> pays and marks the card
+        /// (<see cref="CardView.SetBatteryPowerIndicator"/>, in its preview only, which a keyboard hover
+        /// does not run): from Battery first for <see cref="ArgKey.IsCellOnly"/> or
+        /// <see cref="ArgKey.IsCellFirst"/>, else from Power with what Power lacks from Battery. A free
+        /// card pays nothing. Null otherwise, or out of a fight.</summary>
+        public static string PaymentNote(CardView view)
+        {
+            var model = Model;
+            var engine = Controller?.TaskEngine;
+            var card = view?.CardModel;
+            if (card == null || model == null || engine == null) return null;
+            try
+            {
+                var args = card.GetModdedCardArgs(engine, false);
+                if (Flag(args, ArgKey.IsFree)) return null;
+                int power = Number(args, ArgKey.PowerCost), mana = Number(args, ArgKey.ManaCost);
+                if (view.WillUnpowered(args))
+                    return StarVoders.Core.Strings.Strings.FightNotEnough(power > 0 || mana == 0 ? CostWord(CostType.Power) : CostWord(CostType.Mana));
+                if (power <= 0) return null;
+                int cells = model.Values[EncounterValue.PowerCell];
+                bool spends = Flag(args, ArgKey.IsCellOnly) || Flag(args, ArgKey.IsCellFirst)
+                    ? cells > 0
+                    : power > model.Values[EncounterValue.Power] && cells > 0;
+                return spends ? StarVoders.Core.Strings.Strings.FightSpends(GameLoc.Get("Battery_Keyword") ?? "Battery") : null;
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: reading how " + card.CardName + " pays failed: " + e.Message);
+                return null;
+            }
+        }
+
+        private static int Number(Il2CppSystem.Collections.Generic.Dictionary<ArgKey, Il2CppSystem.Object> args, ArgKey key) =>
+            args != null && args.ContainsKey(key) && args[key] != null ? args[key].Unbox<int>() : 0;
+
         private static bool Flag(Il2CppSystem.Collections.Generic.Dictionary<ArgKey, Il2CppSystem.Object> args, ArgKey key) =>
             args != null && args.ContainsKey(key) && args[key] != null && args[key].Unbox<bool>();
 

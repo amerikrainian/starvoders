@@ -305,7 +305,12 @@ separately. Host F6 uses the same OS read.
   play modifiers (`CardPlayModel.PlayCardModifiers`, never in the model's `HeatCost`) as the art
   draws them: the cost icons, a `Minus` icon is a point taken off (only those = Free), the `_repeatText`
   "x3", Purge/Flow added = modded vs default card args; test: `AddPlayCardModTask` reusing a live
-  mod's `StartCondition`, then `RemovePlayCardModTask`),
+  mod's `StartCondition`, then `RemovePlayCardModTask`; Burnt/Frozen are traits (7, 12), read with
+  the rest; "not enough Power" = the game's `CardView.WillUnpowered` (darkened icons), "spends Battery"
+  = `PlayCardCostTask`'s rule (the mark shows only in its preview); not read: the keep mark (only
+  the deck viewer draws it), the autoplay and freeze previews (they need the game's hover preview,
+  mouse mode only), the burn warning. A Gunner's cards all cost Heat (`BaseEnergyCost`): test Power by
+  setting a hand card's `PowerCost`, `Values[Power/PowerCell]`, `UpdateView()`, then restore),
   Rack, Status. Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
   category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, Heat, objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones
