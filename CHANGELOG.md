@@ -7,6 +7,8 @@
 - The bomb count is no longer announced every time you move over a bomb or a target tile. it is still spoken once during previews.
 - Things destroyed together are now grouped.
 - Switching the language from the main menu now switches the mod's own words right away, instead of reading the combo box back in the old language.
+- Fix home/end not behaving as they should on the grid; added page up/down for symmetry.
+- Shift and arrows skip the labels on the grid, e.g., doom rows, spawn rows. Hopefully they'll be more useful now.
 
 ## V0.0.3
 
