@@ -20,7 +20,7 @@ namespace StarVoders.Module.Screens
     /// jar (Min's Fundraiser), Min, the Gacha machine and the red button when shown, Exit. Then the
     /// run status and the act timeline. A bought ware stops being interactable and leaves the list.
     /// Min's lines (welcome, thanks, a tip's, a pat's) are speech bubbles: the popup reader's.
-    /// Not covered yet: the unlock canvas a full fundraiser shows.
+    /// The unlock canvas a full fundraiser shows is <see cref="MinUnlockScreen"/>'s.
     /// </summary>
     public sealed class WorkshopScreen : Screen
     {

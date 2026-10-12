@@ -156,8 +156,12 @@ separately. Host F6 uses the same OS read.
   hundredth), "Sale!, was 5700" (price on `SaleText`, `BuyButtonText` crossed out), "Bundle!, 2
   copies" (bought twice), "disabled" while the price is drawn red (`Text.color !=
   originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and
-  red button when shown, Exit; buying, tipping, Restock and Exit: never through the driver; the
-  unlock canvas is not read yet), `PackmasterScreen` (Bud's Factory, `PackmasterScene`,
+  red button when shown, Exit; buying, tipping, Restock and Exit: never through the driver),
+  `MinUnlockScreen` (the full fundraiser's `MinUnlockCanvas`, `ShopController.currentUnlockCanvas`, layer
+  15, exclusive: a dialog named by `UnlockTitle`, the card/artifact board's model as the rewards read it
+  (Enter = more info), `MiscUnlockText`, Take/Skip or Continue; holds until opaque, 3 s at most; down
+  once the canvas `IsEndingScene`; test: load `WorkshopScene` from the encounter choice with
+  `SceneLoader.LoadSceneWithTransition`, tip the jar full, click it), `PackmasterScreen` (Bud's Factory, `PackmasterScene`,
   `PackmasterController`, a `CampaignSceneController`: the belt's `CardViews` under "Pick 2 Cards", Enter =
   the card's click `OnPressSelectCardButton` (toggles `_isSelected`, "selected" live), Proceed (enabled at
   2; adds them and leaves: never through the driver), Reroll; the `PackViews` by `<Pack>_Misc` and
