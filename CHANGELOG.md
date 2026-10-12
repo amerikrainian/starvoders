@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.0.5
+
+- Makes Min's unlock screen accessible.
+- Cards that shift their AOE will now report the new area as you move your cursor.
+
 ## V0.0.4
 
 - Sandbox settings are accessible now. Pack and boss rows read banned or allowed, and locked ones just say locked.
