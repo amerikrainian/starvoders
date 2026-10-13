@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.0.6
+
+- Improve card readouts.
+
 ## V0.0.5
 
 - Makes Min's unlock screen accessible.
