@@ -17,9 +17,9 @@ namespace StarVoders.Module.Screens
     /// The Daily Run (<c>DailyRunSceneAdditive</c>, <see cref="DailyRunController"/>, over the main menu
     /// once every pilot is unlocked), named by its title ("Daily"). Stops: the run, its pilot (drawn
     /// only as a portrait: the static <c>PlayerData.PilotName</c> and the game's subtitle), the
-    /// modifier lines under <c>ModVerticalLayoutGroup</c>, its artifacts, Start (the run begins: never
-    /// through the driver) and Back, then the reset countdown and Total Completed; and the deck, its
-    /// cards in the grid's order. Escape is Back. The view is built when the scene starts, so the screen
+    /// modifier lines under <c>ModVerticalLayoutGroup</c>, its artifacts, the deck as a row of its cards
+    /// in the grid's order (Left/Right), Start (the run begins: never through the driver) and Back, then
+    /// the reset countdown and Total Completed; all one stop. Escape is Back. The view is built when the scene starts, so the screen
     /// holds its arrival until the deck is in, 2 s at most.
     /// </summary>
     public sealed class DailyRunScreen : Screen
@@ -95,6 +95,25 @@ namespace StarVoders.Module.Screens
                     if (artifact.ArtifactModel != null)
                         b.AddItem(ControlId.Structural("daily:artifact" + artifact.GetInstanceID()), CardNodes.Artifact(artifact.ArtifactModel, artifact));
             }
+            b.PopContext();
+
+            // The deck as a row (Left/Right), under its name, between the artifacts and Start.
+            var cards = Cards(c);
+            if (cards.Count > 0)
+            {
+                b.PushContext(GameLoc.Get("Deck_Misc"));
+                b.StartRow("daily:deck");
+                foreach (var card in cards)
+                {
+                    var vt = CardNodes.Card(card.CardModel, card);
+                    vt.OnActivate = null;
+                    b.AddItem(ControlId.Structural("daily:card:" + card.GetInstanceID()), vt);
+                }
+                b.EndRow();
+                b.PopContext();
+            }
+
+            b.PushContext(null, positions: false);
             if (ViewNodes.IsShown(c.StartButton))
                 b.AddItem(ControlId.Structural("daily:start"), ViewNodes.Button(c.StartButton));
             if (ViewNodes.IsShown(c.BackButton))
@@ -104,20 +123,6 @@ namespace StarVoders.Module.Screens
             if (c.StreakNumber != null && c.StreakNumber.gameObject.activeInHierarchy)
                 b.AddItem(ControlId.Structural("daily:completed"), GameNodes.Text(() => Completed(c)));
             b.PopContext();
-
-            var cards = Cards(c);
-            if (cards.Count > 0)
-            {
-                b.BeginStop("daily:deck");
-                b.PushContext(GameLoc.Get("Deck_Misc"));
-                foreach (var card in cards)
-                {
-                    var vt = CardNodes.Card(card.CardModel, card);
-                    vt.OnActivate = null;
-                    b.AddItem(ControlId.Structural("daily:card:" + card.GetInstanceID()), vt);
-                }
-                b.PopContext();
-            }
         }
 
         public override IEnumerable<ElementAction> GetActions()

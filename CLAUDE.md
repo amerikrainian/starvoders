@@ -186,8 +186,9 @@ separately. Host F6 uses the same OS read.
   (`DailyRunSceneAdditive`, `DailyRunController`, layer 10, exclusive, over the main menu once every pilot
   is unlocked (`SettingsSceneController.UnlockPilots()` asks first through the confirm prompt; the main
   menu shows the button from its next load): the pilot by the static `PlayerData.PilotName` + subtitle,
-  `ModVerticalLayoutGroup`'s lines, the pilot and mod artifacts, Start (a run: never through the driver),
-  Back, the reset countdown, Total Completed by `StreakNumber`; the deck its own stop),
+  `ModVerticalLayoutGroup`'s lines, the pilot and mod artifacts, the deck as a row (Left/Right, under
+  "Deck"), Start (a run: never through the driver),
+  Back, the reset countdown, Total Completed by `StreakNumber`; all one stop),
   `CompendiumScreen` (`GlossarySceneAdditive`, `GlossaryController`,
   layer 35, exclusive: class tabs (`ClassButtons`, locked = `IsDisabled()` read "LOCKED", landing
   shows the class), the count panel (Enter = `ArrowRightButton`, the victory view), Filters
