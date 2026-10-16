@@ -349,7 +349,7 @@ separately. Host F6 uses the same OS read.
   RemoveCard, PlayerData, PileView, Glossary, StarterDeck) and `PileToShow`): `DeckViewScreen`,
   title by the pile its first card is in (no title drawn), `DeckCardView`s from `_cardGrid` and
   `_cardPilotUniqueGrid`, artifacts (the game draws them above the cards; the starter deck's is the pilot's
-  starter artifact), Back its own stop; Escape = `ExitScene`. The game creates the artifacts first and
+  starter artifact), Back last in the same stop (outside the cards' positions); Escape = `ExitScene`. The game creates the artifacts first and
   the cards over the next frames, so the screen holds its arrival until the card count holds 0.15 s
   (an empty pile 0.5 s, 1.5 s at most), else focus lands on the artifact. In RemoveCard mode a
   card's click removes it: never Enter on a card there through the driver.

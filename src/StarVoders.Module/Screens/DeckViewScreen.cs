@@ -7,7 +7,7 @@ using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
-using UnityEngine;
+using UnityEngine;
 using FightState = StarVoders.Module.Fight.Fight;
 using Screen = StarVoders.Core.Screens.Screen;
 
@@ -19,7 +19,7 @@ namespace StarVoders.Module.Screens
     /// names it: in a fight, the pile its cards are in ("Draw Pile", the game's own word), else the
     /// deck. Its cards in the order shown (the draw pile comes shuffled, as the game shows it), each
     /// "name, cost, description" with the keyword explanations in the ui buffer and on Backspace;
-    /// then its artifacts; Back is the next Tab stop. Enter is the game's click on a card (nothing in a pile; the
+    /// then its artifacts, then Back. Enter is the game's click on a card (nothing in a pile; the
     /// removal in the shop's mode). Escape is Back.
     ///
     /// The game creates the artifacts first and the cards over the next frames, so the screen holds
@@ -84,12 +84,14 @@ namespace StarVoders.Module.Screens
                     if (artifact != null) b.AddItem(ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()), CardNodes.Artifact(artifact.ArtifactModel, artifact));
             }
             b.PopContext();
-            // Back on its own stop (Tab), so the list's positions count the cards alone.
+            // Back after the cards in the same stop, outside their context, so the list's positions
+            // count the cards alone.
             var back = GameScenes.Item(c, "BackButton");
             if (ViewNodes.IsShown(back))
             {
-                b.BeginStop("deckview:back");
+                b.PushContext(null, positions: false);
                 b.AddItem(ControlId.Structural("deckview:back"), ViewNodes.Button(back, () => Strings.Get("bind.ui.back")));
+                b.PopContext();
             }
         }
 
