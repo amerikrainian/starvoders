@@ -1,5 +1,11 @@
 # Changelog
 
+## V0.0.7
+
+- Added support for other characters and their resources, e.g., mana/heat.
+- Added support for challenges.
+- In the daily run, the deck is now in the same tab stop with everything else.
+
 ## V0.0.6
 
 - Improve card readouts.
