@@ -115,7 +115,8 @@ separately. Host F6 uses the same OS read.
   slid off screen, not faded, so it is offered only with the open panel), the class level, Guide;
   empty while `IsTransitioning`), `DifficultyScreen` (`DifficultySelectionSceneAdditive`, layer 10:
   radio buttons; Enter = `OnLevelNPressed(false)`, select only: the game's click on the selected one
-  starts the run; Go! = `OnStartPressed`, never through the driver; seed field mouse-only),
+  starts the run; Go! = `OnStartPressed`, never through the driver; Go! and Challenges are never
+  hovered: the game's keyboard hover on either clears the selected difficulty; seed field mouse-only),
   `ChallengesScreen` (`ChallengesSceneAdditive`, `ChallengesSceneController`, the difficulty's Challenges,
   layer 11, one stop as the difficulties: `ChallengeTextLineList` as a row of radio buttons by title,
   entry = the selected (`_selectedImage`), `IsLocked` reads LOCKED; Enter = its `OnClick`

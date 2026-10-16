@@ -18,7 +18,7 @@ namespace StarVoders.Module.Screens
     /// <see cref="DifficultySelectionController"/>, over the pilot choice), titled "Select Difficulty".
     /// One stop: the three difficulties as a row of radio buttons ("First Contact, selected", its description
     /// lines after; a locked one LOCKED and disabled, with "Unlocked by beating previous difficulty");
-    /// Challenges when the game shows it; Go! (the run starts; "disabled" while no difficulty is selected,
+    /// Challenges when the game shows it (not hovered either: that too deselects); Go! (the run starts; "disabled" while no difficulty is selected,
     /// and never hovered: the game's keyboard hover on it deselects the difficulty); Back. Enter on a difficulty only
     /// selects it (<c>OnLevel1Pressed(allowStart: false)</c>): the game's own click on the selected
     /// one starts the run, which a second Enter must not do by surprise; Go! starts it. The seed field
@@ -77,9 +77,15 @@ namespace StarVoders.Module.Screens
             }
             b.PopContext();
             b.PushContext(null, positions: false);
-            if (ViewNodes.IsShown(c.CustomButton)) b.AddItem(ControlId.Structural("difficulty:challenges"), ViewNodes.Button(c.CustomButton));
-            // Go! starts the run with the selected difficulty, refusing silently without one. It is
-            // not hovered: the game's keyboard hover on it clears the selection.
+            // Challenges and Go! are not hovered: the game's keyboard hover on either clears the
+            // selected difficulty (and with it Go!).
+            if (ViewNodes.IsShown(c.CustomButton))
+            {
+                var challenges = c.CustomButton;
+                b.AddItem(ControlId.Structural("difficulty:challenges"), GameNodes.Button(() => ViewNodes.Label(challenges),
+                    () => ViewNodes.Click(challenges), () => ViewNodes.IsShown(challenges)));
+            }
+            // Go! starts the run with the selected difficulty, refusing silently without one.
             if (c.GoButtonShown && ViewNodes.IsShown(c.GoButton))
             {
                 var go = c.GoButton;
