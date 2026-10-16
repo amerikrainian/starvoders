@@ -320,15 +320,26 @@ separately. Host F6 uses the same OS read.
   the deck viewer draws it), the autoplay and freeze previews (they need the game's hover preview,
   mouse mode only), the burn warning. A Gunner's cards all cost Heat (`BaseEnergyCost`): test Power by
   setting a hand card's `PowerCost`, `Values[Power/PowerCell]`, `UpdateView()`, then restore),
-  Rack, Status. Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
+  Rack (End Turn; the Transformer's Draw, `PowerView.DrawButton`, shown when the run has the artifact
+  (`PowerView.Initialize`), once a turn = `DrawButtonLock`; a Keeper's spells = `ManaView.SpellViews`,
+  not in `ArtifactViewDict`: buttons, Enter = the click (cast), "Cooldown: N, disabled" while
+  `CooldownObject` shows (its text is stale while hidden), refused when `Used`/`Destroyed`; test:
+  `TaskEngine.QueueTask(new CreateArtifactTask(ArtifactName.Transformer))`, Iris starts with Conjure),
+  Status. The class energy: the game initializes all three panels (Heat 0/1, Power 2/3, Mana 4/5) and
+  shows one (`GetActiveEnergyView` takes the first shown); `Fight.Resources` reads each shown: Heat,
+  Power + Battery (`PowerCell`, while `BatteryMockView` shows; Power over max becomes Battery, spent when
+  Power runs out), Mana + its gain ("+3 / Turn", `_manaRegenText`). Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
-  category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, Heat, objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones
+  category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones
   step by region, "5, 1 to 5, 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
-  targets events are), Alt+Backspace, E; Backspace reads details (`*_InfoLine` keywords).
+  targets events are), Alt+Backspace, E; Backspace reads details (`*_InfoLine` keywords; on a pickup
+  the whole card as the hand reads it, from `GridModel.PickupMap`'s `CardID` via `CardPlayView.GetCardView`;
+  test pickups: `QueueTask(new CreateRandomCardsAsPickupNearbyTask())`).
 - Fight events (`Fight/FightEvents`, Core `Fight/FightDiff` with tests): snapshot at settle
   points (task engine idle 3 frames, or waiting on the player: a selection or a click tip, else
   an enemy turn's changes would wait for the next card to resolve), diff, speak each event as its own queued entry,
-  append to the uncapped combat buffer. Ticked before `ScreenManager` so an event
+  append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
+  pickups by card id: "Pickup: Dash appears at 4, 7", "Pickup: Dash destroyed" when gone and not drawn. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
 - Choosing a target (`Fight.ReadTargets`: the selection's targets sorted into tiles, `PlayAreaView`,
   `DirectionSelectionArrow`s, others): a selection with grid targets is answered ON THE BOARD (its

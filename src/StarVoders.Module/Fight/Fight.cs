@@ -433,6 +433,57 @@ namespace StarVoders.Module.Fight
             return title != null ? title + " " + figure : figure;
         }
 
+        /// <summary>Whether a panel is drawn: active and not faded out (the Heat panel stays active,
+        /// faded, for the classes without Heat).</summary>
+        public static bool Shown(UnityEngine.Component view)
+        {
+            if (view == null || !view.gameObject.activeInHierarchy) return false;
+            var group = view.GetComponent<UnityEngine.CanvasGroup>();
+            return group == null || group.alpha > 0.05f;
+        }
+
+        /// <summary>"Battery 2": the Battery Pack beside the Power panel (<see cref="EncounterValue.PowerCell"/>,
+        /// what Power spends once it runs out); null while the panel does not draw it.</summary>
+        public static string Battery()
+        {
+            var power = View?.PowerView;
+            if (!Shown(power) || !Shown(power.BatteryMockView)) return null;
+            int? cells = Value(EncounterValue.PowerCell);
+            if (cells == null) return null;
+            string title = GameLoc.Get("Battery_Keyword");
+            return title != null ? title + " " + cells.Value : cells.Value.ToString();
+        }
+
+        /// <summary>"+3 / Turn": the Mana gained each turn as the Mana panel draws it; null while it
+        /// draws none.</summary>
+        public static string ManaRegen()
+        {
+            var mana = View?.ManaView;
+            if (!Shown(mana) || mana._manaRegenText == null || !mana._manaRegenText.gameObject.activeInHierarchy) return null;
+            string text = GameText.Of(mana._manaRegenText);
+            return string.IsNullOrWhiteSpace(text) ? null : System.Text.RegularExpressions.Regex.Replace(text, @"\s+", " ").Trim();
+        }
+
+        /// <summary>The mech's energy as its panels show it: Heat for a Gunner, Power and its
+        /// Battery for a Stinger, Mana and its gain per turn for a Keeper ("Mana 2/5, +3 / Turn").
+        /// The game draws one class panel at a time (<see cref="EncounterView.GetActiveEnergyView"/>
+        /// takes the first shown), but each that is shown is read.</summary>
+        public static List<string> Resources()
+        {
+            var lines = new List<string>();
+            var view = View;
+            if (view == null) return lines;
+            void Add(string line) { if (!string.IsNullOrEmpty(line)) lines.Add(line); }
+            if (Shown(view.HeatView)) Add(Figure("Heat"));
+            if (Shown(view.PowerView)) { Add(Figure("Power")); Add(Battery()); }
+            if (Shown(view.ManaView))
+            {
+                string mana = Figure("Mana"), regen = ManaRegen();
+                Add(mana != null && regen != null ? mana + ", " + regen : mana);
+            }
+            return lines;
+        }
+
         /// <summary>The player's bombs on the grid out of the limit, "Bombs 1/3"
         /// (<see cref="GridModel.PlayerBombList"/>). The limit is the 3 the game writes into its
         /// counter (<see cref="BombLimitView.SetBombAmount"/>) and tests in AddToPlayerBombListTask,
@@ -447,6 +498,21 @@ namespace StarVoders.Module.Fight
         }
 
         private const int BombLimit = 3;
+
+        /// <summary>The player's Summons on the grid out of the limit, "Summon 1/3"
+        /// (<see cref="GridModel.PlayerPuppetList"/> over the counter's <c>_maxPuppets</c>); null
+        /// unless a Summon is out or the mech is a Keeper (the Mana panel shown), whose cards make them.</summary>
+        public static string Summons()
+        {
+            var view = View;
+            var summons = Model?.GridModel?.PlayerPuppetList;
+            if (summons == null || view == null) return null;
+            if (summons.Count == 0 && !Shown(view.ManaView)) return null;
+            int max = view.PuppetLimitView != null && view.PuppetLimitView._maxPuppets > 0 ? view.PuppetLimitView._maxPuppets : 3;
+            string figure = Core.Strings.Strings.Position(summons.Count, max);
+            string title = GameLoc.Get("Summon_Keyword");
+            return title != null ? title + " " + figure : figure;
+        }
 
         // ---- target selection ----
 

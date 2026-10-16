@@ -16,8 +16,8 @@ namespace StarVoders.Module.Fight
 {
     /// <summary>
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
-    /// card; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H Heat, Ctrl+O
-    /// objective, Ctrl+M the mech, Ctrl+B the bombs) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
+    /// card; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
+    /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
     /// bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
@@ -56,10 +56,14 @@ namespace StarVoders.Module.Fight
             Read("fight.coords", "Coordinates", KeyCode.C, Coords);
             Read("fight.turn", "Turn", KeyCode.T, EncounterScreen.TurnText);
             Read("fight.doom", "Doom", KeyCode.D, ctrl: true, line: () => Visible(Fight.View?.DoomView) ? Fight.Figure("Doom") : null);
-            Read("fight.heat", "Heat", KeyCode.H, ctrl: true, line: () => Visible(Fight.View?.HeatView) ? Fight.Figure("Heat") : null);
+            Read("fight.heat", "Energy", KeyCode.H, ctrl: true, line: () => { var lines = Fight.Resources(); return lines.Count > 0 ? string.Join(", ", lines) : null; });
             Read("fight.objective", "Objective", KeyCode.O, ctrl: true, line: EncounterScreen.Objective);
             Read("fight.mech", "Mech", KeyCode.M, ctrl: true, line: MechLine);
-            Read("fight.bombs", "Bombs", KeyCode.B, ctrl: true, line: Fight.Bombs);
+            Read("fight.bombs", "Bombs and Summons", KeyCode.B, ctrl: true, line: () =>
+            {
+                string bombs = Fight.Bombs(), summons = Fight.Summons();
+                return bombs != null && summons != null ? bombs + ", " + summons : bombs ?? summons;
+            });
             InputManager.Register("fight.mech.jump", "Go to the mech", InputCategory.Game, () => JumpTo(Mech()))
                 .AddBinding(new KeyboardBinding(KeyCode.M, shift: true));
             InputManager.Register("fight.cat.next", "Next category", InputCategory.Game, () => Category(1))

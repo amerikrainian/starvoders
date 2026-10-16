@@ -7,7 +7,8 @@ namespace StarVoders.Core.Fight
     /// What changed between two settled moments of a fight, worded as outcomes (speechchem's way):
     /// "Enemy turn" first when it began, then per entity: arrived, moved (only the coordinate that
     /// changed: "Migo 1 to row 4"), health, shield, shock, charge; the destroyed, grouped by kind; new Danger Zones per
-    /// attacker; then Doom and Heat as their panels read; then the new turn ("Turn 2/8") and the
+    /// attacker; then the cards that land on the grid as pickups and those lost from it without being drawn
+    /// (a drawn one is the "Drew" line); then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
     /// cards drawn. Terse, one line per fact, in that
     /// order. Engine-free: the module takes the snapshots.
     /// </summary>
@@ -67,9 +68,19 @@ namespace StarVoders.Core.Fight
             foreach (var kv in byWho)
                 lines.Add(S.FightTargets(kv.Key, string.Join("; ", TileRanges.Parts(kv.Value, after.Columns, after.Rows))));
 
+            var inHand = new HashSet<string>();
+            foreach (var c in after.Hand) inHand.Add(c.Key);
+            foreach (var p in after.Pickups)
+                if (!before.Pickups.Exists(q => q.Key == p.Key && q.X == p.X && q.Y == p.Y))
+                    lines.Add(S.FightAppears(p.Name, S.FightCoord(p.X, p.Y)));
+            foreach (var p in before.Pickups)
+                if (!after.Pickups.Exists(q => q.Key == p.Key) && !inHand.Contains(p.Key))
+                    lines.Add(S.FightDestroyed(p.Name));
+
             if (after.Combo > before.Combo && after.ComboText != null) lines.Add(after.ComboText);
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
-            if (after.Heat != null && after.Heat != before.Heat) lines.Add(after.Heat);
+            foreach (var (was, now) in new[] { (before.Heat, after.Heat), (before.Power, after.Power), (before.Battery, after.Battery), (before.Mana, after.Mana) })
+                if (now != null && now != was) lines.Add(now);
             if (after.PlayerTurn && (!before.PlayerTurn || turnAdvanced)) lines.Add(after.TurnText ?? S.FightTurn(after.Turn, after.Turns));
 
             var held = new HashSet<string>();

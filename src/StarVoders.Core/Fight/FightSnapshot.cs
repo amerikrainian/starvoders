@@ -30,6 +30,15 @@ namespace StarVoders.Core.Fight
         public int X, Y;
     }
 
+    /// <summary>A card lying on the grid: the card's id (as <see cref="CardSnap.Key"/>), its spoken
+    /// name ("Pickup: Dash") and its tile, 1-based.</summary>
+    public sealed class PickupSnap
+    {
+        public string Key;
+        public string Name;
+        public int X, Y;
+    }
+
     /// <summary>A card in hand: the game's id (two Fire! cards differ) and its name.</summary>
     public sealed class CardSnap
     {
@@ -38,7 +47,8 @@ namespace StarVoders.Core.Fight
     }
 
     /// <summary>The fight at one settled moment, what <see cref="FightDiff"/> compares. Doom and
-    /// Heat are kept as they read ("Doom 1/5"), so a change is said as the key reads it.</summary>
+    /// the energy (Heat; Power and Battery; Mana) are kept as they read ("Doom 1/5"), so a change
+    /// is said as the key reads it; null where the fight has no such panel.</summary>
     public sealed class FightSnapshot
     {
         public int Turn, Turns;
@@ -48,7 +58,7 @@ namespace StarVoders.Core.Fight
         /// <summary>The board's size (0 when unknown), for whole rows and columns.</summary>
         public int Columns, Rows;
         public bool PlayerTurn;
-        public string Doom, Heat;
+        public string Doom, Heat, Power, Battery, Mana;
         /// <summary>The combo (invaders destroyed this turn, the Stars multiplier) and how it reads
         /// ("Combo! 4, Nice!"): said when the count rises, never when it drops back to 0.</summary>
         public int Combo;
@@ -56,5 +66,6 @@ namespace StarVoders.Core.Fight
         public List<EntitySnap> Entities = new List<EntitySnap>();
         public List<CardSnap> Hand = new List<CardSnap>();
         public List<DangerSnap> Dangers = new List<DangerSnap>();
+        public List<PickupSnap> Pickups = new List<PickupSnap>();
     }
 }

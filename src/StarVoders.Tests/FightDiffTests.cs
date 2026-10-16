@@ -167,6 +167,33 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void The_energy_reads_as_its_panels_each_when_it_changes()
+        {
+            var before = Snap();
+            before.Power = "Power 3/3";
+            before.Battery = "Battery 2";
+            before.Mana = "Mana 2/5";
+            var after = Snap();
+            after.Power = "Power 2/3";
+            after.Battery = "Battery 2";
+            after.Mana = "Mana 4/5";
+            Assert.Equal(new[] { "Power 2/3", "Mana 4/5" }, FightDiff.Lines(before, after));
+        }
+
+        [Fact]
+        public void A_pickup_reads_where_it_lands_and_when_lost_but_not_when_drawn()
+        {
+            var before = Snap();
+            before.Pickups.Add(new PickupSnap { Key = "Dash#1", Name = "Pickup: Dash", X = 4, Y = 7 });
+            before.Pickups.Add(new PickupSnap { Key = "Sting#1", Name = "Pickup: Sting", X = 4, Y = 6 });
+            var after = Snap();
+            after.Pickups.Add(new PickupSnap { Key = "Kunai#1", Name = "Pickup: Kunai", X = 2, Y = 5 });
+            after.Hand.Add(new CardSnap { Key = "Sting#1", Name = "Sting" });
+            Assert.Equal(new[] { "Pickup: Kunai appears at 2, 5", "Pickup: Dash destroyed", "Drew Sting" },
+                FightDiff.Lines(before, after));
+        }
+
+        [Fact]
         public void Cards_drawn_are_the_new_ones_by_id_not_by_name()
         {
             var before = Snap();

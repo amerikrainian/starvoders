@@ -119,10 +119,9 @@ namespace StarVoders.Module.Fight
                 if (doom != null && doom.gameObject.activeInHierarchy) snap.Doom = Fight.Figure("Doom");
                 snap.Combo = Fight.Value(EncounterValue.Combo) ?? 0;
                 snap.ComboText = ComboText(snap.Combo, view.ComboView);
-                var heat = view.HeatView;
-                var group = heat != null ? heat.GetComponent<CanvasGroup>() : null;
-                if (heat != null && heat.gameObject.activeInHierarchy && (group == null || group.alpha > 0.05f))
-                    snap.Heat = Fight.Figure("Heat");
+                if (Fight.Shown(view.HeatView)) snap.Heat = Fight.Figure("Heat");
+                if (Fight.Shown(view.PowerView)) { snap.Power = Fight.Figure("Power"); snap.Battery = Fight.Battery(); }
+                if (Fight.Shown(view.ManaView)) snap.Mana = Fight.Figure("Mana");
                 foreach (var entity in board.Entities)
                 {
                     var c = model.GridModel.GetEntityCoord(entity.ID.Cast<EntityID>(), false);
@@ -149,6 +148,13 @@ namespace StarVoders.Module.Fight
                     for (int x = 0; x < board.Columns; x++)
                         foreach (var who in board.Attackers(x, y))
                             snap.Dangers.Add(new DangerSnap { Who = who, X = x + 1, Y = y + 1 });
+                for (int y = 0; y < board.Rows; y++)
+                    for (int x = 0; x < board.Columns; x++)
+                    {
+                        var pickup = board.PickupCard(x, y).Card;
+                        if (pickup != null)
+                            snap.Pickups.Add(new PickupSnap { Key = pickup.CardID.CardName + "#" + pickup.CardID.Number, Name = board.Pickup(x, y), X = x + 1, Y = y + 1 });
+                    }
                 // The hand pile as the model has it: a card being played is still in it, so choosing
                 // its target and cancelling reads as nothing.
                 var play = view.CardPlayView;

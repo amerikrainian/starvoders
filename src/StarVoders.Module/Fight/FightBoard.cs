@@ -243,16 +243,33 @@ namespace StarVoders.Module.Fight
         /// <summary>"Pickup: Fire!" for a card lying on the tile, else null.</summary>
         public string Pickup(int x, int y)
         {
+            if (!HasPickup(x, y)) return null;
+            var card = PickupCard(x, y).Card;
+            string label = PickupLabel;
+            return card != null ? Strings.FightLabelled(label, Fight.CardName(card)) : label;
+        }
+
+        public static string PickupLabel => GameLoc.Get("Pickup_Keyword") ?? "Pickup";
+
+        public bool HasPickup(int x, int y)
+        {
+            try { return _grid.PickupMap.ContainsKey(MakeCoord(x, y)); }
+            catch { return false; }
+        }
+
+        /// <summary>The card lying on the tile and its view (the hand's card views hold it while it
+        /// is on the grid); nulls when none.</summary>
+        public (CardModel Card, CardView View) PickupCard(int x, int y)
+        {
             try
             {
                 var map = _grid.PickupMap;
                 var c = MakeCoord(x, y);
-                if (!map.ContainsKey(c)) return null;
-                var card = Fight.View?.CardPlayView?.GetCardView(map[c])?.CardModel;
-                string label = GameLoc.Get("Pickup_Keyword") ?? "Pickup";
-                return card != null ? Strings.FightLabelled(label, Fight.CardName(card)) : label;
+                if (!map.ContainsKey(c)) return (null, null);
+                var view = Fight.View?.CardPlayView?.GetCardView(map[c]);
+                return (view?.CardModel, view);
             }
-            catch { return null; }
+            catch { return (null, null); }
         }
 
         /// <summary>The row's zone: "doom" (invaders there add Doom), "spawn", or "middle".</summary>

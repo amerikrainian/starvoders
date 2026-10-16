@@ -19,8 +19,9 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// The fight (<c>EncounterScene</c>). Stops: the hand (each card "name, cost, description", Enter
     /// playing it as the game's click does, unplayable cards disabled with the game's reason); the
-    /// rack (End Turn, Rewind with the Chrono Tokens left, the draw and discard piles with their
-    /// counts); the status (turn x/y, Doom, Heat, Power and Mana where the mech has them, Stars,
+    /// rack (End Turn, the Transformer's Draw on the Power panel, a Keeper's spells (Enter casts),
+    /// Rewind with the Chrono Tokens left, the draw and discard piles with their
+    /// counts); the status (turn x/y, Doom, Heat, Power and its Battery, Mana and its gain a turn, where the mech has them, Stars,
     /// the objective, the artifacts). Labels are the game's own strings (its <c>*_Misc</c> keys).
     /// </summary>
     public sealed class EncounterScreen : Screen
@@ -88,6 +89,17 @@ namespace StarVoders.Module.Screens
             if (ViewNodes.IsShown(endTurn))
                 b.AddItem(ControlId.Structural("fight:endturn"), Button(endTurn, () => GameLoc.Get("EndTurnTitle_Misc"),
                     () => endTurn.ButtonEnabled, null, () => GameLoc.Get("EndTurnDesc_Misc")));
+            // The Transformer's Draw button on the Power panel: spend 1 Power to draw, once a turn.
+            var powerDraw = view.PowerView != null ? view.PowerView.DrawButton : null;
+            if (ViewNodes.IsShown(powerDraw) && FightState.Shown(view.PowerView))
+                b.AddItem(ControlId.Structural("fight:powerdraw"), Button(powerDraw, () => GameLoc.Get("DrawButton_Misc"),
+                    () => !view.PowerView.DrawButtonLock && powerDraw.ButtonEnabled, null, () => GameLoc.Get("TransformerDrawButtonDesc_Misc")));
+            // A Keeper's spells, in the Mana panel's slots: cast by clicking.
+            var spells = view.ManaView != null && FightState.Shown(view.ManaView) ? view.ManaView.SpellViews : null;
+            if (spells != null)
+                foreach (var spell in spells)
+                    if (ViewNodes.IsShown(spell) && spell.ArtifactModel != null)
+                        b.AddItem(ControlId.Structural("fight:spell:" + spell.GetInstanceID()), Spell(spell));
             var rewind = view.ChronoButtonView;
             if (ViewNodes.IsShown(rewind))
                 b.AddItem(ControlId.Structural("fight:rewind"), Button(rewind, () => GameLoc.Get("RewindButtonTitle_Misc"),
@@ -114,10 +126,18 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("fight:heat"), Stat(() => FightState.Figure("Heat"), () => GameLoc.Get("HeatPanelDesc_Misc")));
             var power = view.PowerView;
             if (ViewNodes.IsShown(power) && Visible(power))
+            {
                 b.AddItem(ControlId.Structural("fight:power"), Stat(() => FightState.Figure("Power"), () => GameLoc.Get("PowerBankDesc_Misc")));
+                if (FightState.Battery() != null)
+                    b.AddItem(ControlId.Structural("fight:battery"), Stat(FightState.Battery, () => GameLoc.Get("BatteryPanelDesc_Misc")));
+            }
             var mana = view.ManaView;
             if (ViewNodes.IsShown(mana) && Visible(mana))
-                b.AddItem(ControlId.Structural("fight:mana"), Stat(() => FightState.Figure("Mana"), () => GameLoc.Get("ManaPanelDesc_Misc")));
+                b.AddItem(ControlId.Structural("fight:mana"), Stat(() =>
+                {
+                    string figure = FightState.Figure("Mana"), regen = FightState.ManaRegen();
+                    return figure != null && regen != null ? figure + ", " + regen : figure;
+                }, () => GameLoc.Get("ManaPanelDesc_Misc")));
             var stars = view._starBucksText;
             if (stars != null && stars.gameObject.activeInHierarchy)
                 b.AddItem(ControlId.Structural("fight:stars"), Stat(() => Join(GameLoc.Get("StarPanelTitle_Misc"), Number(stars)), () => GameLoc.Get("StarPanelDesc_Misc")));
@@ -293,8 +313,19 @@ namespace StarVoders.Module.Screens
                 string d = FightBoard.StatusDescription(status.Value);
                 yield return d != null ? Strings.FightLabelled(FightBoard.StatusName(status.Value), d) : FightBoard.StatusName(status.Value);
             }
-            string pickup = board.Pickup(x, y);
-            if (pickup != null) yield return pickup;
+            // A pickup reads as the card in hand does: "Pickup: Kunai, 1 Power, Attack, Tactic, ...",
+            // then its more info.
+            var (card, cardView) = board.PickupCard(x, y);
+            if (card != null)
+            {
+                var parts = new List<string> { FightState.CardName(card) };
+                foreach (var part in new[] { FightState.CardUpgrade(card), Cost(card, cardView), FightState.CardTraits(card),
+                    FightState.CardDescription(card), FightState.CardUpgradeDescription(card) })
+                    if (!string.IsNullOrEmpty(part)) parts.Add(part);
+                yield return Strings.FightLabelled(FightBoard.PickupLabel, string.Join(", ", parts));
+                foreach (var line in FightState.CardInfoLines(card)) yield return line;
+            }
+            else if (board.HasPickup(x, y)) yield return FightBoard.PickupLabel;
         }
 
         /// <summary>Shift+arrow: past the cells that read the same as this one (contents and strike
@@ -578,6 +609,29 @@ namespace StarVoders.Module.Screens
 
         private static NodeVtable Artifact(ArtifactView view) =>
             CardNodes.Artifact(view.ArtifactModel, view, cooldown: false, focus: () => FightState.Hover(view));
+
+        // "Conjure, Spell, button, Cooldown: 2, disabled, Give or break a Shield on any entity.": the
+        // turns left while the slot draws its counter; Enter casts it (the game's click, which refuses
+        // a used, destroyed or recharging spell).
+        private static NodeVtable Spell(SpellView view)
+        {
+            var model = view.ArtifactModel;
+            Func<bool> recharging = () => view.CooldownObject != null && view.CooldownObject.activeInHierarchy;
+            var vt = CardNodes.Artifact(model, view, cooldown: false, focus: () => FightState.Hover(view));
+            vt.ControlType = ControlTypes.Button;
+            var parts = new List<NodeAnnouncement>(vt.Announcements);
+            parts.Insert(2, new NodeAnnouncement(() =>
+            {
+                if (!recharging()) return null;
+                string text = GameLoc.Get("Cooldown_Misc");
+                string turns = GameText.Of(view.Cooldown);
+                return text != null ? text.Replace("[X]", turns) : turns;
+            }, live: true, kind: AnnouncementKinds.Value));
+            parts.Insert(3, GameNodes.DisabledPart(() => !model.Used && !model.Destroyed && !recharging()));
+            vt.Announcements = parts;
+            vt.OnActivate = () => FightState.Click(view);
+            return vt;
+        }
 
         private static bool Visible(UnityEngine.Component view)
         {
