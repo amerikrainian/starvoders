@@ -19,8 +19,8 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// The fight (<c>EncounterScene</c>). Stops: the hand (each card "name, cost, description", Enter
     /// playing it as the game's click does, unplayable cards disabled with the game's reason); the
-    /// rack (End Turn, the Transformer's Draw on the Power panel, a Keeper's spells (Enter casts),
-    /// Rewind with the Chrono Tokens left, the draw and discard piles with their
+    /// spells (a Keeper's, when there are any: Enter casts); the rack (End Turn, the Transformer's
+    /// Draw on the Power panel, Rewind with the Chrono Tokens left, the draw and discard piles with their
     /// counts); the status (turn x/y, Doom, Heat, Power and its Battery, Mana and its gain a turn, where the mech has them, Stars,
     /// the objective, the artifacts). Labels are the game's own strings (its <c>*_Misc</c> keys).
     /// </summary>
@@ -81,6 +81,21 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("fight:card:" + card.GetInstanceID()), Card(card));
             b.PopContext();
 
+            // A Keeper's spells, in the Mana panel's slots (cast by clicking): their own stop, when
+            // there are any.
+            var spells = new List<SpellView>();
+            if (view.ManaView != null && FightState.Shown(view.ManaView) && view.ManaView.SpellViews != null)
+                foreach (var spell in view.ManaView.SpellViews)
+                    if (ViewNodes.IsShown(spell) && spell.ArtifactModel != null) spells.Add(spell);
+            if (spells.Count > 0)
+            {
+                b.BeginStop("fight:spells");
+                b.PushContext(null);
+                foreach (var spell in spells)
+                    b.AddItem(ControlId.Structural("fight:spell:" + spell.GetInstanceID()), Spell(spell));
+                b.PopContext();
+            }
+
             // The rack and the status read short: no positions, their descriptions in the ui buffer
             // (and on Backspace) rather than spoken on every visit.
             b.BeginStop("fight:rack");
@@ -94,12 +109,6 @@ namespace StarVoders.Module.Screens
             if (ViewNodes.IsShown(powerDraw) && FightState.Shown(view.PowerView))
                 b.AddItem(ControlId.Structural("fight:powerdraw"), Button(powerDraw, () => GameLoc.Get("DrawButton_Misc"),
                     () => !view.PowerView.DrawButtonLock && powerDraw.ButtonEnabled, null, () => GameLoc.Get("TransformerDrawButtonDesc_Misc")));
-            // A Keeper's spells, in the Mana panel's slots: cast by clicking.
-            var spells = view.ManaView != null && FightState.Shown(view.ManaView) ? view.ManaView.SpellViews : null;
-            if (spells != null)
-                foreach (var spell in spells)
-                    if (ViewNodes.IsShown(spell) && spell.ArtifactModel != null)
-                        b.AddItem(ControlId.Structural("fight:spell:" + spell.GetInstanceID()), Spell(spell));
             var rewind = view.ChronoButtonView;
             if (ViewNodes.IsShown(rewind))
                 b.AddItem(ControlId.Structural("fight:rewind"), Button(rewind, () => GameLoc.Get("RewindButtonTitle_Misc"),

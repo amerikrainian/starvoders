@@ -320,12 +320,12 @@ separately. Host F6 uses the same OS read.
   the deck viewer draws it), the autoplay and freeze previews (they need the game's hover preview,
   mouse mode only), the burn warning. A Gunner's cards all cost Heat (`BaseEnergyCost`): test Power by
   setting a hand card's `PowerCost`, `Values[Power/PowerCell]`, `UpdateView()`, then restore),
-  Rack (End Turn; the Transformer's Draw, `PowerView.DrawButton`, shown when the run has the artifact
-  (`PowerView.Initialize`), once a turn = `DrawButtonLock`; a Keeper's spells = `ManaView.SpellViews`,
-  not in `ArtifactViewDict`: buttons, Enter = the click (cast), "Cooldown: N, disabled" while
+  Spells (its own stop, only when any: a Keeper's `ManaView.SpellViews`, not in `ArtifactViewDict`:
+  buttons, Enter = the click (cast), "Cooldown: N, disabled" while
   `CooldownObject` shows (its text is stale while hidden), refused when `Used`/`Destroyed`; test:
-  `TaskEngine.QueueTask(new CreateArtifactTask(ArtifactName.Transformer))`, Iris starts with Conjure),
-  Status. The class energy: the game initializes all three panels (Heat 0/1, Power 2/3, Mana 4/5) and
+  Iris starts with Conjure), Rack (End Turn; the Transformer's Draw, `PowerView.DrawButton`, shown
+  when the run has the artifact (`PowerView.Initialize`), once a turn = `DrawButtonLock`; test:
+  `TaskEngine.QueueTask(new CreateArtifactTask(ArtifactName.Transformer))`), Status. The class energy: the game initializes all three panels (Heat 0/1, Power 2/3, Mana 4/5) and
   shows one (`GetActiveEnergyView` takes the first shown); `Fight.Resources` reads each shown: Heat,
   Power + Battery (`PowerCell`, while `BatteryMockView` shows; Power over max becomes Battery, spent when
   Power runs out), Mana + its gain ("+3 / Turn", `_manaRegenText`). Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
