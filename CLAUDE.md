@@ -116,6 +116,14 @@ separately. Host F6 uses the same OS read.
   empty while `IsTransitioning`), `DifficultyScreen` (`DifficultySelectionSceneAdditive`, layer 10:
   radio buttons; Enter = `OnLevelNPressed(false)`, select only: the game's click on the selected one
   starts the run; Go! = `OnStartPressed`, never through the driver; seed field mouse-only),
+  `ChallengesScreen` (`ChallengesSceneAdditive`, `ChallengesSceneController`, the difficulty's Challenges,
+  layer 11, one stop as the difficulties: `ChallengeTextLineList` as a row of radio buttons by title,
+  entry = the selected (`_selectedImage`), `IsLocked` reads LOCKED; Enter = its `OnClick`
+  (`OnClickChallenge`: select only); then the selected one's `CustomStartObject` ("Custom Loadout, Deck":
+  `_deckButton` = the deck viewer), the `ModVerticalLayoutGroup` lines, mod artifacts, its trophy by
+  sprite (`ObtainedTrophy` = the game's Completed, `TrueEnding`/`UltimateEndingObtainedTrophy` add the
+  ending), the pilot by `PilotTitleImage` sprite, Total Completed, Start (a run: never through the
+  driver), Back = `OnClickBack`; empty while `IsEndingScene`),
   `ProfilesScreen` (`SaveProfileSceneAdditive`, `SaveProfileSceneController`, layer 10: the page's three
   `SaveProfileGroup` slots, a saved one followed by its `_deleteButton` "Delete File 1", page arrows, Back
   = `OnClickBack`; switching, creating and deleting profiles: never through the driver),

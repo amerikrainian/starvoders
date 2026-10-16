@@ -223,6 +223,9 @@ namespace StarVoders.Core.Strings
             D("pilots.random", "Random pilot"),
             D("pilots.done", "done"),
             D("pilots.notdone", "not done"),
+            // The challenges: a won challenge's trophy drawn for the run's ending (after the game's "Completed").
+            D("challenges.trueending", "True Ending"),
+            D("challenges.ultimateending", "Ultimate Ending"),
             // The save profiles: a profile's delete button ({0} the profile, "File 1"), the arrows between pages of profiles.
             D("profiles.delete", "Delete {0}"),
             D("profiles.prevpage", "Previous page"),
@@ -516,6 +519,8 @@ namespace StarVoders.Core.Strings
         public static string ProfilesNextPage => Get("profiles.nextpage");
         public static string PilotsDone => Get("pilots.done");
         public static string PilotsNotDone => Get("pilots.notdone");
+        public static string ChallengesTrueEnding => Get("challenges.trueending");
+        public static string ChallengesUltimateEnding => Get("challenges.ultimateending");
         public static string CompendiumKind(bool cards, bool artifacts) => Get(cards == artifacts ? "compendium.both" : cards ? "compendium.cards" : "compendium.artifacts");
         public static string FightStrikes(string tiles, string who) => who != null ? F("fight.strikes.hits", tiles, who) : F("fight.strikes", tiles);
         public static string HistoryRun(int run, int runs) => F("history.run", run, runs);

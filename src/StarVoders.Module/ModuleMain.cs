@@ -167,6 +167,7 @@ namespace StarVoders.Module
             ScreenManager.Register(new GuideScreen());
             ScreenManager.Register(new PilotSelectScreen());
             ScreenManager.Register(new DifficultyScreen());
+            ScreenManager.Register(new ChallengesScreen());
             ScreenManager.Register(new ProfilesScreen());
             ScreenManager.Register(new MoreInfoScreen());
             ScreenManager.Register(new ModifiersScreen());
