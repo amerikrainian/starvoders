@@ -17,9 +17,12 @@ namespace StarVoders.Module.Fight
         public static IEnumerable<string> Hand()
         {
             if (Fight.Controller == null) yield break;
-            foreach (var card in Fight.Hand())
-                yield return GraphAnnouncer.LeafText(new GraphNode { Vtable = EncounterScreen.Card(card) });
+            foreach (var card in Fight.Hand()) yield return HandLine(card);
         }
+
+        /// <summary>A hand card as focusing it reads it (the hand buffer's line, Shift plus its card key).</summary>
+        public static string HandLine(CardView card) =>
+            card != null ? GraphAnnouncer.LeafText(new GraphNode { Vtable = EncounterScreen.Card(card) }) : null;
 
         public static IEnumerable<string> Player()
         {

@@ -13,26 +13,29 @@ namespace StarVoders.Module.Input
     /// the saved overrides into it, and <c>effectivePath</c> carries them), only while some key is
     /// down or just released, once a frame. Its keyboard bindings ("&lt;Keyboard&gt;/a") become
     /// <see cref="KeyCode"/>s polled from the OS like <see cref="KeyboardBinding"/>'s, with no
-    /// modifier held (the game's own are bare keys). With no handler or action to read, the game's
-    /// default key stands in.
+    /// modifier held (the game's own are bare keys), or with Shift alone for a <see cref="Shift"/>
+    /// binding: ours on top of the game's key (Shift+1 reads the card 1 plays). With no handler or
+    /// action to read, the game's default key stands in.
     /// </summary>
     public sealed class GameKeyBinding : InputBinding
     {
         public string Action { get; }
+        public bool Shift { get; }
         private readonly KeyCode _default;
         private readonly Func<StarVaders.InputHandler> _handler;
 
         private readonly List<KeyCode> _keys = new List<KeyCode>();
         private int _frame = int.MinValue;
 
-        public GameKeyBinding(string action, KeyCode defaultKey, Func<StarVaders.InputHandler> handler)
+        public GameKeyBinding(string action, KeyCode defaultKey, Func<StarVaders.InputHandler> handler, bool shift = false)
         {
             Action = action;
+            Shift = shift;
             _default = defaultKey;
             _handler = handler;
         }
 
-        private static bool NoModifiers => !OsKeys.CtrlHeld && !OsKeys.ShiftHeld && !OsKeys.AltHeld;
+        private bool ModifiersMatch => !OsKeys.CtrlHeld && OsKeys.ShiftHeld == Shift && !OsKeys.AltHeld;
 
         public override bool JustPressed() => Any(OsKeys.Pressed);
         public override bool Held() => Any(OsKeys.Held);
@@ -40,7 +43,7 @@ namespace StarVoders.Module.Input
 
         private bool Any(Func<KeyCode, bool> phase)
         {
-            if (!OsKeys.AnyActive || !NoModifiers) return false;
+            if (!OsKeys.AnyActive || !ModifiersMatch) return false;
             foreach (var key in Keys())
                 if (phase(key)) return true;
             return false;
@@ -51,6 +54,7 @@ namespace StarVoders.Module.Input
         {
             get
             {
+                if (Shift) return false;
                 foreach (var key in Keys())
                     if ((key >= KeyCode.A && key <= KeyCode.Z) || key == KeyCode.Space) return true;
                 return false;
@@ -62,7 +66,7 @@ namespace StarVoders.Module.Input
             get
             {
                 var names = new List<string>();
-                foreach (var key in Keys()) names.Add(KeyboardBinding.KeyName(key));
+                foreach (var key in Keys()) names.Add((Shift ? "Shift+" : "") + KeyboardBinding.KeyName(key));
                 return names.Count > 0 ? string.Join(", ", names) : Action;
             }
         }
@@ -70,7 +74,7 @@ namespace StarVoders.Module.Input
         public override string Type => "game";
 
         // The game's action name: the keys themselves are the game's to say.
-        public override string Serialize() => Action;
+        public override string Serialize() => Shift ? "shift+" + Action : Action;
 
         // ---- reading the game ----
 

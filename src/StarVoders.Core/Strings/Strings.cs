@@ -151,6 +151,17 @@ namespace StarVoders.Core.Strings
             D("bind.fight.card8", "Play card 8"),
             D("bind.fight.card9", "Play card 9"),
             D("bind.fight.card10", "Play card 10"),
+            // Shift plus a card key: the card it plays, read as the hand reads it.
+            D("bind.fight.cardinfo1", "Read card 1"),
+            D("bind.fight.cardinfo2", "Read card 2"),
+            D("bind.fight.cardinfo3", "Read card 3"),
+            D("bind.fight.cardinfo4", "Read card 4"),
+            D("bind.fight.cardinfo5", "Read card 5"),
+            D("bind.fight.cardinfo6", "Read card 6"),
+            D("bind.fight.cardinfo7", "Read card 7"),
+            D("bind.fight.cardinfo8", "Read card 8"),
+            D("bind.fight.cardinfo9", "Read card 9"),
+            D("bind.fight.cardinfo10", "Read card 10"),
             // Choosing a target: the play area ("Play"), the arrows' directions, a tile ("x, y", 1-based, row 1 at the bottom).
             D("fight.play", "Play"),
             D("fight.dir.n", "up"),

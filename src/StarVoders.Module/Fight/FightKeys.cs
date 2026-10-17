@@ -16,7 +16,7 @@ namespace StarVoders.Module.Fight
 {
     /// <summary>
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
-    /// card; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
+    /// card, Shift with them reads it as the hand buffer does; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
     /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
     /// Summons (a Keeper's puppets), bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
@@ -33,7 +33,8 @@ namespace StarVoders.Module.Fight
         // The fight's action asset (the scene's PlayerInput): what the game's own fight keys listen to.
         private static StarVaders.InputHandler Handler() => Fight.Controller?.EncounterInputHandler;
 
-        private static GameKeyBinding GameKey(string action, KeyCode defaultKey) => new GameKeyBinding(action, defaultKey, Handler);
+        private static GameKeyBinding GameKey(string action, KeyCode defaultKey, bool shift = false) =>
+            new GameKeyBinding(action, defaultKey, Handler, shift);
 
         public static void Register()
         {
@@ -42,6 +43,8 @@ namespace StarVoders.Module.Fight
                 int card = n, digit = n % 10;
                 InputManager.Register("fight.card" + card, "Play card " + card, InputCategory.Game, () => EncounterScreen.PlayCard(card))
                     .AddBinding(GameKey("SelectCard" + digit, KeyCode.Alpha0 + digit));
+                InputManager.Register("fight.cardinfo" + card, "Read card " + card, InputCategory.Game, () => ReadCard(card))
+                    .AddBinding(GameKey("SelectCard" + digit, KeyCode.Alpha0 + digit, shift: true));
             }
             InputManager.Register("fight.skip.up", "Skip up", InputCategory.Game, () => EncounterScreen.Skip(0, 1))
                 .AddBinding(new KeyboardBinding(KeyCode.UpArrow, shift: true)).Repeating();
@@ -108,6 +111,17 @@ namespace StarVoders.Module.Fight
                 catch (Exception e) { CoreLog.Warning("FightKeys: " + key + " failed: " + e.Message); }
                 if (!string.IsNullOrEmpty(text)) Speech.Say(text, interrupt: true);
             }).AddBinding(new KeyboardBinding(code, ctrl: ctrl));
+        }
+
+        // Shift plus a card key: the card that key plays, as the hand buffer reads it; silent past the hand.
+        private static void ReadCard(int n)
+        {
+            var hand = Fight.Hand();
+            if (n < 1 || n > hand.Count) return;
+            string line = null;
+            try { line = FightBuffers.HandLine(hand[n - 1]); }
+            catch (Exception e) { CoreLog.Warning("FightKeys: reading card " + n + " failed: " + e.Message); }
+            if (!string.IsNullOrEmpty(line)) Speech.Say(line, interrupt: true);
         }
 
         private static bool Visible(Component view)

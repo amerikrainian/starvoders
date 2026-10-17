@@ -3,6 +3,7 @@
 ## V0.0.9
 
 - Add some more useful buffers: player, enemies, hand.
+- Shift and digits now announce the corresponding card you would play when pressing that number.
 
 ## V0.0.8
 
