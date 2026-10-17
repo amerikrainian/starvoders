@@ -1,5 +1,11 @@
 # Changelog
 
+## V0.0.8
+
+- Player's summons like puppets now have a category.
+- Fixed the mod repeating encounter objective when abandoning a run.
+- Allow the game's keys to go through: A for draw, S for discard, R for rewind, F for more info (same as backspace).
+
 ## V0.0.7
 
 - Added support for other characters and their resources, e.g., mana/heat.
