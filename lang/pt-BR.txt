@@ -118,6 +118,7 @@ fight.danger={0}: {1}
 fight.targeted=na mira de {0}
 fight.cat.invaders=Invasores
 fight.cat.mech=Mech
+fight.cat.summons=Invocações
 fight.cat.items=Bombas e itens
 fight.cat.pickups=Coletáveis
 fight.cat.danger=Zonas de perigo

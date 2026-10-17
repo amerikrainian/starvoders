@@ -118,6 +118,7 @@ fight.danger={0}: {1}
 fight.targeted={0} が狙う
 fight.cat.invaders=インベーダー
 fight.cat.mech=メカ
+fight.cat.summons=召喚
 fight.cat.items=爆弾とアイテム
 fight.cat.pickups=ピックアップ
 fight.cat.danger=危険ゾーン

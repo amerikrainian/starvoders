@@ -331,7 +331,8 @@ separately. Host F6 uses the same OS read.
   Power + Battery (`PowerCell`, while `BatteryMockView` shows; Power over max becomes Battery, spent when
   Power runs out), Mana + its gain ("+3 / Turn", `_manaRegenText`). Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
-  category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones
+  category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (Summons = the tiles of `PlayerPuppetList`'s entities, `PuppetItem`s,
+  left out of "Bombs and items"; danger zones
   step by region, "5, 1 to 5, 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
   targets events are), Alt+Backspace; the game's own fight keys are `Input/GameKeyBinding`s, the keys
   of the game's action (`PlayerInput.actions` of the fight's handler: one asset, the main menu loads

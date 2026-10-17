@@ -26,6 +26,7 @@ namespace StarVoders.Module.Fight
         // invader is called by its place in its kind ("Shooter 2"), stable since the dead stay.
         private readonly Dictionary<EnemyName, List<int>> _kinds = new Dictionary<EnemyName, List<int>>();
         private readonly HashSet<(int, int)> _spawn = new HashSet<(int, int)>();
+        private readonly HashSet<(int, int)> _summons = new HashSet<(int, int)>();
         public readonly List<AEntityModel> Entities = new List<AEntityModel>();
 
         private FightBoard(EncounterModel model)
@@ -64,12 +65,20 @@ namespace StarVoders.Module.Fight
                 }
                 foreach (var numbers in board._kinds.Values) numbers.Sort();
                 foreach (var c in grid.GetSpawnCoords()) board._spawn.Add((c.x, c.y));
+                var summons = grid.PlayerPuppetList;
+                if (summons != null)
+                    foreach (var id in summons)
+                        if (grid.IsEntityOnGrid(id)) { var c = grid.GetEntityCoord(id, false); board._summons.Add((c.x, c.y)); }
             }
             catch (Exception e) { CoreLog.Warning("FightBoard: reading the board failed: " + e.Message); }
             return board;
         }
 
         public AEntityModel At(int x, int y) => _at.TryGetValue((x, y), out var e) ? e : null;
+
+        /// <summary>Whether the tile holds one of the player's Summons (the game's puppets:
+        /// <see cref="GridModel.PlayerPuppetList"/>, a Keeper's).</summary>
+        public bool IsSummon(int x, int y) => _summons.Contains((x, y));
 
         public static Coord MakeCoord(int x, int y)
         {

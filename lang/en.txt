@@ -120,6 +120,7 @@ fight.danger={0}: {1}
 fight.targeted=targeted by {0}
 fight.cat.invaders=Invaders
 fight.cat.mech=Mech
+fight.cat.summons=Summons
 fight.cat.items=Bombs and items
 fight.cat.pickups=Pickups
 fight.cat.danger=Danger zones

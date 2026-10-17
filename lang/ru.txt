@@ -118,6 +118,7 @@ fight.danger={0}: {1}
 fight.targeted=под прицелом: {0}
 fight.cat.invaders=Захватчики
 fight.cat.mech=Мех
+fight.cat.summons=Призывы
 fight.cat.items=Бомбы и предметы
 fight.cat.pickups=Подбираемое
 fight.cat.danger=Опасные зоны

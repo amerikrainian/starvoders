@@ -19,7 +19,7 @@ namespace StarVoders.Module.Fight
     /// card; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
     /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
-    /// bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
+    /// Summons (a Keeper's puppets), bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
     /// as its targets are announced ("5, 1 to 5, 5, targeted by Shooter 2", the cursor to its first
     /// tile); Alt+Backspace jumps back to where a jump left from; Shift+arrows skip cells that read
@@ -183,7 +183,7 @@ namespace StarVoders.Module.Fight
 
         // ---- categories ----
 
-        private static readonly string[] Categories = { "targets", "invaders", "mech", "items", "pickups", "danger" };
+        private static readonly string[] Categories = { "targets", "invaders", "mech", "summons", "items", "pickups", "danger" };
         private static int _category = -1;
         private static int _item = -1;
 
@@ -211,7 +211,8 @@ namespace StarVoders.Module.Fight
                         case "targets": member = EncounterScreen.IsTarget(x, y); break;
                         case "invaders": member = e?.TryCast<EnemyEntityModel>() != null; break;
                         case "mech": member = e?.TryCast<PlayerEntityModel>() != null; break;
-                        case "items": member = e?.TryCast<ItemEntityModel>() != null; break;
+                        case "summons": member = board.IsSummon(x, y); break;
+                        case "items": member = e?.TryCast<ItemEntityModel>() != null && !board.IsSummon(x, y); break;
                         default: member = board.Pickup(x, y) != null; break;
                     }
                     if (member) tiles.Add(new Member { Tile = (x, y) });

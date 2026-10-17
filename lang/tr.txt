@@ -118,6 +118,7 @@ fight.danger={0}: {1}
 fight.targeted={0} tarafından hedefleniyor
 fight.cat.invaders=İstilacılar
 fight.cat.mech=Mech
+fight.cat.summons=Çağrılar
 fight.cat.items=Bombalar ve eşyalar
 fight.cat.pickups=Toplanabilirler
 fight.cat.danger=Tehlike bölgeleri
