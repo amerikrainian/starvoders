@@ -46,6 +46,19 @@ namespace StarVoders.Module.Input
         public static bool ShiftHeld => Held(KeyCode.LeftShift) || Held(KeyCode.RightShift);
         public static bool AltHeld => Held(KeyCode.LeftAlt) || Held(KeyCode.RightAlt);
 
+        /// <summary>Whether any key is down this frame or was last frame: false means no key can be
+        /// pressed, held or released now.</summary>
+        public static bool AnyActive
+        {
+            get
+            {
+                Refresh();
+                foreach (int vk in s_polled)
+                    if (s_down[vk] || s_prev[vk]) return true;
+                return false;
+            }
+        }
+
         /// <summary>The Windows virtual-key code of a Unity key, or 0 when it has none here.</summary>
         public static int VirtualKey(KeyCode key) => s_vk.TryGetValue(key, out int vk) ? vk : 0;
 

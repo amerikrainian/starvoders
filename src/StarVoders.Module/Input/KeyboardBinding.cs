@@ -63,7 +63,7 @@ namespace StarVoders.Module.Input
         private static readonly System.Text.RegularExpressions.Regex WordSeam =
             new System.Text.RegularExpressions.Regex("(?<=[a-z])(?=[A-Z])", System.Text.RegularExpressions.RegexOptions.Compiled);
 
-        private static string KeyName(KeyCode key)
+        internal static string KeyName(KeyCode key)
         {
             string name = key.ToString();
             if (key == KeyCode.Return) return "Enter";

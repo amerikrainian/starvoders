@@ -22,19 +22,26 @@ namespace StarVoders.Module.Fight
     /// bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
     /// as its targets are announced ("5, 1 to 5, 5, targeted by Shooter 2", the cursor to its first
-    /// tile); Alt+Backspace jumps back to where a jump left from; E ends
-    /// the turn; Shift+arrows skip cells that read the same; Home and End go to the row's ends, Page Up
-    /// and Page Down to the column's.
+    /// tile); Alt+Backspace jumps back to where a jump left from; Shift+arrows skip cells that read
+    /// the same; Home and End go to the row's ends, Page Up and Page Down to the column's.
+    /// The game's own fight keys are its actions' keys, read from the game (<see cref="GameKeyBinding"/>,
+    /// so its rebinding carries over): the card digits, E ends the turn, A and S open the draw and
+    /// discard piles, R rewinds, F is Backspace's details (the game's more info).
     /// </summary>
     internal static class FightKeys
     {
+        // The fight's action asset (the scene's PlayerInput): what the game's own fight keys listen to.
+        private static StarVaders.InputHandler Handler() => Fight.Controller?.EncounterInputHandler;
+
+        private static GameKeyBinding GameKey(string action, KeyCode defaultKey) => new GameKeyBinding(action, defaultKey, Handler);
+
         public static void Register()
         {
             for (int n = 1; n <= 10; n++)
             {
-                int card = n;
+                int card = n, digit = n % 10;
                 InputManager.Register("fight.card" + card, "Play card " + card, InputCategory.Game, () => EncounterScreen.PlayCard(card))
-                    .AddBinding(new KeyboardBinding(card == 10 ? KeyCode.Alpha0 : KeyCode.Alpha0 + card));
+                    .AddBinding(GameKey("SelectCard" + digit, KeyCode.Alpha0 + digit));
             }
             InputManager.Register("fight.skip.up", "Skip up", InputCategory.Game, () => EncounterScreen.Skip(0, 1))
                 .AddBinding(new KeyboardBinding(KeyCode.UpArrow, shift: true)).Repeating();
@@ -77,7 +84,18 @@ namespace StarVoders.Module.Fight
             InputManager.Register("fight.jumpback", "Jump back", InputCategory.Game, JumpBack)
                 .AddBinding(new KeyboardBinding(KeyCode.Backspace, alt: true));
             InputManager.Register("fight.endturn", "End turn", InputCategory.Game, EndTurn)
-                .AddBinding(new KeyboardBinding(KeyCode.E));
+                .AddBinding(GameKey("EndTurn", KeyCode.E));
+            InputManager.Register("fight.deck", "Draw pile", InputCategory.Game, () => Pile(Fight.View?.CardPlayView?.DrawPileView))
+                .AddBinding(GameKey("Deck", KeyCode.A));
+            InputManager.Register("fight.discard", "Discard pile", InputCategory.Game, () => Pile(Fight.View?.CardPlayView?.DiscardView))
+                .AddBinding(GameKey("Discard", KeyCode.S));
+            InputManager.Register("fight.rewind", "Rewind", InputCategory.Game, Rewind)
+                .AddBinding(GameKey("Reroll", KeyCode.R));
+            InputManager.Register("fight.moreinfo", "More info", InputCategory.Game, () =>
+            {
+                var details = InputManager.Find(UiActions.Secondary);
+                if (details != null) Navigation.DispatchJustPressed(details);
+            }).AddBinding(GameKey("MoreInfo", KeyCode.F));
         }
 
         // A read key: speaks its line, interrupting; nothing when the line is null.
@@ -288,6 +306,27 @@ namespace StarVoders.Module.Fight
                 return;
             }
             Fight.Click(end);
+        }
+
+        // ---- the rack's other buttons, as Enter on them ----
+
+        // A and S: the pile's click, the card viewer (the game's keys hover the pile and click too).
+        private static void Pile(AViewItem pile)
+        {
+            if (!ViewNodes.IsShown(pile)) return;
+            Fight.Click(pile);
+        }
+
+        private static void Rewind()
+        {
+            var rewind = Fight.View?.ChronoButtonView;
+            if (!ViewNodes.IsShown(rewind)) return;
+            if (!rewind.ButtonEnabled)
+            {
+                Speech.Say(Strings.FightLabelled(GameLoc.Get("RewindButtonTitle_Misc") ?? "Rewind", Strings.StateDisabled), interrupt: true);
+                return;
+            }
+            Fight.Click(rewind);
         }
     }
 }

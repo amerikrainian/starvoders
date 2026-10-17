@@ -333,7 +333,11 @@ separately. Host F6 uses the same OS read.
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
   category): digits, Shift+arrows skip, C T, Ctrl+D H O M B (Doom, the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (danger zones
   step by region, "5, 1 to 5, 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
-  targets events are), Alt+Backspace, E; Backspace reads details (`*_InfoLine` keywords; on a pickup
+  targets events are), Alt+Backspace; the game's own fight keys are `Input/GameKeyBinding`s, the keys
+  of the game's action (`PlayerInput.actions` of the fight's handler: one asset, the main menu loads
+  the saved rebinds into it, `effectivePath` carries them), so its Options rebinding carries over:
+  digits (`SelectCard1..0`), E (`EndTurn`), A/S (`Deck`/`Discard`: the pile's click), R (`Reroll`:
+  Rewind), F (`MoreInfo`: Backspace's details); T stays ours (the game's guide). Backspace reads details (`*_InfoLine` keywords; on a pickup
   the whole card as the hand reads it, from `GridModel.PickupMap`'s `CardID` via `CardPlayView.GetCardView`;
   test pickups: `QueueTask(new CreateRandomCardsAsPickupNearbyTask())`).
 - Fight events (`Fight/FightEvents`, Core `Fight/FightDiff` with tests): snapshot at settle

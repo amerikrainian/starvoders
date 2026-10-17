@@ -259,6 +259,10 @@ namespace StarVoders.Core.Strings
             D("bind.fight.item.prev", "Previous in category"),
             D("bind.fight.jumpback", "Jump back"),
             D("bind.fight.endturn", "End turn"),
+            D("bind.fight.deck", "Draw pile"),
+            D("bind.fight.discard", "Discard pile"),
+            D("bind.fight.rewind", "Rewind"),
+            D("bind.fight.moreinfo", "More info"),
 
             D("screen.mod_menu", "StarVoders"),
             D("mod.settings", "Settings"),
