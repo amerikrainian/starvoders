@@ -134,7 +134,7 @@ namespace StarVoders.Module.Fight
         }
 
         // "mech, 3, 2[, shielded...]".
-        private static string MechLine()
+        internal static string MechLine()
         {
             var at = Mech();
             var board = FightBoard.Read();

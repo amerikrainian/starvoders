@@ -238,6 +238,10 @@ namespace StarVoders.Core.Strings
             D("history.prev", "Previous run"),
             D("history.next", "Next run"),
             D("buffer.combat", "combat"),
+            // The fight's hand, the player's figures (Doom, energy, bombs; in a run, Doom and Stars), the invaders on the board.
+            D("buffer.hand", "hand"),
+            D("buffer.player", "player"),
+            D("buffer.enemies", "enemies"),
             D("bind.fight.skip.up", "Skip up"),
             D("bind.fight.skip.down", "Skip down"),
             D("bind.fight.skip.left", "Skip left"),
@@ -532,6 +536,9 @@ namespace StarVoders.Core.Strings
         public static string HistoryPrevious => Get("history.prev");
         public static string HistoryNext => Get("history.next");
         public static string BufferCombat => Get("buffer.combat");
+        public static string BufferHand => Get("buffer.hand");
+        public static string BufferPlayer => Get("buffer.player");
+        public static string BufferEnemies => Get("buffer.enemies");
 
 
         public static string ScreenModMenu => Get("screen.mod_menu");

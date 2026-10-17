@@ -4,6 +4,7 @@ using StarVaders;
 using StarVoders.Core.Graph;
 using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
+using StarVoders.Module.Interop;
 using TMPro;
 using UnityEngine;
 
@@ -83,13 +84,10 @@ namespace StarVoders.Module.UI
             b.BeginStop(key + ":status");
             b.PushContext(null, positions: false);
 
-            var doomTitle = Under<TMP_Text>(portrait, "CanvasGroup/Portrait/TitleText");
-            var doomTip = Under<StarVaders.TooltipTrigger>(portrait, "CanvasGroup/Portrait/DoomTooltipTrigger");
-            b.AddItem(ControlId.Structural(key + ":doom"), Stat(
-                () => GameText.Of(doomTitle) ?? Tooltip(doomTip).Title,
-                () => GameText.Of(portrait.DoomText), doomTip));
+            var doomTip = DoomTip(portrait);
+            b.AddItem(ControlId.Structural(key + ":doom"), Stat(() => DoomLabel(portrait), () => GameText.Of(portrait.DoomText), doomTip));
 
-            var stars = Under<StarVaders.TooltipTrigger>(portrait, "CanvasGroup/Portrait/Stardust");
+            var stars = StarsTip(portrait);
             b.AddItem(ControlId.Structural(key + ":stars"), Stat(
                 () => Tooltip(stars).Title, () => Number(portrait.StarbucksText), stars));
 
@@ -99,6 +97,32 @@ namespace StarVoders.Module.UI
                     ViewNodes.Button(deck, () => GameText.Of(portrait.DeckTooltipTitleText) ?? GameText.Of(portrait.DeckNumberText)));
             b.PopContext();
         }
+
+        /// <summary>"Doom 2/5" and "Stars 7500" as the portrait shows them, for the player buffer
+        /// between fights: empty while no run scene draws the portrait.</summary>
+        public static List<string> StatusLines()
+        {
+            var lines = new List<string>();
+            var portrait = GameScenes.Controller<CampaignSceneController>()?.CampaignPortraitView;
+            if (portrait == null || !portrait.gameObject.activeInHierarchy) return lines;
+            void Add(string label, string value)
+            {
+                if (value == null) return;
+                lines.Add(label != null ? label + " " + value : value);
+            }
+            Add(DoomLabel(portrait), GameText.Of(portrait.DoomText));
+            Add(Tooltip(StarsTip(portrait)).Title, Number(portrait.StarbucksText));
+            return lines;
+        }
+
+        private static StarVaders.TooltipTrigger DoomTip(CampaignPortraitView portrait) =>
+            Under<StarVaders.TooltipTrigger>(portrait, "CanvasGroup/Portrait/DoomTooltipTrigger");
+
+        private static StarVaders.TooltipTrigger StarsTip(CampaignPortraitView portrait) =>
+            Under<StarVaders.TooltipTrigger>(portrait, "CanvasGroup/Portrait/Stardust");
+
+        private static string DoomLabel(CampaignPortraitView portrait) =>
+            GameText.Of(Under<TMP_Text>(portrait, "CanvasGroup/Portrait/TitleText")) ?? Tooltip(DoomTip(portrait)).Title;
 
         // A read-only figure: "label, value"; its tooltip's description in the ui buffer and on Backspace.
         private static NodeVtable Stat(Func<string> label, Func<string> value, StarVaders.TooltipTrigger tip)

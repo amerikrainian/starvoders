@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.0.9
+
+- Add some more useful buffers: player, enemies, hand.
+
 ## V0.0.8
 
 - Player's summons like puppets now have a category.

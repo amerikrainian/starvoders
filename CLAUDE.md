@@ -81,8 +81,12 @@ version in `Directory.Build.props` alone, notes from `CHANGELOG.md`).
   unit-tested: key graph, navigator, buffers, input manager, screens, strings), **Module** (net6.0,
   reloadable, engine-coupled: day-to-day work), **Patcher** (net6.0, preloader, permanent), **Tests**.
 - Not ported from guildrun yet: audio cues, `TextEdit`/`NumberEdit` (legacy-input text fields),
-  `ScreenAudit`, `BufferKeys`'
-  guildrun buffer names (hero, quest... are placeholders; the ui buffer is the only one).
+  `ScreenAudit`, `BufferKeys`' guildrun buffer names (hero, quest... are placeholders).
+- Buffers (`UI/Buffers`, sources in `Fight/FightBuffers`): ui (the focused control), hand (each card
+  as its focus reads it: `GraphAnnouncer.LeafText` over `EncounterScreen.Card`), player (in a fight:
+  Doom, `Fight.Resources`, bombs, Summons, the mech line, Stars; between fights the portrait's Doom and
+  Stars, `CampaignNodes.StatusLines`), enemies (invaders, described + tile, top row first), combat. Only
+  ui follows focus; a focus change rewinds them all (combat to its newest) and keeps review where it is.
 
 ## Input (the port's one real redesign)
 Guildrun reads keys from legacy `Input` and silences the game by disabling the Input System

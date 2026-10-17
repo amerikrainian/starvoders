@@ -147,9 +147,8 @@ namespace StarVoders.Module.Screens
                     string figure = FightState.Figure("Mana"), regen = FightState.ManaRegen();
                     return figure != null && regen != null ? figure + ", " + regen : figure;
                 }, () => GameLoc.Get("ManaPanelDesc_Misc")));
-            var stars = view._starBucksText;
-            if (stars != null && stars.gameObject.activeInHierarchy)
-                b.AddItem(ControlId.Structural("fight:stars"), Stat(() => Join(GameLoc.Get("StarPanelTitle_Misc"), Number(stars)), () => GameLoc.Get("StarPanelDesc_Misc")));
+            if (Stars() != null)
+                b.AddItem(ControlId.Structural("fight:stars"), Stat(Stars, () => GameLoc.Get("StarPanelDesc_Misc")));
             b.AddItem(ControlId.Structural("fight:objective"), Stat(Objective, null));
             var artifacts = view.ArtifactViewDict;
             if (artifacts != null && artifacts.Count > 0)
@@ -479,7 +478,8 @@ namespace StarVoders.Module.Screens
 
         // ---- the hand ----
 
-        private static NodeVtable Card(CardView view)
+        /// <summary>A hand card's node, also what the hand buffer reads each card by.</summary>
+        internal static NodeVtable Card(CardView view)
         {
             Func<string> name = () => FightState.CardName(view.CardModel);
             return new NodeVtable
@@ -646,6 +646,14 @@ namespace StarVoders.Module.Screens
         {
             var group = view.GetComponent<UnityEngine.CanvasGroup>();
             return group == null || group.alpha > 0.05f;
+        }
+
+        /// <summary>"Stars 7500", as the fight's Stars panel draws it; null while it is hidden.</summary>
+        internal static string Stars()
+        {
+            var stars = FightState.View?._starBucksText;
+            if (stars == null || !stars.gameObject.activeInHierarchy) return null;
+            return Join(GameLoc.Get("StarPanelTitle_Misc"), Number(stars));
         }
 
         private static string Number(TMP_Text tmp)
