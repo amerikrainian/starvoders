@@ -157,7 +157,9 @@ separately. Host F6 uses the same OS read.
   artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
   (`PauseMenuSceneAdditive`, layer 30, exclusive (what it opens sits above it: Options, the Compendium
   pages, the guide and Modifiers 35, the deck viewer 36, the confirm prompt 37; a Compendium page leaving stays up, empty, until
-  its scene unloads, else the pause menu is announced twice around the scene change): "Paused", its buttons by object name, the run's
+  its scene unloads, else the pause menu is announced twice around the scene change; the pause menu
+  itself likewise stays up, empty, once `IsEndingScene`, until its scene unloads: Abandon Run keeps it
+  loaded under the run end, else the fight beneath is announced first): "Paused", its buttons by object name, the run's
   difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
   Save & Exit and Skip Tutorial/Abandon Run: never through the driver), `WorkshopScreen`
   (`WorkshopScene`, `ShopController`, named by `ShopTitle_Misc`: one stop of the wares, cards

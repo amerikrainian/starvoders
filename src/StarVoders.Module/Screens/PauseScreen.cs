@@ -26,11 +26,10 @@ namespace StarVoders.Module.Screens
 
         private static PauseMenuController Controller => GameScenes.Controller<PauseMenuController>();
 
-        public override bool IsActive()
-        {
-            var c = Controller;
-            return c != null && !c.IsEndingScene;
-        }
+        // Up until the scene is gone, empty once leaving (IsEndingScene, set at the press): Abandon Run
+        // keeps this scene loaded under the run's end, and Save & Exit under its transition, so standing
+        // down at the press would land on the fight beneath first; Resume unloads it after its fade.
+        public override bool IsActive() => Controller != null;
 
         public override string ScreenName => GameLoc.Get("Paused_Misc");
 
@@ -52,7 +51,7 @@ namespace StarVoders.Module.Screens
         public override void Build(GraphBuilder b)
         {
             var c = Controller;
-            if (c == null) return;
+            if (c == null || c.IsEndingScene) return;
 
             b.BeginStop("pause:menu");
             b.PushContext(null);
