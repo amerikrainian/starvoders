@@ -42,26 +42,31 @@ namespace StarVoders.Module.Screens
                 foreach (var board in c.CardRewardBoards)
                     if (ViewNodes.IsShown(board)) cards.Add(board);
             cards.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
-            // The cards as one strip, the artifacts as another under them.
-            if (cards.Count > 0)
-            {
-                b.StartRow("reward:cards");
-                foreach (var board in cards)
-                    b.AddItem(ControlId.Structural("reward:card:" + board.GetInstanceID()), CardNodes.Card(board.GetCardModel(), board));
-                b.EndRow();
-            }
             var artifacts = new List<ArtifactRewardBoard>();
             if (c.ArtifactRewardBoards != null)
                 foreach (var board in c.ArtifactRewardBoards)
                     if (ViewNodes.IsShown(board)) artifacts.Add(board);
             artifacts.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
+            bool both = cards.Count > 0 && artifacts.Count > 0;
+            // The cards as one strip, the artifacts as another under them; labelled when both show.
+            if (cards.Count > 0)
+            {
+                b.PushContext(CardNodes.CardsLabel(both));
+                b.StartRow("reward:cards");
+                foreach (var board in cards)
+                    b.AddItem(ControlId.Structural("reward:card:" + board.GetInstanceID()), CardNodes.Card(board.GetCardModel(), board));
+                b.EndRow();
+                b.PopContext();
+            }
             if (artifacts.Count > 0)
             {
+                b.PushContext(CardNodes.ArtifactsLabel(both));
                 b.StartRow("reward:artifacts");
                 foreach (var board in artifacts)
                     b.AddItem(ControlId.Structural("reward:artifact:" + board.GetInstanceID()),
                         CardNodes.Artifact(board.GetArtifactModel(), board, clickable: true));
                 b.EndRow();
+                b.PopContext();
             }
             b.PopContext();
             // The landing: the first reward, under the run's strips.

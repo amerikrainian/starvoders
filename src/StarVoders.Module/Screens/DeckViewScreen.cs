@@ -75,23 +75,31 @@ namespace StarVoders.Module.Screens
             var cards = Cards(c);
             b.BeginStop("deckview:cards");
             b.PushContext(Title(cards));
-            // Each grid's cards as strips, a row each as drawn (Up and Down keep the column), then the
-            // artifacts' strips.
-            foreach (var grid in new[] { c._cardGrid, c._cardPilotUniqueGrid })
-                if (grid != null)
-                    CardNodes.Strips(b, cards.FindAll(card => card.transform.IsChildOf(grid.transform)), "deckview:rows",
-                        card => ControlId.Structural("deckview:card:" + card.GetInstanceID()),
-                        card => CardNodes.Card(card.CardModel, card));
+            var artifactsByGrid = new List<List<DeckArtifactView>>();
             foreach (var grid in new[] { c._artifactGrid, c._artifactPilotUniqueGrid })
             {
                 if (grid == null || !grid.gameObject.activeInHierarchy) continue;
                 var artifacts = new List<DeckArtifactView>();
                 foreach (var artifact in grid.GetComponentsInChildren<DeckArtifactView>(false))
                     if (artifact != null) artifacts.Add(artifact);
+                if (artifacts.Count > 0) artifactsByGrid.Add(artifacts);
+            }
+            bool both = cards.Count > 0 && artifactsByGrid.Count > 0;
+            // Each grid's cards as strips, a row each as drawn (Up and Down keep the column), then the
+            // artifacts' strips; labelled "Cards" and "Artifacts" when both show.
+            b.PushContext(CardNodes.CardsLabel(both));
+            foreach (var grid in new[] { c._cardGrid, c._cardPilotUniqueGrid })
+                if (grid != null)
+                    CardNodes.Strips(b, cards.FindAll(card => card.transform.IsChildOf(grid.transform)), "deckview:rows",
+                        card => ControlId.Structural("deckview:card:" + card.GetInstanceID()),
+                        card => CardNodes.Card(card.CardModel, card));
+            b.PopContext();
+            b.PushContext(CardNodes.ArtifactsLabel(both));
+            foreach (var artifacts in artifactsByGrid)
                 CardNodes.Strips(b, artifacts, "deckview:rows",
                     artifact => ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()),
                     artifact => CardNodes.Artifact(artifact.ArtifactModel, artifact));
-            }
+            b.PopContext();
             b.PopContext();
             // Back after the cards in the same stop, outside their context, so the list's positions
             // count the cards alone.

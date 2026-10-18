@@ -18,6 +18,14 @@ namespace StarVoders.Module.UI
     /// </summary>
     internal static class CardNodes
     {
+        /// <summary>The label of a screen's cards ("Cards", the game's Compendium filter word), only when
+        /// it shows artifacts too (<paramref name="both"/>): with one kind alone a label says nothing.
+        /// Null otherwise, an unspoken context.</summary>
+        public static string CardsLabel(bool both) => both ? GameLoc.Get("FilterCards_Misc") ?? "Cards" : null;
+
+        /// <summary>The label of a screen's artifacts ("Artifacts"), as <see cref="CardsLabel"/>.</summary>
+        public static string ArtifactsLabel(bool both) => both ? GameLoc.Get("FilterArtifacts_Misc") ?? "Artifacts" : null;
+
         /// <summary>The views as the game draws them in rows: top row first, each left to right. A view
         /// starts a new row when it sits lower than the row's first by more than half its own drawn
         /// height (a rack, a grid; one row when they share a line).</summary>

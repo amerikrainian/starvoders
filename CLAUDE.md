@@ -173,7 +173,9 @@ separately. Host F6 uses the same OS read.
   (`WorkshopScene`, `ShopController`, named by `ShopTitle_Misc`: one stop of the wares, the cards
   rack as strips, a row each as drawn (`CardNodes.Strips`/`DrawnRows`: a view lower than its row's
   first by over half its drawn height starts a row; rows share a key, so Up/Down keep the column),
-  then the artifacts' strip, each "name, 8900 Stars" (the drawn price; the model's is a
+  then the artifacts' strip (`CardNodes.CardsLabel`/`ArtifactsLabel`: the game's `FilterCards_Misc`/
+  `FilterArtifacts_Misc` words as contexts, only when both kinds show; the rewards and the card
+  viewer do the same), each "name, 8900 Stars" (the drawn price; the model's is a
   hundredth), "Sale!, was 5700" (price on `SaleText`, `BuyButtonText` crossed out), "Bundle!, 2
   copies" (bought twice), "disabled" while the price is drawn red (`Text.color !=
   originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and

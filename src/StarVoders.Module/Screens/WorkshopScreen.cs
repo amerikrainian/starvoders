@@ -48,8 +48,14 @@ namespace StarVoders.Module.Screens
             if (c.CardViews != null)
                 foreach (var view in c.CardViews)
                     if (ViewNodes.IsShown(view) && view.IsInteractable && view.CardModel != null) cards.Add(view);
+            var artifacts = new List<WorkshopArtifactView>();
+            if (c.ArtifactViews != null)
+                foreach (var view in c.ArtifactViews)
+                    if (ViewNodes.IsShown(view) && view.IsInteractable && view.ArtifactModel != null) artifacts.Add(view);
+            bool both = cards.Count > 0 && artifacts.Count > 0;
             // The cards rack as strips, a row each as drawn, then the artifacts' strip: Up and Down keep
-            // the column across them.
+            // the column across them. Labelled "Cards" and "Artifacts" when both show.
+            b.PushContext(CardNodes.CardsLabel(both));
             var firstCard = CardNodes.Strips(b, cards, "workshop:wares",
                 v => ControlId.Structural("workshop:card:" + v.GetInstanceID()),
                 v =>
@@ -59,10 +65,8 @@ namespace StarVoders.Module.Screens
                     Insert(vt, () => CardPrice(v), () => Affordable(price));
                     return vt;
                 });
-            var artifacts = new List<WorkshopArtifactView>();
-            if (c.ArtifactViews != null)
-                foreach (var view in c.ArtifactViews)
-                    if (ViewNodes.IsShown(view) && view.IsInteractable && view.ArtifactModel != null) artifacts.Add(view);
+            b.PopContext();
+            b.PushContext(CardNodes.ArtifactsLabel(both));
             var firstArtifact = CardNodes.Strips(b, artifacts, "workshop:wares",
                 v => ControlId.Structural("workshop:artifact:" + v.GetInstanceID()),
                 v =>
@@ -71,6 +75,7 @@ namespace StarVoders.Module.Screens
                     Insert(vt, () => Stars(v.BuyButtonText), () => Affordable(v.BuyButtonText));
                     return vt;
                 });
+            b.PopContext();
             b.PopContext();
             // The landing: the first ware, under the run's strips.
             if (firstCard != null || firstArtifact != null) b.SetStart(firstCard ?? firstArtifact);
