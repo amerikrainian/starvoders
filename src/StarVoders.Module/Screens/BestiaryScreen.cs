@@ -236,7 +236,7 @@ namespace StarVoders.Module.Screens
             Func<IEnumerable<string>> details = () =>
             {
                 var lines = new List<string>(FightBoard.TraitLines(entity));
-                foreach (var line in FightState.InfoLines(entity.MoreInfoWordNames))
+                foreach (var line in FightState.EntityInfoLines(entity))
                     if (!lines.Contains(line)) lines.Add(line);
                 return lines;
             };

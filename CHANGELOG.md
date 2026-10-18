@@ -5,6 +5,7 @@
 - We now allow you to rebind in-game actions.
 - Compress the run into one tab stop.
 - Cards, artifacts, and rewards now get rendered as horizontal rows.
+- Fixed invader cards not showing descriptions on an encounter screen.
 
 ## V0.0.9
 

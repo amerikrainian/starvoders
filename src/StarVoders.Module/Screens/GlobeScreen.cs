@@ -167,7 +167,8 @@ namespace StarVoders.Module.Screens
             return parts.Count > 0 ? string.Join(", ", parts) : null;
         }
 
-        // The ui buffer: each invader with its description, then every tooltip the panel shows.
+        // The ui buffer: each invader with its description and what its more info links, then every
+        // tooltip the panel shows.
         private static IEnumerable<string> Details(RoomChoicePanel panel, EncounterRoomChoicePanel encounter)
         {
             var lines = new List<string>();
@@ -180,6 +181,9 @@ namespace StarVoders.Module.Screens
                     string d = GameLoc.EntityDescription(enemy, name + "_EntityDesc", null);
                     string line = d != null ? n + ": " + d : n;
                     if (!lines.Contains(line)) lines.Add(line);
+                    // What its more info links: keywords, and the cards it adds (the Pixie's Shimmer).
+                    foreach (var info in Fight.Fight.EntityInfoLines(enemy))
+                        if (!lines.Contains(info)) lines.Add(info);
                 }
             foreach (var view in new[] { panel.DifficultyModArtifact, panel.CurseModArtifact })
             {

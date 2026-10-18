@@ -171,6 +171,19 @@ namespace StarVoders.Module.Fight
 
         /// <summary>One more-info set's lines, as the game's more info panel lists them: the keyword
         /// explanations, then each card, item and invader it names with its description.</summary>
+        /// <summary>What an invader's or item's more info shows besides its own text: its keyword
+        /// explanations, then the cards, items and invaders it names ("Shimmer: Purge this card..." for
+        /// the Pixie, "Jam: ..." for the Shooter).</summary>
+        public static List<string> EntityInfoLines(AEntityModel entity)
+        {
+            var lines = new List<string>();
+            if (entity == null) return lines;
+            void Add(string line) { if (line != null && !lines.Contains(line)) lines.Add(line); }
+            try { MoreInfo(Add, entity.MoreInfoWordNames, entity.MoreInfoCardNames, entity.MoreInfoItemNames, entity.MoreInfoEnemyNames); }
+            catch (Exception e) { CoreLog.Warning("Fight: reading an entity's more info failed: " + e.Message); }
+            return lines;
+        }
+
         private static void MoreInfo(Action<string> add,
             Il2CppSystem.Collections.Generic.HashSet<MoreInfoWordName> words,
             Il2CppSystem.Collections.Generic.HashSet<CardName> cards,

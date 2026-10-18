@@ -292,7 +292,9 @@ separately. Host F6 uses the same OS read.
   its first item, and the pause menu's run stop with the timeline; timeline kind from the active `Pip`/`StarPip`/`BossPip` child named by the map
   tooltip's legend, cleared = `XPip.enabled`, current = first not cleared, Up into the row lands
   on it), the encounters (`CurrentRoomChoicePanels`, the landing: selected, else first; invaders
-  by `EnemyEntityModel.EnemyID.EnemyName`, reward by its tooltip title; invader descriptions and
+  by `EnemyEntityModel.EnemyID.EnemyName`, reward by its tooltip title; invader descriptions, each
+  followed by its more-info links (`Fight.EntityInfoLines`: keywords and the `MoreInfoCardNames`/items/
+  invaders it names, the Pixie's Shimmer; the fight's cell details and the Bestiary use it too), and
   every tooltip in the ui buffer), Proceed, then Reroll under it (`ButtonEnabled`). **Clicking the encounter that is
   already selected is `ProceedButton.OnClick` (the fight starts)**, as in the game, and the
   tutorial preselects its one encounter: never Enter on an encounter through the driver.

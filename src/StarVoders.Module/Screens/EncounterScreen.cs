@@ -317,7 +317,7 @@ namespace StarVoders.Module.Screens
                 yield return d != null ? Strings.FightLabelled(board.Name(entity), d) : board.Describe(entity);
                 var traits = FightBoard.TraitLines(entity);
                 foreach (var line in traits) yield return line;
-                foreach (var line in FightState.InfoLines(entity.MoreInfoWordNames))
+                foreach (var line in FightState.EntityInfoLines(entity))
                     if (!traits.Contains(line)) yield return line;
             }
             string danger = board.Danger(x, y);
