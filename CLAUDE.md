@@ -84,7 +84,7 @@ a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includ
   Prism, `HostPump`, `ModuleLoader`, dev server), **Core** (netstandard2.0, reloadable, engine-free,
   unit-tested: key graph, navigator, buffers, input manager, screens, strings), **Module** (net6.0,
   reloadable, engine-coupled: day-to-day work), **Patcher** (net6.0, preloader, permanent), **Tests**.
-- Not ported from guildrun yet: audio cues, `TextEdit`/`NumberEdit` (legacy-input text fields),
+- Not ported from guildrun yet: audio cues, `NumberEdit` (the mod's own number entry),
   `ScreenAudit`, `BufferKeys`' guildrun buffer names (hero, quest... are placeholders).
 - Buffers (`UI/Buffers`, sources in `Fight/FightBuffers`): ui (the focused control), hand (each card
   as its focus reads it: `GraphAnnouncer.LeafText` over `EncounterScreen.Card`), player (in a fight:
@@ -124,7 +124,7 @@ separately. Host F6 uses the same OS read.
   empty while `IsTransitioning`), `DifficultyScreen` (`DifficultySelectionSceneAdditive`, layer 10:
   radio buttons; Enter = `OnLevelNPressed(false)`, select only: the game's click on the selected one
   starts the run; Go! = `OnStartPressed`, never through the driver; Go! and Challenges are never
-  hovered: the game's keyboard hover on either clears the selected difficulty; seed field mouse-only),
+  hovered: the game's keyboard hover on either clears the selected difficulty; the seed: see Text fields),
   `ChallengesScreen` (`ChallengesSceneAdditive`, `ChallengesSceneController`, the difficulty's Challenges,
   layer 11, one stop as the difficulties: `ChallengeTextLineList` as a row of radio buttons by title,
   entry = the selected (`_selectedImage`), `IsLocked` reads LOCKED; Enter = its `OnClick`
@@ -209,7 +209,7 @@ separately. Host F6 uses the same OS read.
   (`IsFilterPanelActive`: `FilterPanel`'s sections by their `Title`, `FilterButton.IsSelected`), the
   items by `verticalLayoutGroup` child order with `GlossaryPilotGroup` titles; `IsLockedMode`/
   `IsUndiscoveredMode` items read only the game's LOCKED/UNDISCOVERED; never bind a
-  `DeckCardView` click there (it is the shop's removal path); search is mouse-only; Escape closes
+  `DeckCardView` click there (it is the shop's removal path); the search: see Text fields; Escape closes
   the filters, else `ExitScene`; the count is labelled by class and the Type filter: it counts what
   is shown), the other Compendium pages (each its own additive scene, layer 35, exclusive; their
   bottom row and Back in `UI/GlossaryNodes`; Escape = `ExitScene`): `BestiaryScreen`
@@ -432,6 +432,36 @@ separately. Host F6 uses the same OS read.
   (the game swaps a key another of its actions had; that is not announced). The game saves bindings on Apply
   and on every tab press (`SaveManager.SaveBindings`): a test rebind is on disk, so put the key back
   (`RemoveAllBindingOverrides`, then `SaveBindings` of the asset's json).
+
+## Text fields
+`UI/TextEdit` (guildrun's, keys from `OsKeys`): the game's own `TMP_InputField` edits, selected and
+activated as a click does; TextMesh Pro reads Unity's IMGUI event queue, which focus mode leaves
+alone, so typing, the caret, selection, Ctrl+A and the clipboard are the game's. The mod's keys stand
+down meanwhile (`InputManager.TextFieldFocused`, until the ending key comes up; type-ahead too).
+Each step is echoed from the field's state before and after (`Core/UI/EditEcho`). Enter ends the edit with focus resting on the field (Enter there edits again, with no word of its
+own: the field selecting its text is echoed, "123 selected"); Escape ends it silently and runs the
+screen's Back, as on any control (the text kept); Tab and Shift+Tab end it and move on, and so do
+Up and Down in a one-line field; focus leaving any other way stops it. A field is edited the moment focus lands on it, taking focus once every key is up (a held arrow
+would move its caret) (`TextEdit.OnLanding`, ticked from the screen's
+`OnUpdate`; `editOnLanding: false` would wait for Enter); Up and Down leave a one-line field, so
+one can share a stop with other controls (the seed); `TextEdit.Node` reads "Insert Seed, edit, 123" (name = the
+placeholder, dots dropped; value not live: the echo says each step). Fields: the Compendium search
+(`GlossaryController.InputField`; the game shows its bar only in mouse mode, `HandleSearchBarVisibility`
+at start and on a device change, so the mod shows `_searchBar` for the edit; `onEndEdit` runs
+`OnSearch`, so the search applies when the edit ends; `OnSearch` REBUILDS every item (new objects,
+new ids), so: an edit the mod ends with the text unchanged switches that one listener off for the
+end (`quietWhenUnchanged`; `SetPersistentListenerState`, restored to RuntimeOnly: 2020 has no
+getter), else Tab past the field would land on an item the rebuild destroys and focus would fall
+back to the search, which edits again; a changed search left by Tab takes the Tab's move
+(`TextEdit.Ended` with `EditExit`, `TextEdit.MoveTaken`), waits for `isShowingCoroutine` up then
+down (5 s at most, the search not edited meanwhile) and focuses the items stop, or re-reads the
+search when nothing was found), the difficulty seed (`SeedInput`, above the difficulties in their stop, the landing still a
+difficulty by `SetStart`; offered
+once `MiscUnlockName.Challenges` is unlocked; whole numbers, 12 digits; Go! reads it).
+`OptionInputField` rows are not in the Options scene; the F2 bug report form is not covered.
+Test with real keys: a scratch script bringing the game forward (`AttachThreadInput` +
+`SetForegroundWindow`) and `keybd_event` (End/Home need the extended-key flag, else they read as
+the numpad's); the driver's `/input` goes to the mod, not the field.
 
 ## Dev driver (Debug only; `SVO_NO_DEV=1` disables, `SVO_DEV_PORT` sets the port, default 8772)
 Guildrun's server unchanged: `/input`, `/nav`, `/gui`, `/speech`, `/log`, `/eval` (Roslyn, every

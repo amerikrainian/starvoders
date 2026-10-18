@@ -28,7 +28,6 @@ state.collapsed=折りたたみ
 value.blank=ブランク
 value.space=スペース
 value.percent={0} パーセント
-edit.begin=編集
 edit.selected={0} 選択
 edit.unselected={0} 選択解除
 edit.point=ピリオド

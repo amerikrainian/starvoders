@@ -28,7 +28,6 @@ state.collapsed=daraltılmış
 value.blank=boş
 value.space=boşluk
 value.percent=yüzde {0}
-edit.begin=düzenleniyor
 edit.selected={0} seçildi
 edit.unselected={0} seçimi kaldırıldı
 edit.point=nokta

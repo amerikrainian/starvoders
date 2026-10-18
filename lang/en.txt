@@ -30,7 +30,6 @@ state.collapsed=collapsed
 value.blank=blank
 value.space=space
 value.percent={0} percent
-edit.begin=editing
 edit.selected={0} selected
 edit.unselected={0} unselected
 edit.point=point

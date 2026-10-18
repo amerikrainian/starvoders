@@ -59,7 +59,6 @@ namespace StarVoders.Core.Strings
             D("value.space", "space"),
             // A 0 to 1 slider's value (the volumes). {0} = the whole percent.
             D("value.percent", "{0} percent"),
-            D("edit.begin", "editing"),
             D("edit.selected", "{0} selected"),
             D("edit.unselected", "{0} unselected"),
             // The mod's own number entry: the decimal point as typed, a character erased with Backspace.
@@ -450,7 +449,6 @@ namespace StarVoders.Core.Strings
         public static string ValueBlank => Get("value.blank");
         public static string ValueSpace => Get("value.space");
         public static string Percent(int percent) => F("value.percent", percent);
-        public static string EditBegin => Get("edit.begin");
         public static string EditSelected(string text) => F("edit.selected", text);
         public static string EditUnselected(string text) => F("edit.unselected", text);
         public static string EditPoint => Get("edit.point");

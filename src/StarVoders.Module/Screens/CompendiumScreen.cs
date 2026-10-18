@@ -22,8 +22,12 @@ namespace StarVoders.Module.Screens
     /// Bestiary, Album, Trophies and Back. An item reads as <see cref="CardNodes"/> does, or the game's
     /// "LOCKED" or "UNDISCOVERED" with its explanation when it is one (its name is hidden, as the
     /// game hides it); in the victory view, "Victory" on the ones won with. An item's click is never
-    /// bound: <see cref="DeckCardView.OnClick"/> is the shop's card removal. The search bar is the
-    /// mouse's only (<see cref="GlossaryController.HandleSearchBarVisibility"/>) and not read. Escape
+    /// bound: <see cref="DeckCardView.OnClick"/> is the shop's card removal. The search, after the
+    /// header, is a stop of its own (the arrows are the field's while it is edited), edited the moment
+    /// focus lands on it (<see cref="TextEdit"/>); the game shows its bar only in mouse mode
+    /// (<see cref="GlossaryController.HandleSearchBarVisibility"/>, run at start and on a device
+    /// change), so the mod shows it before editing. The game searches when the edit ends
+    /// (<c>onEndEdit</c>: <c>OnSearch</c>), on Enter or Escape. Escape on a resting field, else,
     /// closes the filter panel, else leaves (<see cref="GlossaryController.ExitScene"/>).
     /// </summary>
     public sealed class CompendiumScreen : Screen
@@ -37,6 +41,33 @@ namespace StarVoders.Module.Screens
         private const string TabsStop = "compendium:tabs";
         private const string HeaderStop = "compendium:header";
         private const string FiltersStop = "compendium:filters";
+        private static readonly ControlId SearchId = ControlId.Structural("compendium:search");
+        private readonly TextEdit.OnLanding _search = new TextEdit.OnLanding();
+
+        // A changed search left by Tab: the game rebuilds every item (OnSearch), so an item Tab landed on
+        // would go with them and focus fall back to the search. The Tab's move is taken instead: focus
+        // stays, quiet, on the search (not edited meanwhile) and goes to the new first item once the
+        // rebuild is done (isShowingCoroutine seen up, then down; 5 s at most).
+        private bool _toItems;
+        private bool _sawShowing;
+        private float _toItemsUntil;
+
+        public CompendiumScreen()
+        {
+            TextEdit.Ended += (field, changed, how) =>
+            {
+                var c = Controller;
+                if (!changed || how != EditExit.Next || c == null || c.InputField == null || field.Pointer != c.InputField.Pointer) return;
+                _toItems = true;
+                TextEdit.MoveTaken = true;
+                _sawShowing = false;
+                _toItemsUntil = Time.unscaledTime + 5f;
+            };
+        }
+
+        private static bool SearchFocused => Equals(Navigation.FocusedNode?.Id, SearchId);
+
+        public override bool AllowsTypeahead => !SearchFocused;
 
         private static GlossaryController Controller => GameScenes.Controller<GlossaryController>();
 
@@ -65,6 +96,12 @@ namespace StarVoders.Module.Screens
             if (ViewNodes.IsShown(filters)) b.AddItem(ControlId.Structural("compendium:filtertoggle"), FilterToggle(c, filters));
             b.PopContext();
 
+            if (c.InputField != null)
+            {
+                b.BeginStop("compendium:search");
+                b.AddItem(SearchId, TextEdit.Node(c.InputField, prepare: () => ShowSearch(c), quietWhenUnchanged: "OnSearch"));
+            }
+
             if (c.IsFilterPanelActive) BuildFilters(b, c);
 
             BuildItems(b, c);
@@ -92,9 +129,14 @@ namespace StarVoders.Module.Screens
         // The filter panel opening takes the focus to its buttons; closing it, back to the Filters button.
         private bool _wasFiltering;
 
+        public override void OnPop() => TextEdit.Stop();
+
         public override void OnUpdate()
         {
             var c = Controller;
+            if (_toItems) ToItems(c);
+            // OnSearch rebuilds every item: not run for an edit that changed nothing (Tab past the field).
+            _search.Tick(SearchFocused && !_toItems, c?.InputField, () => ShowSearch(c), quietWhenUnchanged: "OnSearch");
             bool filtering = c != null && c.IsFilterPanelActive;
             if (filtering != _wasFiltering)
             {
@@ -102,6 +144,30 @@ namespace StarVoders.Module.Screens
                 else if (c != null) Navigation.Active?.MoveTo(ControlId.Structural("compendium:filtertoggle"));
             }
             _wasFiltering = filtering;
+        }
+
+        private void ToItems(GlossaryController c)
+        {
+            if (c == null || Time.unscaledTime > _toItemsUntil) { _toItems = false; return; }
+            if (c.isShowingCoroutine) { _sawShowing = true; return; }
+            if (!_sawShowing) return;
+            _toItems = false;
+            Navigation.Active?.FocusStop("compendium:items");
+            // Nothing found: focus never left the search; read it, so the Tab is answered.
+            if (SearchFocused) Navigation.AnnounceCurrent();
+        }
+
+        // The game hides the search bar outside mouse mode: shown for the edit (until the game's next
+        // device change, which may hide it again).
+        private static void ShowSearch(GlossaryController c)
+        {
+            if (c == null) return;
+            try
+            {
+                if (c._searchBar != null && !c._searchBar.activeSelf) c._searchBar.SetActive(true);
+                if (c._searchBarBackground != null && !c._searchBarBackground.activeSelf) c._searchBarBackground.SetActive(true);
+            }
+            catch (Exception e) { CoreLog.Warning("Compendium: showing the search bar failed: " + e.Message); }
         }
 
         // ---- the tabs ----

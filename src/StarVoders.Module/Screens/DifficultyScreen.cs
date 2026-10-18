@@ -21,8 +21,11 @@ namespace StarVoders.Module.Screens
     /// Challenges when the game shows it (not hovered either: that too deselects); Go! (the run starts; "disabled" while no difficulty is selected,
     /// and never hovered: the game's keyboard hover on it deselects the difficulty); Back. Enter on a difficulty only
     /// selects it (<c>OnLevel1Pressed(allowStart: false)</c>): the game's own click on the selected
-    /// one starts the run, which a second Enter must not do by surprise; Go! starts it. The seed field
-    /// is the mouse's (hidden here) and not read. Escape is <see cref="DifficultySelectionController.OnBackPressed"/>;
+    /// one starts the run, which a second Enter must not do by surprise; Go! starts it. The seed sits
+    /// above the difficulties in the same stop (focus still lands on them), edited the moment focus
+    /// lands on it (<see cref="TextEdit"/>; Up or Down ends the edit and moves on). Offered once Challenges are unlocked:
+    /// the game shows it then, in mouse mode only (<c>HandleDeviceChanged</c>), so the mod shows it
+    /// for the edit; Go! reads it. Escape is <see cref="DifficultySelectionController.OnBackPressed"/>;
     /// empty while it transitions.
     /// </summary>
     public sealed class DifficultyScreen : Screen
@@ -63,6 +66,13 @@ namespace StarVoders.Module.Screens
             var c = Controller;
             if (c == null || c.IsTransitioning) return;
             b.BeginStop("difficulty");
+            // The seed at the top, as drawn, in the same stop: edited on landing, Down leaves it.
+            if (SeedAvailable(c))
+            {
+                b.PushContext(null, positions: false);
+                b.AddItem(SeedId, TextEdit.Node(c.SeedInput, prepare: () => ShowSeed(c)));
+                b.PopContext();
+            }
             b.PushContext(null);
             // The difficulties side by side, as drawn: a row (Left/Right), coming up into it on the
             // selected one.
@@ -74,6 +84,8 @@ namespace StarVoders.Module.Screens
                 b.StartRow("difficulty:levels", () => Math.Max(0, shown.IndexOf(SelectedIndex(c))));
                 foreach (int i in shown) b.AddItem(ControlId.Structural("difficulty:" + i), Difficulty(c, panels[i], i));
                 b.EndRow();
+                // The landing: the difficulties (the selected one wins), not the seed above them.
+                b.SetStart(ControlId.Structural("difficulty:" + shown[0]));
             }
             b.PopContext();
             b.PushContext(null, positions: false);
@@ -100,6 +112,38 @@ namespace StarVoders.Module.Screens
                 }));
             b.PopContext();
         }
+
+        // ---- the seed ----
+
+        private static readonly ControlId SeedId = ControlId.Structural("difficulty:seed");
+        private readonly TextEdit.OnLanding _seed = new TextEdit.OnLanding();
+
+        private static bool SeedFocused => Equals(Navigation.FocusedNode?.Id, SeedId);
+
+        public override bool AllowsTypeahead => !SeedFocused;
+
+        // The game offers the seed once Challenges are unlocked (its HandleDeviceChanged).
+        private static bool SeedAvailable(DifficultySelectionController c)
+        {
+            try { return c.SeedInput != null && !UnlockManager.IsLocked(MiscUnlockName.Challenges); }
+            catch (Exception e) { CoreLog.Warning("Difficulty: reading the seed's unlock failed: " + e.Message); return false; }
+        }
+
+        // Hidden outside mouse mode: shown for the edit.
+        private static void ShowSeed(DifficultySelectionController c)
+        {
+            try { if (c?.SeedInput != null && !c.SeedInput.gameObject.activeSelf) c.SeedInput.gameObject.SetActive(true); }
+            catch (Exception e) { CoreLog.Warning("Difficulty: showing the seed failed: " + e.Message); }
+        }
+
+        public override void OnPop() => TextEdit.Stop();
+
+        public override void OnUpdate()
+        {
+            var c = Controller;
+            _seed.Tick(SeedFocused, c?.SeedInput, () => ShowSeed(c));
+        }
+
 
         private static NodeVtable Difficulty(DifficultySelectionController c, AViewItem panel, int index)
         {

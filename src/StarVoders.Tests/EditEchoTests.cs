@@ -33,6 +33,15 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void TypingOverASelectionThatStartsWithItEchoesTheTyped()
+        {
+            // "fi" all selected, "f" typed: the common prefix would make it look like "i" was deleted.
+            Assert.Equal("f", EditEcho.Describe(Sel("fi", 0, 2), At("f", 1), false));
+            // Deleting a selection echoes what went.
+            Assert.Equal("fi", EditEcho.Describe(Sel("fire", 0, 2), At("re", 0), false));
+        }
+
+        [Fact]
         public void AMoveReadsTheCharacterAtTheCaret()
         {
             Assert.Equal("u", EditEcho.Describe(At("yu", 2), At("yu", 1), false));

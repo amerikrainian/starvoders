@@ -54,6 +54,7 @@ namespace StarVoders.Module
             Navigation.BackFallbackAvailable = Pause.CanOpen;
             Navigation.BackFallback = Pause.Open;
             InputManager.FocusActive = () => FocusMode.Active;
+            InputManager.TextFieldFocused = () => TextEdit.OwnsKeyboard;
             GraphAnnouncer.PositionText = (i, n) => host.Settings.SpeakPositions ? Strings.Position(i, n) : null;
             GraphAnnouncer.ExpandedStateText = Strings.ExpandedState;
             InputBinding.RegisterType("keyboard", KeyboardBinding.Deserialize);
@@ -186,7 +187,8 @@ namespace StarVoders.Module
             // Before the screens: an event is heard before the focus landing it caused (a target list).
             Safe(Fight.FightEvents.Tick, "fight events");
             ScreenManager.Tick();
-            Navigation.TickTypeahead();
+            Safe(TextEdit.Tick, "text edit");
+            if (!TextEdit.OwnsKeyboard) Navigation.TickTypeahead();
             Safe(Later.Tick, "later");
             Safe(Readers.PopupReader.Tick, "popups");
             Safe(Buffers.Tick, "buffers");
@@ -211,6 +213,7 @@ namespace StarVoders.Module
             // On a reload the successor already owns the keyboard and the EventSystem: drop our hooks
             // only. On a shutdown, give everything back to the game.
             bool restore = _host == null || !_host.SuccessorLoaded;
+            try { TextEdit.Shutdown(); } catch (Exception e) { _host?.LogError("[dispose] text edit: " + e); }
             try { FocusMode.Shutdown(restore); } catch (Exception e) { _host?.LogError("[dispose] focus: " + e); }
             try { ScreenManager.Shutdown(); } catch (Exception e) { _host?.LogError("[dispose] screens: " + e); }
             try { InputManager.Clear(); } catch (Exception e) { _host?.LogError("[dispose] input: " + e); }

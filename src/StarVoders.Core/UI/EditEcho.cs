@@ -37,6 +37,20 @@ namespace StarVoders.Core.UI
             string a = before.Text ?? "", b = after.Text ?? "";
             if (!string.Equals(a, b, StringComparison.Ordinal))
             {
+                // Over a selection, the selection is what was replaced: what came in its place, else
+                // what went ("fi" selected, "f" typed: "f", never the "i" a common-prefix diff finds).
+                if (before.HasSelection)
+                {
+                    int selStart = before.SelectionStart, selEnd = before.SelectionEnd;
+                    int keptTail = a.Length - selEnd;
+                    if (b.Length >= selStart + keptTail
+                        && string.CompareOrdinal(a, 0, b, 0, selStart) == 0
+                        && string.CompareOrdinal(a, selEnd, b, b.Length - keptTail, keptTail) == 0)
+                    {
+                        string typed = b.Substring(selStart, b.Length - keptTail - selStart);
+                        return Name(typed.Length > 0 ? typed : a.Substring(selStart, selEnd - selStart));
+                    }
+                }
                 int prefix = 0;
                 while (prefix < a.Length && prefix < b.Length && a[prefix] == b[prefix]) prefix++;
                 int suffix = 0;

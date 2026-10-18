@@ -8,6 +8,8 @@
 - Fixed invader cards not showing descriptions on an encounter screen.
 - Your hand now gets rendered below the grid. Since it might be a little more annoying to go to it now, alt+h jumps to it.
 - When purging, we no longer spawn a separate list of cards and reuse your hand. Whoops?
+- Added ability to search the compendium.
+- You can now input game seeds upon unlocking the ability to do so.
 
 ## V0.0.9
 

@@ -28,7 +28,3 @@ That is the Steam overlay. Turn it off; see [Installation](installation.md#turn-
 ## The Keyboard Stopped Working
 
 You pressed Ctrl+Shift+A, which hands the keyboard to the game. Press it again.
-
-## Mouse Only
-
-Typing is not supported yet: the run seed field and the Compendium search cannot be used.

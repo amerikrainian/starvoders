@@ -28,7 +28,6 @@ state.collapsed=recolhido
 value.blank=em branco
 value.space=espaço
 value.percent={0} por cento
-edit.begin=edição
 edit.selected={0} selecionado
 edit.unselected={0} não selecionado
 edit.point=ponto

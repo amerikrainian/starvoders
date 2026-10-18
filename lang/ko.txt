@@ -28,7 +28,6 @@ state.collapsed=접힘
 value.blank=비어 있음
 value.space=공백
 value.percent={0}퍼센트
-edit.begin=편집 중
 edit.selected={0} 선택됨
 edit.unselected={0} 선택 해제됨
 edit.point=점
