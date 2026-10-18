@@ -39,7 +39,6 @@ namespace StarVoders.Core.Strings
             D("role.radio button", "radio button"),
             D("role.combo box", "combo box"),
             D("role.tab", "tab"),
-            D("role.key binding", "key binding"),
             D("role.item", "item"),
             D("role.heading", "heading"),
             D("role.table", "table"),
@@ -301,6 +300,10 @@ namespace StarVoders.Core.Strings
             D("help.none", "no keys here"),
             // {0} = what the key does, {1} = the keys bound to it.
             D("help.row", "{0}: {1}"),
+            // A key binding row waiting for its new key (the game's rebind); {0} = the action.
+            D("rebind.prompt", "Press a key for {0}, Escape cancels"),
+            // The new key is also one of the mod's: {0} = the key, {1} = what the mod does with it.
+            D("rebind.conflict", "{0} is also {1}"),
         };
 
         private static readonly Dictionary<string, string> _defaults = BuildDefaults();
@@ -558,6 +561,8 @@ namespace StarVoders.Core.Strings
         public static string ScreenHelp => Get("screen.help");
         public static string HelpNone => Get("help.none");
         public static string HelpRow(string label, string keys) => F("help.row", label, keys);
+        public static string RebindPrompt(string action) => F("rebind.prompt", action);
+        public static string RebindConflict(string key, string what) => F("rebind.conflict", key, what);
         public static string ModClose => Get("mod.close");
         public static string ModSpeakPositions => Get("mod.speak_positions");
         public static string ModFocusOnLaunch => Get("mod.focus_on_launch");

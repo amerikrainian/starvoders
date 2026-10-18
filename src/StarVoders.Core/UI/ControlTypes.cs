@@ -78,12 +78,12 @@ namespace StarVoders.Core.UI
             Common = () => RoleWord("tab"),
         };
 
-        /// <summary>One binding slot of a key-binding row (label + current combo; rebind/clear).</summary>
+        /// <summary>One binding slot of a key-binding row (label + current combo; rebind/clear). No role
+        /// word: "Reroll, R" says what it is.</summary>
         public static readonly ControlType KeyBinding = new ControlType
         {
             Key = "key_binding",
             Order = StandardOrder,
-            Common = () => RoleWord("key binding"),
         };
 
         /// <summary>An inventory/relic/shop item ("label, item[, state]").</summary>

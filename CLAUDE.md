@@ -401,8 +401,19 @@ separately. Host F6 uses the same OS read.
   `IsLocalized`; no `StateText`, so Enter does not echo the value before the list);
   label = `OptionView.Description`; a tooltip only where the "?" (`TooltipTrigger`) is active:
   several Graphics rows have `HasTooltip` set with the "?" hidden and copied text. Volumes are 0-1
-  (read as percent), animation speeds 0-4 whole. Key binding rows are read only (rebinding listens
-  on the keyboard focus mode disables, and the game's bindings matter only with focus mode off).
+  (read as percent), animation speeds 0-4 whole. Key binding rows rebind (`Screens/KeyCaptureScreen`, a
+  child of the options): the game's `UIRebindActionBehaviour.StartRebindProcess` (`OptionKeybind.OnClick`)
+  is Unity's interactive rebind, listening on the Input System keyboard focus mode disables, so the
+  screen waits for every key up, lends the keyboard (`FocusMode.LendKeyboard`), clicks, stands the mod
+  down (`CapturesRawInput`) while the row's `waitingText` shows, takes the keyboard back and waits for
+  every key up again (else Enter or the new key reaches the rebind or the mod). The game excludes arrows
+  and the mouse, Escape cancels; a Harmony prefix on `RebindingOperation.Start`, armed for that click,
+  also excludes the modifiers AND the synthetic `shift`/`ctrl`/`alt`/`anyKey` (Alt alone binds anyKey,
+  then alt). After: the row reads its key (the prompt's TMP while shown; some keys, Enter, are drawn as a
+  picture with the TMP hidden and stale, so then the key is named from the binding), then "C is also Coordinates" for a bare mod key it shares
+  (the game swaps a key another of its actions had; that is not announced). The game saves bindings on Apply
+  and on every tab press (`SaveManager.SaveBindings`): a test rebind is on disk, so put the key back
+  (`RemoveAllBindingOverrides`, then `SaveBindings` of the asset's json).
 
 ## Dev driver (Debug only; `SVO_NO_DEV=1` disables, `SVO_DEV_PORT` sets the port, default 8772)
 Guildrun's server unchanged: `/input`, `/nav`, `/gui`, `/speech`, `/log`, `/eval` (Roslyn, every

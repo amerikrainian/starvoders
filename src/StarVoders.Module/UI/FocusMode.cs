@@ -18,6 +18,8 @@ namespace StarVoders.Module.UI
     /// generation releasing it, a keyboard plugged in), its device-change event lets us disable it
     /// once more: no scanning, no per-frame checks.</item>
     /// </list>
+    /// The keyboard can be lent back to the Input System while focus mode stays on
+    /// (<see cref="LendKeyboard"/>): the game's key rebinding listens on that device.
     /// Fully reversible: turning focus mode off re-enables the keyboard and the EventSystem's
     /// navigation. A fresh EventSystem (Unity builds one per scene, with no event for it) is noticed
     /// by a per-frame instance compare and suppressed on sight.
@@ -25,6 +27,7 @@ namespace StarVoders.Module.UI
     public static class FocusMode
     {
         private static bool _active;
+        private static bool _lent; // the keyboard handed back for a moment, focus mode still on
         private static EventSystem _applied; // the EventSystem instance the suppression was applied to
         private static Il2CppSystem.Action<InputDevice, InputDeviceChange> _deviceHook;
 
@@ -36,6 +39,7 @@ namespace StarVoders.Module.UI
         {
             if (on == _active) return;
             _active = on;
+            _lent = false;
             if (on)
             {
                 Apply(EventSystem.current);
@@ -70,6 +74,17 @@ namespace StarVoders.Module.UI
             try { InputSystem.remove_onDeviceChange(_deviceHook); }
             catch (Exception e) { CoreLog.Warning("FocusMode: unhooking device changes failed: " + e.Message); }
             _deviceHook = null;
+        }
+
+        /// <summary>Hand the Input System keyboard back to the game while focus mode stays on (a key
+        /// rebind waiting for its key), or take it again. The EventSystem stays suppressed. No-op with
+        /// focus mode off, where the game has the keyboard anyway.</summary>
+        public static void LendKeyboard(bool lend)
+        {
+            if (!_active || lend == _lent) return;
+            _lent = lend;
+            if (lend) UnlockKeyboards();
+            else LockKeyboards();
         }
 
         // ---- the EventSystem ----
@@ -116,7 +131,7 @@ namespace StarVoders.Module.UI
         {
             try
             {
-                if (!_active || device == null) return;
+                if (!_active || _lent || device == null) return;
                 if (change != InputDeviceChange.Added && change != InputDeviceChange.Enabled) return;
                 if (device.TryCast<Keyboard>() == null) return;
                 InputSystem.DisableDevice(device, false);

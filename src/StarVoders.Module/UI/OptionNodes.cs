@@ -142,19 +142,35 @@ namespace StarVoders.Module.UI
             return Row(row, ControlTypes.Button, label, null, null, onActivate: () => row.OnClick());
         }
 
-        /// <summary>A key binding row, read only: "action, key binding, key". The game's bindings
-        /// only matter while the mod has handed the keyboard back (Ctrl+Shift+A), and rebinding
-        /// listens on the keyboard focus mode switches off, so it is not offered.</summary>
+        /// <summary>A key binding row: "action, key" ("Reroll, R"). Enter rebinds it, through the game's
+        /// own rebind with the keyboard lent to it (<see cref="Screens.KeyCaptureScreen"/>); the fight's
+        /// game keys (<see cref="Input.GameKeyBinding"/>) read the result.</summary>
+        /// <summary>The key a binding row draws ("W"), or null. Some keys (Enter) are drawn as a picture
+        /// with the prompt's text hidden and stale, so then the key is named from the binding.</summary>
+        public static string KeyText(OptionKeybind row)
+        {
+            var prompt = row.MainKeyprompt;
+            var text = prompt != null ? prompt._keyText : null;
+            if (text != null && text.isActiveAndEnabled && !string.IsNullOrWhiteSpace(text.text)) return text.text;
+            var action = row._rebindActionBehaviour != null ? row._rebindActionBehaviour.focusedInputAction : null;
+            if (action == null) return null;
+            var bindings = action.bindings;
+            for (int i = 0; i < bindings.Count; i++)
+            {
+                var key = Input.GameKeyBinding.KeyOf(bindings[i].effectivePath);
+                if (key.HasValue) return Input.KeyboardBinding.KeyName(key.Value);
+            }
+            return null;
+        }
+
         public static NodeVtable Keybind(OptionKeybind row)
         {
             Func<string> label = () => Label(row);
-            Func<string> key = () =>
-            {
-                var prompt = row.MainKeyprompt;
-                var text = prompt != null ? prompt._keyText : null;
-                return text != null && !string.IsNullOrWhiteSpace(text.text) ? text.text : null;
-            };
-            return Row(row, ControlTypes.KeyBinding, label, key, null, onActivate: null);
+            Func<string> key = () => KeyText(row);
+            var vt = Row(row, ControlTypes.KeyBinding, label, key, null,
+                onActivate: () => Core.Screens.ScreenManager.Current?.PushChild(new Screens.KeyCaptureScreen(row, label())));
+            vt.StateText = null; // Enter's echo would be the old key: the prompt speaks instead
+            return vt;
         }
 
         private static NodeVtable Row(OptionView row, ControlType type, Func<string> label, Func<string> value,

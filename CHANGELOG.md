@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.1.0
+
+- We now allow you to rebind in-game actions.
+
 ## V0.0.9
 
 - Add some more useful buffers: player, enemies, hand.

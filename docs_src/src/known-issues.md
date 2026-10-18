@@ -29,10 +29,6 @@ That is the Steam overlay. Turn it off; see [Installation](installation.md#turn-
 
 You pressed Ctrl+Shift+A, which hands the keyboard to the game. Press it again.
 
-## Rebinding Keys
-
-The options' key binding rows are read only: the game listens for the new key on the keyboard the mod holds. To rebind, press Ctrl+Shift+A, rebind with the game's own navigation, and press Ctrl+Shift+A again. The mod's fight keys that are the game's (cards, End Turn, the piles, Rewind, More Info) follow the new binding.
-
 ## Mouse Only
 
 Typing is not supported yet: the run seed field and the Compendium search cannot be used.
