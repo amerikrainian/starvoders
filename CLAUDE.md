@@ -74,6 +74,10 @@ Launch: `dev.py launch` (Steam `-applaunch 2097570`, waits for the dev server). 
 `dotnet test src/StarVoders.Tests/StarVoders.Tests.csproj` (Core + Contracts, no game).
 Release: `build_release.ps1`, `build-installer.ps1`, `create-release.ps1 vX.Y.Z` (guildrun's flow;
 version in `Directory.Build.props` alone, notes from `CHANGELOG.md`).
+Player docs: mdbook in `docs_src` (`mdbook build docs_src`; `book/` gitignored), in guildrun's tone:
+how things work and the non-obvious keys, not each screen's readout. `build_release.ps1` ships the
+rendered book as `StarVodersDocs`; `.github/workflows/build-docs.yml` publishes it to GitHub Pages on
+a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includes `CHANGELOG.md`).
 
 ## Architecture (guildrun's, see its CLAUDE.md for the long form)
 - **Contracts** (netstandard2.0, permanent), **host** `StarVoders` (net6.0, permanent: Plugin,

@@ -3,6 +3,8 @@
 A [StarVaders](https://store.steampowered.com/app/2097570/) mod that makes the game playable by
 blind users.
 
+Docs are [here](https://amerikrainian.com/starvoders/)
+
 ## Install
 
 Download `StarVodersInstaller.exe` from the
