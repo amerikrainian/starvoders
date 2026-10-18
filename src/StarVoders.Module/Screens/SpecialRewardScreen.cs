@@ -13,17 +13,17 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// A special reward after a fight (<c>SpecialRewardScene</c>, <see cref="SpecialRewardController"/>,
     /// kind in the static <c>CurrentSpecialReward</c>: legendaries, upgrades, pilot cards, artifacts),
-    /// named by its title ("Special"). Stops: what it gives under its description ("You will gain the
+    /// named by its title ("Special"). Stops: the act timeline and the run status as strips, then what it
+    /// gives (the landing) under its description ("You will gain the
     /// following LEGENDARY cards!"), left to right, cards and artifacts as the reward screen reads them
     /// (display only: the reward is taken whole), then Take All (<c>AcceptRewardViewItem</c>), Skip (the
-    /// base <c>ProceedButton</c>, its "+1000" Stars) and Reroll; the run status; the act timeline. Taking
+    /// base <c>ProceedButton</c>, its "+1000" Stars) and Reroll. Taking
     /// or skipping changes the run: never through the driver. Up until <c>IsEndingScene</c>; the box
     /// opens on arrival, so the screen holds (declaring nothing) until its texts and rewards show.
     /// </summary>
     public sealed class SpecialRewardScreen : Screen
     {
         public override string Key => "specialreward";
-        public override object InitialFocusStop => RewardsStop;
 
         private const string RewardsStop = "specialreward:rewards";
         private const float MaxWait = 3f;
@@ -77,7 +77,9 @@ namespace StarVoders.Module.Screens
             if (c == null || !Settled(c)) return;
 
             b.BeginStop(RewardsStop);
+            CampaignNodes.Strips(b, c, "specialreward");
             b.PushContext(GameText.Of(c.SpecialRewardDescription));
+            bool first = true;
             foreach (var item in Rewards(c))
             {
                 var card = item.TryCast<CardRewardBoard>();
@@ -85,13 +87,20 @@ namespace StarVoders.Module.Screens
                 {
                     var vt = CardNodes.Card(card.GetCardModel(), card);
                     vt.OnActivate = null;
-                    b.AddItem(ControlId.Structural("specialreward:card:" + item.GetInstanceID()), vt);
+                    var id = ControlId.Structural("specialreward:card:" + item.GetInstanceID());
+                    b.AddItem(id, vt);
+                    if (first) b.SetStart(id); // the landing: the first reward, under the run's strips
+                    first = false;
                     continue;
                 }
                 var artifact = item.TryCast<ArtifactRewardBoard>();
                 if (artifact != null)
-                    b.AddItem(ControlId.Structural("specialreward:artifact:" + item.GetInstanceID()),
-                        CardNodes.Artifact(artifact.GetArtifactModel(), artifact));
+                {
+                    var id = ControlId.Structural("specialreward:artifact:" + item.GetInstanceID());
+                    b.AddItem(id, CardNodes.Artifact(artifact.GetArtifactModel(), artifact));
+                    if (first) b.SetStart(id);
+                    first = false;
+                }
             }
             b.PopContext();
             // Take All, Skip and Reroll answer the same offer: they follow it in the stop, unnumbered.
@@ -108,9 +117,6 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("specialreward:skip"), ViewNodes.Button(skip, () => SkipLabel(skip), enabled: () => skip.ButtonEnabled));
             CampaignNodes.Reroll(b, c.RerollButton, "specialreward:reroll");
             b.PopContext();
-
-            CampaignNodes.Status(b, c, "specialreward");
-            CampaignNodes.Map(b, c.MapPanel, "specialreward");
         }
 
         // "Skip, +1000": the caption and the Stars it pays, the star glyph ("=") dropped.

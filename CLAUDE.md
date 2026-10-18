@@ -285,8 +285,9 @@ separately. Host F6 uses the same OS read.
 - Encounter choice (`GlobeScene`, `GlobeController : CampaignSceneController`): stops tip (while
   `TipManager.CurrentTip` shows in this scene; Enter = `Tip.Destroy(true)`, what a finished tip
   box's click does), then ONE stop of horizontal rows, top to bottom: the act timeline and the
-  status (`UI/CampaignNodes` `Map`/`Status` with `row: true`; the other run screens keep them as
-  their own stops; timeline kind from the active `Pip`/`StarPip`/`BossPip` child named by the map
+  status (`UI/CampaignNodes.Strips`: `Map`/`Status` with `row: true`; every run screen (rewards,
+  Workshop, Bud's Factory, special rewards) opens its main stop with them, landing by `SetStart` on
+  its first item, and the pause menu's run stop with the timeline; timeline kind from the active `Pip`/`StarPip`/`BossPip` child named by the map
   tooltip's legend, cleared = `XPip.enabled`, current = first not cleared, Up into the row lands
   on it), the encounters (`CurrentRoomChoicePanels`, the landing: selected, else first; invaders
   by `EnemyEntityModel.EnemyID.EnemyName`, reward by its tooltip title; invader descriptions and

@@ -75,6 +75,14 @@ namespace StarVoders.Module.UI
             return int.TryParse(left, out int l) && int.TryParse(max, out int m) ? Strings.Position(l, m) : left;
         }
 
+        /// <summary>The run's strips at the top of a screen's main stop: the act timeline, then the
+        /// status, each a row (the screen's items follow, and it lands on them).</summary>
+        public static void Strips(GraphBuilder b, CampaignSceneController c, string key)
+        {
+            Map(b, c.MapPanel, key, row: true);
+            Status(b, c, key, row: true);
+        }
+
         /// <summary>Doom, Stars and Deck, one stop; with <paramref name="row"/>, a row of the current
         /// stop instead.</summary>
         public static void Status(GraphBuilder b, CampaignSceneController c, string key, bool row = false)

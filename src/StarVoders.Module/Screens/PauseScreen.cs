@@ -16,7 +16,8 @@ namespace StarVoders.Module.Screens
     /// The pause menu (<c>PauseMenuSceneAdditive</c>, <see cref="PauseMenuController"/>), opened by
     /// Escape on a run's screens (<see cref="Pause"/>). Named "Paused" (the game's word). Stops: its
     /// buttons (Resume, Options, Compendium, Save &amp; Exit, Skip Tutorial or Abandon Run, Show Guide),
-    /// each the game's click; the run (difficulty, Deck, Modifiers); the act timeline. Escape resumes.
+    /// each the game's click; the run: the act timeline as a strip, then difficulty, Deck, Modifiers.
+    /// Escape resumes.
     /// </summary>
     public sealed class PauseScreen : Screen
     {
@@ -63,6 +64,7 @@ namespace StarVoders.Module.Screens
             b.PopContext();
 
             b.BeginStop("pause:run");
+            CampaignNodes.Map(b, c.MapPanel, "pause", row: true);
             b.PushContext(null, positions: false);
             var difficulty = c.DifficultyText;
             if (difficulty != null && difficulty.gameObject.activeInHierarchy)
@@ -86,8 +88,6 @@ namespace StarVoders.Module.Screens
                     enabled: () => !mods._isLocked));
             }
             b.PopContext();
-
-            CampaignNodes.Map(b, c.MapPanel, "pause");
         }
 
         private static string Labelled(string label, string value) =>

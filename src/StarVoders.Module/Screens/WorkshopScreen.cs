@@ -12,20 +12,19 @@ namespace StarVoders.Module.Screens
 {
     /// <summary>
     /// Min's Workshop (<c>WorkshopScene</c>, <see cref="ShopController"/>), named by the game's
-    /// <c>ShopTitle_Misc</c> (no title is drawn). Stops: the wares, the cards rack (top row first,
+    /// <c>ShopTitle_Misc</c> (no title is drawn). Stops: the act timeline and the run status as
+    /// strips, then the wares (the landing), the cards rack (top row first,
     /// each left to right) then the artifacts, each with its price in Stars ("disabled" while the
     /// price is drawn red: too dear), "Sale!" with the crossed-out price, "Bundle!" (two copies: the
     /// game adds the card twice and draws a second one behind it); Enter buys, the game's click.
     /// Unnumbered after them: Remove Card (opens the card viewer in RemoveCard mode), Restock, the tip
-    /// jar (Min's Fundraiser), Min, the Gacha machine and the red button when shown, Exit. Then the
-    /// run status and the act timeline. A bought ware stops being interactable and leaves the list.
+    /// jar (Min's Fundraiser), Min, the Gacha machine and the red button when shown, Exit. A bought ware stops being interactable and leaves the list.
     /// Min's lines (welcome, thanks, a tip's, a pat's) are speech bubbles: the popup reader's.
     /// The unlock canvas a full fundraiser shows is <see cref="MinUnlockScreen"/>'s.
     /// </summary>
     public sealed class WorkshopScreen : Screen
     {
         public override string Key => "workshop";
-        public override object InitialFocusStop => "workshop:wares";
 
         private static ShopController Controller => GameScenes.Controller<ShopController>();
 
@@ -43,6 +42,7 @@ namespace StarVoders.Module.Screens
             if (c == null) return;
 
             b.BeginStop("workshop:wares");
+            CampaignNodes.Strips(b, c, "workshop");
             b.PushContext(null);
             var cards = new List<WorkshopCardView>();
             if (c.CardViews != null)
@@ -70,6 +70,9 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("workshop:artifact:" + v.GetInstanceID()), vt);
             }
             b.PopContext();
+            // The landing: the first ware, under the run's strips.
+            if (cards.Count > 0) b.SetStart(ControlId.Structural("workshop:card:" + cards[0].GetInstanceID()));
+            else if (artifacts.Count > 0) b.SetStart(ControlId.Structural("workshop:artifact:" + artifacts[0].GetInstanceID()));
 
             // The workshop's own services follow the wares in the stop, unnumbered.
             b.PushContext(null, positions: false);
@@ -91,9 +94,6 @@ namespace StarVoders.Module.Screens
             if (ViewNodes.IsShown(exit))
                 b.AddItem(ControlId.Structural("workshop:exit"), ViewNodes.Button(exit, enabled: () => exit.ButtonEnabled));
             b.PopContext();
-
-            CampaignNodes.Status(b, c, "workshop");
-            CampaignNodes.Map(b, c.MapPanel, "workshop");
         }
 
         // The racks are rows of wares: top row first, each left to right (y up; rows ~27 apart).

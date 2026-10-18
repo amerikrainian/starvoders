@@ -13,13 +13,14 @@ namespace StarVoders.Module.Screens
 {
     /// <summary>
     /// Bud's Factory (<c>PackmasterScene</c>, <see cref="PackmasterController"/>), named by the game's
-    /// <c>PackSceneTitle_Misc</c>. Stops: the cards on the belt under the pick panel's line ("Pick 2
+    /// <c>PackSceneTitle_Misc</c>. Stops: the act timeline and the run status as strips, then the
+    /// cards (the landing) on the belt under the pick panel's line ("Pick 2
     /// Cards"), left to right, each "name, cost, description[, selected]", Enter its click
     /// (<c>OnPressSelectCardButton</c>: picks or unpicks it), then Proceed (enabled once enough are
     /// picked; it adds them to the deck and leaves: never through the driver) and Reroll; the run's packs
     /// under the panel's "Packs" (its "?" tooltip as the description), each "name, description" (the
     /// game's <c>&lt;Pack&gt;_Misc</c>, <c>&lt;Pack&gt;_Desc_Misc</c>; drawn only as a picture), Enter its
-    /// click (the Compendium, on that pack); the run status; the act timeline.
+    /// click (the Compendium, on that pack).
     ///
     /// The cards ride in on the belt, unclickable until they stop, so the screen holds its arrival
     /// (declaring nothing) until every shown card is interactable, 3 s at most.
@@ -27,7 +28,6 @@ namespace StarVoders.Module.Screens
     public sealed class PackmasterScreen : Screen
     {
         public override string Key => "packmaster";
-        public override object InitialFocusStop => CardsStop;
 
         private const string CardsStop = "packmaster:cards";
         private const float MaxWait = 3f;
@@ -74,13 +74,19 @@ namespace StarVoders.Module.Screens
             if (c == null || !Settled(c)) return;
 
             b.BeginStop(CardsStop);
+            CampaignNodes.Strips(b, c, "packmaster");
             b.PushContext(PickLine(c));
+            bool first = true;
             foreach (var card in Cards(c))
             {
                 var view = card;
                 var vt = CardNodes.Card(view.CardModel, view);
                 vt.Announcements = new List<NodeAnnouncement>(vt.Announcements) { GameNodes.SelectedPart(() => view._isSelected) };
-                b.AddItem(ControlId.Structural("packmaster:card:" + view.GetInstanceID()), vt);
+                var id = ControlId.Structural("packmaster:card:" + view.GetInstanceID());
+                b.AddItem(id, vt);
+                // The landing: the first card (a selected one wins), under the run's strips.
+                if (first) b.SetStart(id);
+                first = false;
             }
             b.PopContext();
             // Proceed and Reroll answer the same choice: they follow the cards in the stop, unnumbered.
@@ -119,9 +125,6 @@ namespace StarVoders.Module.Screens
                     b.AddItem(ControlId.Structural("packmaster:packsabout"), GameNodes.Text(() => about));
                 b.PopContext();
             }
-
-            CampaignNodes.Status(b, c, "packmaster");
-            CampaignNodes.Map(b, c.MapPanel, "packmaster");
         }
 
         // "Pick 2 Cards", the panel over the belt.

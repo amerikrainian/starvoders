@@ -9,16 +9,15 @@ namespace StarVoders.Module.Screens
 {
     /// <summary>
     /// A reward after a fight (<c>CardRewardScene</c>, one <see cref="RewardController"/> for cards,
-    /// upgrades and artifacts). Its title ("Pick a Card") names the screen. Stops: the rewards, left
+    /// upgrades and artifacts). Its title ("Pick a Card") names the screen. One stop: the act
+    /// timeline and the run status (Doom, Stars, Deck) as strips, then the rewards (the landing), left
     /// to right, cards "name, cost, description" and artifacts "name, description", Enter taking one
-    /// as the game's click does, then Skip and Reroll (with the Chrono Tokens left); the run status (Doom,
-    /// Stars, Deck); the act timeline. Up until a reward is taken or skipped
+    /// as the game's click does, then Skip and Reroll (with the Chrono Tokens left). Up until a reward is taken or skipped
     /// (<see cref="RewardController.IsEndingScene"/>).
     /// </summary>
     public sealed class RewardScreen : Screen
     {
         public override string Key => "reward";
-        public override object InitialFocusStop => "reward:choices";
 
         private static RewardController Controller => GameScenes.Controller<RewardController>();
 
@@ -36,6 +35,7 @@ namespace StarVoders.Module.Screens
             if (c == null) return;
 
             b.BeginStop("reward:choices");
+            CampaignNodes.Strips(b, c, "reward");
             b.PushContext(null);
             var cards = new List<CardRewardBoard>();
             if (c.CardRewardBoards != null)
@@ -53,6 +53,9 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("reward:artifact:" + board.GetInstanceID()),
                     CardNodes.Artifact(board.GetArtifactModel(), board, clickable: true));
             b.PopContext();
+            // The landing: the first reward, under the run's strips.
+            if (cards.Count > 0) b.SetStart(ControlId.Structural("reward:card:" + cards[0].GetInstanceID()));
+            else if (artifacts.Count > 0) b.SetStart(ControlId.Structural("reward:artifact:" + artifacts[0].GetInstanceID()));
 
             // Skip and Reroll answer the same choice: they follow the rewards in the stop, unnumbered.
             b.PushContext(null, positions: false);
@@ -61,9 +64,6 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("reward:skip"), ViewNodes.Button(skip, enabled: () => skip.ButtonEnabled));
             CampaignNodes.Reroll(b, c.RerollButton, "reward:reroll");
             b.PopContext();
-
-            CampaignNodes.Status(b, c, "reward");
-            CampaignNodes.Map(b, c.MapPanel, "reward");
         }
     }
 }

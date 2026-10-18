@@ -68,8 +68,7 @@ namespace StarVoders.Module.Screens
             }
 
             b.BeginStop("globe:run");
-            CampaignNodes.Map(b, c.MapPanel, "globe", row: true);
-            CampaignNodes.Status(b, c, "globe", row: true);
+            CampaignNodes.Strips(b, c, "globe");
 
             var shown = new List<int>();
             var panels = c.CurrentRoomChoicePanels;
