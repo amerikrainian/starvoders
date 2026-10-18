@@ -18,6 +18,58 @@ namespace StarVoders.Module.UI
     /// </summary>
     internal static class CardNodes
     {
+        /// <summary>The views as the game draws them in rows: top row first, each left to right. A view
+        /// starts a new row when it sits lower than the row's first by more than half its own drawn
+        /// height (a rack, a grid; one row when they share a line).</summary>
+        public static List<List<T>> DrawnRows<T>(IEnumerable<T> views) where T : UnityEngine.Component
+        {
+            var sorted = new List<T>(views);
+            sorted.Sort((x, y) => y.transform.position.y.CompareTo(x.transform.position.y));
+            var rows = new List<List<T>>();
+            float rowY = 0f;
+            foreach (var view in sorted)
+            {
+                float y = view.transform.position.y;
+                if (rows.Count == 0 || rowY - y > HalfHeight(view))
+                {
+                    rows.Add(new List<T>());
+                    rowY = y;
+                }
+                rows[rows.Count - 1].Add(view);
+            }
+            foreach (var row in rows) row.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
+            return rows;
+        }
+
+        // Half the view's drawn height in world units; a small default for a view without a rect.
+        private static float HalfHeight(UnityEngine.Component view)
+        {
+            var rect = view.transform.TryCast<UnityEngine.RectTransform>();
+            float h = rect != null ? rect.rect.height * Math.Abs(rect.lossyScale.y) : 0f;
+            return h > 0f ? h / 2f : 0.01f;
+        }
+
+        /// <summary>The views as horizontal strips (<see cref="DrawnRows"/>), one row each; rows share
+        /// <paramref name="rowKey"/>, so Up and Down keep the column. Returns the first id, the landing,
+        /// or null when there were none.</summary>
+        public static ControlId Strips<T>(GraphBuilder b, IEnumerable<T> views, string rowKey,
+            Func<T, ControlId> id, Func<T, NodeVtable> node) where T : UnityEngine.Component
+        {
+            ControlId first = null;
+            foreach (var row in DrawnRows(views))
+            {
+                b.StartRow(rowKey);
+                foreach (var view in row)
+                {
+                    var key = id(view);
+                    b.AddItem(key, node(view));
+                    first = first ?? key;
+                }
+                b.EndRow();
+            }
+            return first;
+        }
+
         public static NodeVtable Card(CardModel card, AViewItem view)
         {
             Func<string> name = () => FightState.CardName(card);

@@ -75,10 +75,17 @@ namespace StarVoders.Module.Screens
 
             BuildBoard(b);
 
+            // The hand as one strip, left to right as the digits count it.
             b.BeginStop("fight:hand");
             b.PushContext(null);
-            foreach (var card in FightState.Hand())
-                b.AddItem(ControlId.Structural("fight:card:" + card.GetInstanceID()), Card(card));
+            var hand = FightState.Hand();
+            if (hand.Count > 0)
+            {
+                b.StartRow("fight:hand");
+                foreach (var card in hand)
+                    b.AddItem(ControlId.Structural("fight:card:" + card.GetInstanceID()), Card(card));
+                b.EndRow();
+            }
             b.PopContext();
 
             // A Keeper's spells, in the Mana panel's slots (cast by clicking): their own stop, when

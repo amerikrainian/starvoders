@@ -13,12 +13,12 @@ namespace StarVoders.Module.Screens
 {
     /// <summary>
     /// Bud's Factory (<c>PackmasterScene</c>, <see cref="PackmasterController"/>), named by the game's
-    /// <c>PackSceneTitle_Misc</c>. Stops: the act timeline and the run status as strips, then the
-    /// cards (the landing) on the belt under the pick panel's line ("Pick 2
-    /// Cards"), left to right, each "name, cost, description[, selected]", Enter its click
+    /// <c>PackSceneTitle_Misc</c>. One stop: the act timeline and the run status as strips, then
+    /// the cards (the landing, a strip) on the belt under the pick panel's line ("Pick 2 Cards"),
+    /// left to right, each "name, cost, description[, selected]", Enter its click
     /// (<c>OnPressSelectCardButton</c>: picks or unpicks it), then Proceed (enabled once enough are
-    /// picked; it adds them to the deck and leaves: never through the driver) and Reroll; the run's packs
-    /// under the panel's "Packs" (its "?" tooltip as the description), each "name, description" (the
+    /// picked; it adds them to the deck and leaves: never through the driver) and Reroll; then the
+    /// run's packs as a strip under the panel's "Packs" (its "?" tooltip first, where the icon sits), each "name, description" (the
     /// game's <c>&lt;Pack&gt;_Misc</c>, <c>&lt;Pack&gt;_Desc_Misc</c>; drawn only as a picture), Enter its
     /// click (the Compendium, on that pack).
     ///
@@ -77,7 +77,9 @@ namespace StarVoders.Module.Screens
             CampaignNodes.Strips(b, c, "packmaster");
             b.PushContext(PickLine(c));
             bool first = true;
-            foreach (var card in Cards(c))
+            var cards = Cards(c);
+            if (cards.Count > 0) b.StartRow("packmaster:cards"); // the belt, one strip
+            foreach (var card in cards)
             {
                 var view = card;
                 var vt = CardNodes.Card(view.CardModel, view);
@@ -88,6 +90,7 @@ namespace StarVoders.Module.Screens
                 if (first) b.SetStart(id);
                 first = false;
             }
+            if (cards.Count > 0) b.EndRow();
             b.PopContext();
             // Proceed and Reroll answer the same choice: they follow the cards in the stop, unnumbered.
             b.PushContext(null, positions: false);
@@ -104,10 +107,19 @@ namespace StarVoders.Module.Screens
                     if (ViewNodes.IsShown(pack)) packs.Add(pack);
             if (packs.Count > 0)
             {
-                packs.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
+                // A column down the left of the screen, top first; here a strip under Reroll, in the
+                // main stop: what the run's pool holds, not part of the pick.
+                packs.Sort((x, y) => y.transform.position.y.CompareTo(x.transform.position.y));
                 var frame = PacksFrame(c);
-                b.BeginStop("packmaster:packs");
                 b.PushContext(GameText.Of(frame?.Find("Title")?.GetComponent<TMP_Text>()) ?? GameLoc.Get("PackTitle_Misc"));
+                // The frame's "?" (its tooltip: the PACK SYSTEM line) sits by the title, before the packs;
+                // moving into the strip still lands on the first pack.
+                var tip = frame?.GetComponentInChildren<StarVaders.TooltipTrigger>(true);
+                string about = tip != null ? CampaignNodes.TooltipLine(tip) : null;
+                bool hasAbout = !string.IsNullOrWhiteSpace(about);
+                b.StartRow("packmaster:packs", entry: () => hasAbout ? 1 : 0);
+                if (hasAbout)
+                    b.AddItem(ControlId.Structural("packmaster:packsabout"), GameNodes.Text(() => about));
                 foreach (var pack in packs)
                 {
                     var view = pack;
@@ -119,10 +131,7 @@ namespace StarVoders.Module.Screens
                     };
                     b.AddItem(ControlId.Structural("packmaster:pack:" + view.GetInstanceID()), vt);
                 }
-                var tip = frame?.GetComponentInChildren<StarVaders.TooltipTrigger>(true);
-                string about = tip != null ? CampaignNodes.TooltipLine(tip) : null;
-                if (!string.IsNullOrWhiteSpace(about))
-                    b.AddItem(ControlId.Structural("packmaster:packsabout"), GameNodes.Text(() => about));
+                b.EndRow();
                 b.PopContext();
             }
         }

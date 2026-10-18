@@ -42,16 +42,27 @@ namespace StarVoders.Module.Screens
                 foreach (var board in c.CardRewardBoards)
                     if (ViewNodes.IsShown(board)) cards.Add(board);
             cards.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
-            foreach (var board in cards)
-                b.AddItem(ControlId.Structural("reward:card:" + board.GetInstanceID()), CardNodes.Card(board.GetCardModel(), board));
+            // The cards as one strip, the artifacts as another under them.
+            if (cards.Count > 0)
+            {
+                b.StartRow("reward:cards");
+                foreach (var board in cards)
+                    b.AddItem(ControlId.Structural("reward:card:" + board.GetInstanceID()), CardNodes.Card(board.GetCardModel(), board));
+                b.EndRow();
+            }
             var artifacts = new List<ArtifactRewardBoard>();
             if (c.ArtifactRewardBoards != null)
                 foreach (var board in c.ArtifactRewardBoards)
                     if (ViewNodes.IsShown(board)) artifacts.Add(board);
             artifacts.Sort((x, y) => x.transform.position.x.CompareTo(y.transform.position.x));
-            foreach (var board in artifacts)
-                b.AddItem(ControlId.Structural("reward:artifact:" + board.GetInstanceID()),
-                    CardNodes.Artifact(board.GetArtifactModel(), board, clickable: true));
+            if (artifacts.Count > 0)
+            {
+                b.StartRow("reward:artifacts");
+                foreach (var board in artifacts)
+                    b.AddItem(ControlId.Structural("reward:artifact:" + board.GetInstanceID()),
+                        CardNodes.Artifact(board.GetArtifactModel(), board, clickable: true));
+                b.EndRow();
+            }
             b.PopContext();
             // The landing: the first reward, under the run's strips.
             if (cards.Count > 0) b.SetStart(ControlId.Structural("reward:card:" + cards[0].GetInstanceID()));

@@ -48,31 +48,32 @@ namespace StarVoders.Module.Screens
             if (c.CardViews != null)
                 foreach (var view in c.CardViews)
                     if (ViewNodes.IsShown(view) && view.IsInteractable && view.CardModel != null) cards.Add(view);
-            cards.Sort(ByRowThenX);
-            foreach (var view in cards)
-            {
-                var v = view;
-                var vt = CardNodes.Card(v.CardModel, v);
-                var price = Effective(v);
-                Insert(vt, () => CardPrice(v), () => Affordable(price));
-                b.AddItem(ControlId.Structural("workshop:card:" + v.GetInstanceID()), vt);
-            }
+            // The cards rack as strips, a row each as drawn, then the artifacts' strip: Up and Down keep
+            // the column across them.
+            var firstCard = CardNodes.Strips(b, cards, "workshop:wares",
+                v => ControlId.Structural("workshop:card:" + v.GetInstanceID()),
+                v =>
+                {
+                    var vt = CardNodes.Card(v.CardModel, v);
+                    var price = Effective(v);
+                    Insert(vt, () => CardPrice(v), () => Affordable(price));
+                    return vt;
+                });
             var artifacts = new List<WorkshopArtifactView>();
             if (c.ArtifactViews != null)
                 foreach (var view in c.ArtifactViews)
                     if (ViewNodes.IsShown(view) && view.IsInteractable && view.ArtifactModel != null) artifacts.Add(view);
-            artifacts.Sort(ByRowThenX);
-            foreach (var view in artifacts)
-            {
-                var v = view;
-                var vt = CardNodes.Artifact(v.ArtifactModel, v, clickable: true);
-                Insert(vt, () => Stars(v.BuyButtonText), () => Affordable(v.BuyButtonText));
-                b.AddItem(ControlId.Structural("workshop:artifact:" + v.GetInstanceID()), vt);
-            }
+            var firstArtifact = CardNodes.Strips(b, artifacts, "workshop:wares",
+                v => ControlId.Structural("workshop:artifact:" + v.GetInstanceID()),
+                v =>
+                {
+                    var vt = CardNodes.Artifact(v.ArtifactModel, v, clickable: true);
+                    Insert(vt, () => Stars(v.BuyButtonText), () => Affordable(v.BuyButtonText));
+                    return vt;
+                });
             b.PopContext();
             // The landing: the first ware, under the run's strips.
-            if (cards.Count > 0) b.SetStart(ControlId.Structural("workshop:card:" + cards[0].GetInstanceID()));
-            else if (artifacts.Count > 0) b.SetStart(ControlId.Structural("workshop:artifact:" + artifacts[0].GetInstanceID()));
+            if (firstCard != null || firstArtifact != null) b.SetStart(firstCard ?? firstArtifact);
 
             // The workshop's own services follow the wares in the stop, unnumbered.
             b.PushContext(null, positions: false);
@@ -96,12 +97,6 @@ namespace StarVoders.Module.Screens
             b.PopContext();
         }
 
-        // The racks are rows of wares: top row first, each left to right (y up; rows ~27 apart).
-        private static int ByRowThenX(UnityEngine.Component a, UnityEngine.Component z)
-        {
-            int rowA = (int)Math.Round(-a.transform.position.y / 10f), rowZ = (int)Math.Round(-z.transform.position.y / 10f);
-            return rowA != rowZ ? rowA.CompareTo(rowZ) : a.transform.position.x.CompareTo(z.transform.position.x);
-        }
 
         // The price and the too-dear state right after the label: "Quick Fire!, 8900 Stars, Bundle!...".
         private static void Insert(NodeVtable vt, Func<string> price, Func<bool> affordable)

@@ -80,7 +80,10 @@ namespace StarVoders.Module.Screens
             CampaignNodes.Strips(b, c, "specialreward");
             b.PushContext(GameText.Of(c.SpecialRewardDescription));
             bool first = true;
-            foreach (var item in Rewards(c))
+            // One strip, as the box lays them out.
+            var rewards = Rewards(c).FindAll(item => item.TryCast<CardRewardBoard>() != null || item.TryCast<ArtifactRewardBoard>() != null);
+            if (rewards.Count > 0) b.StartRow("specialreward:rewards");
+            foreach (var item in rewards)
             {
                 var card = item.TryCast<CardRewardBoard>();
                 if (card != null)
@@ -102,6 +105,7 @@ namespace StarVoders.Module.Screens
                     first = false;
                 }
             }
+            if (rewards.Count > 0) b.EndRow();
             b.PopContext();
             // Take All, Skip and Reroll answer the same offer: they follow it in the stop, unnumbered.
             b.PushContext(null, positions: false);

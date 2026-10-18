@@ -75,13 +75,22 @@ namespace StarVoders.Module.Screens
             var cards = Cards(c);
             b.BeginStop("deckview:cards");
             b.PushContext(Title(cards));
-            foreach (var card in cards)
-                b.AddItem(ControlId.Structural("deckview:card:" + card.GetInstanceID()), CardNodes.Card(card.CardModel, card));
+            // Each grid's cards as strips, a row each as drawn (Up and Down keep the column), then the
+            // artifacts' strips.
+            foreach (var grid in new[] { c._cardGrid, c._cardPilotUniqueGrid })
+                if (grid != null)
+                    CardNodes.Strips(b, cards.FindAll(card => card.transform.IsChildOf(grid.transform)), "deckview:rows",
+                        card => ControlId.Structural("deckview:card:" + card.GetInstanceID()),
+                        card => CardNodes.Card(card.CardModel, card));
             foreach (var grid in new[] { c._artifactGrid, c._artifactPilotUniqueGrid })
             {
                 if (grid == null || !grid.gameObject.activeInHierarchy) continue;
+                var artifacts = new List<DeckArtifactView>();
                 foreach (var artifact in grid.GetComponentsInChildren<DeckArtifactView>(false))
-                    if (artifact != null) b.AddItem(ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()), CardNodes.Artifact(artifact.ArtifactModel, artifact));
+                    if (artifact != null) artifacts.Add(artifact);
+                CardNodes.Strips(b, artifacts, "deckview:rows",
+                    artifact => ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()),
+                    artifact => CardNodes.Artifact(artifact.ArtifactModel, artifact));
             }
             b.PopContext();
             // Back after the cards in the same stop, outside their context, so the list's positions

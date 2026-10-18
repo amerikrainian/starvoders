@@ -160,7 +160,7 @@ separately. Host F6 uses the same OS read.
   `Box (1)` whose click is `GoToRewardScene`, up while `!IsEndingScene`; opening it leaves the
   fight: never through the driver), `RewardScreen` (`CardRewardScene`, `RewardController` for
   cards, upgrades and artifacts: title `TitleText`, the shown `CardRewardBoards` and
-  `ArtifactRewardBoards` left to right by x, Enter takes one (`AddRewardToDeck`: never through
+  `ArtifactRewardBoards` left to right by x (a strip each), Enter takes one (`AddRewardToDeck`: never through
   the driver), Skip = `ProceedButton`, Reroll and the run status from `UI/CampaignNodes`; card and
   artifact nodes shared with the deck viewer in `UI/CardNodes`), `PauseScreen`
   (`PauseMenuSceneAdditive`, layer 30, exclusive (what it opens sits above it: Options, the Compendium
@@ -170,8 +170,10 @@ separately. Host F6 uses the same OS read.
   loaded under the run end, else the fight beneath is announced first): "Paused", its buttons by object name, the run's
   difficulty, Deck and Modifiers, the map via `CampaignNodes.Map(panel)`; Escape = `OnResumePressed`;
   Save & Exit and Skip Tutorial/Abandon Run: never through the driver), `WorkshopScreen`
-  (`WorkshopScene`, `ShopController`, named by `ShopTitle_Misc`: one stop of the wares, cards
-  top row first then artifacts, each "name, 8900 Stars" (the drawn price; the model's is a
+  (`WorkshopScene`, `ShopController`, named by `ShopTitle_Misc`: one stop of the wares, the cards
+  rack as strips, a row each as drawn (`CardNodes.Strips`/`DrawnRows`: a view lower than its row's
+  first by over half its drawn height starts a row; rows share a key, so Up/Down keep the column),
+  then the artifacts' strip, each "name, 8900 Stars" (the drawn price; the model's is a
   hundredth), "Sale!, was 5700" (price on `SaleText`, `BuyButtonText` crossed out), "Bundle!, 2
   copies" (bought twice), "disabled" while the price is drawn red (`Text.color !=
   originalColor`); then Remove Card, Restock, the tip jar (`MinFundraiserPanel` figures), Gacha and
@@ -181,14 +183,14 @@ separately. Host F6 uses the same OS read.
   (Enter = more info), `MiscUnlockText`, Take/Skip or Continue; holds until opaque, 3 s at most; down
   once the canvas `IsEndingScene`; test: load `WorkshopScene` from the encounter choice with
   `SceneLoader.LoadSceneWithTransition`, tip the jar full, click it), `PackmasterScreen` (Bud's Factory, `PackmasterScene`,
-  `PackmasterController`, a `CampaignSceneController`: the belt's `CardViews` under "Pick 2 Cards", Enter =
+  `PackmasterController`, a `CampaignSceneController`: the belt's `CardViews` (one strip) under "Pick 2 Cards", Enter =
   the card's click `OnPressSelectCardButton` (toggles `_isSelected`, "selected" live), Proceed (enabled at
-  2; adds them and leaves: never through the driver), Reroll; the `PackViews` by `<Pack>_Misc` and
+  2; adds them and leaves: never through the driver), Reroll; the `PackViews` (a strip under Reroll, in the main stop, top first) by `<Pack>_Misc` and
   `<Pack>_Desc_Misc` (drawn only as pictures), Enter = their click (the Compendium via
   `GlossaryTransitionSceneAdditive`), the frame's PACK SYSTEM tooltip; status, map; holds its arrival
   until every shown card is `_interactable` (they ride in on the belt), 3 s at most),
   `SpecialRewardScreen` (`SpecialRewardScene`, `SpecialRewardController`: title from `TextesObject`, the
-  `SpecialRewardDescription` over `_rewardViewItems` (card/artifact reward boards, display only), Take All =
+  `SpecialRewardDescription` over `_rewardViewItems` (card/artifact reward boards as one strip, display only), Take All =
   `AcceptRewardViewItem`, Skip = base `ProceedButton` ("+1000", the star glyph "=" dropped), Reroll; status,
   map; holds until the box has opened; taking/skipping: never through the driver; the kind is the static
   `CurrentSpecialReward` but the offer follows the run's room data: test by setting it and
@@ -323,7 +325,7 @@ separately. Host F6 uses the same OS read.
   jumps there; Escape = `SelectionController.Cancel` + preview/display board/hover resets; a card
   that needs no target still asks for the `PlayAreaView`, read "Play"), Board (rows top first,
   shared row key, lands on the mech; cell = target mark, coords, zone on crossing, contents),
-  Hand (`GetCardsInHandButNotBeingPlayed`, `CardPlayView.GetCardView`; text from
+  Hand (one horizontal strip; `GetCardsInHandButNotBeingPlayed`, `CardPlayView.GetCardView`; text from
   `<CardName>_CardTitle` and `_CardDesc` through `LocalizationUtils.GetModifiedDescriptions`;
   play modifiers (`CardPlayModel.PlayCardModifiers`, never in the model's `HeatCost`) as the art
   draws them: the cost icons, a `Minus` icon is a point taken off (only those = Free), the `_repeatText`
@@ -387,7 +389,7 @@ separately. Host F6 uses the same OS read.
 - Card viewer (`DeckViewSceneAdditive`, `DeckViewSceneController`, statics `Type` (`DeckSceneType`:
   RemoveCard, PlayerData, PileView, Glossary, StarterDeck) and `PileToShow`): `DeckViewScreen`,
   title by the pile its first card is in (no title drawn), `DeckCardView`s from `_cardGrid` and
-  `_cardPilotUniqueGrid`, artifacts (the game draws them above the cards; the starter deck's is the pilot's
+  `_cardPilotUniqueGrid` (each grid as strips, a row each as drawn, Up/Down keeping the column), artifacts (strips too; the game draws them above the cards; the starter deck's is the pilot's
   starter artifact), Back last in the same stop (outside the cards' positions); Escape = `ExitScene`. The game creates the artifacts first and
   the cards over the next frames, so the screen holds its arrival until the card count holds 0.15 s
   (an empty pile 0.5 s, 1.5 s at most), else focus lands on the artifact. In RemoveCard mode a

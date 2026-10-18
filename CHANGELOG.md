@@ -4,6 +4,7 @@
 
 - We now allow you to rebind in-game actions.
 - Compress the run into one tab stop.
+- Cards, artifacts, and rewards now get rendered as horizontal rows.
 
 ## V0.0.9
 
