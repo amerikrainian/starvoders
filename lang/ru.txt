@@ -195,6 +195,7 @@ bind.fight.objective=Цель
 bind.fight.mech=Мех
 bind.fight.bombs=Бомбы
 bind.fight.mech.jump=К меху
+bind.fight.hand=К руке
 bind.fight.cat.next=Следующая категория
 bind.fight.cat.prev=Предыдущая категория
 bind.fight.item.next=Следующий в категории

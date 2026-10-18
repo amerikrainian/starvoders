@@ -51,6 +51,38 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void StrictRowsMoveOnlyToTheSameColumn()
+        {
+            // A 3-wide grid row over a 2-item strict row of the same key, and a 4-item one under that.
+            var render = new GraphBuilder()
+                .StartRow("grid").AddItem(Id("a1"), Vt("A1")).AddItem(Id("a2"), Vt("A2")).AddItem(Id("a3"), Vt("A3")).EndRow()
+                .StartRow("grid", strictColumns: true).AddItem(Id("h1"), Vt("H1")).AddItem(Id("h2"), Vt("H2")).EndRow()
+                .Build();
+
+            Assert.Equal(Id("h2"), render.Nodes[Id("a2")].Transitions[GraphDir.Down].Destination);
+            Assert.False(render.Nodes[Id("a3")].Transitions.ContainsKey(GraphDir.Down)); // nothing under column 3: stay
+            Assert.Equal(Id("a1"), render.Nodes[Id("h1")].Transitions[GraphDir.Up].Destination);
+
+            var wide = new GraphBuilder()
+                .StartRow("grid").AddItem(Id("a1"), Vt("A1")).AddItem(Id("a2"), Vt("A2")).EndRow()
+                .StartRow("grid", strictColumns: true).AddItem(Id("h1"), Vt("H1")).AddItem(Id("h2"), Vt("H2")).AddItem(Id("h3"), Vt("H3")).EndRow()
+                .Build();
+            Assert.False(wide.Nodes[Id("h3")].Transitions.ContainsKey(GraphDir.Up)); // past the last column: stay
+        }
+
+        [Fact]
+        public void StrictRowsOfAnotherKeyAreNotReachedVertically()
+        {
+            var render = new GraphBuilder()
+                .StartRow("grid").AddItem(Id("a1"), Vt("A1")).EndRow()
+                .StartRow("other", strictColumns: true).AddItem(Id("h1"), Vt("H1")).EndRow()
+                .Build();
+
+            Assert.False(render.Nodes[Id("a1")].Transitions.ContainsKey(GraphDir.Down));
+            Assert.False(render.Nodes[Id("h1")].Transitions.ContainsKey(GraphDir.Up));
+        }
+
+        [Fact]
         public void UnkeyedRowsLandOnFirstItem()
         {
             var render = new GraphBuilder()

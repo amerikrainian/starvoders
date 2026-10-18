@@ -65,6 +65,7 @@ These are the game's own actions, so they follow its Controls options. The defau
 | Home / End | First / last column of the row |
 | Page Up / Page Down | Top / bottom row of the column |
 | Shift+M | Go to the mech |
+| Alt+H | Go to your hand |
 | ] / [ | Next / previous category |
 | . / , | Next / previous in the category |
 | Alt+Backspace | Jump back to where the last jump left from |

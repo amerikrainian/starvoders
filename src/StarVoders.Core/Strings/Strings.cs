@@ -268,6 +268,7 @@ namespace StarVoders.Core.Strings
             D("bind.fight.mech", "Mech"),
             D("bind.fight.bombs", "Bombs"),
             D("bind.fight.mech.jump", "Go to the mech"),
+            D("bind.fight.hand", "Go to the hand"),
             D("bind.fight.cat.next", "Next category"),
             D("bind.fight.cat.prev", "Previous category"),
             D("bind.fight.item.next", "Next in category"),

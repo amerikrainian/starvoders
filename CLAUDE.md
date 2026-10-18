@@ -327,7 +327,11 @@ separately. Host F6 uses the same OS read.
   jumps there; Escape = `SelectionController.Cancel` + preview/display board/hover resets; a card
   that needs no target still asks for the `PlayAreaView`, read "Play"), Board (rows top first,
   shared row key, lands on the mech; cell = target mark, coords, zone on crossing, contents),
-  Hand (one horizontal strip; `GetCardsInHandButNotBeingPlayed`, `CardPlayView.GetCardView`; text from
+  Hand (in the Board's stop, a strip under the bottom row, `strictColumns`: card n under column n,
+  Down from a column with no card or Up from a card past the last column stays; keyed apart while a
+  target is chosen on the board, so no arrow reaches a card; a choice begun from the hand moves focus
+  to the last cell, else the mech; Alt+H jumps to card 1, Home/End = first/last card;
+  `GetCardsInHandButNotBeingPlayed`, `CardPlayView.GetCardView`; text from
   `<CardName>_CardTitle` and `_CardDesc` through `LocalizationUtils.GetModifiedDescriptions`;
   play modifiers (`CardPlayModel.PlayCardModifiers`, never in the model's `HeatCost`) as the art
   draws them: the cost icons, a `Minus` icon is a point taken off (only those = Free), the `_repeatText`
@@ -348,7 +352,7 @@ separately. Host F6 uses the same OS read.
   Power + Battery (`PowerCell`, while `BatteryMockView` shows; Power over max becomes Battery, spent when
   Power runs out), Mana + its gain ("+3 / Turn", `_manaRegenText`). Labels are game strings (`*_Misc` keys in the "Everything" table: search it with
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
-  category): digits, Shift+digits (the card as the hand buffer reads it; `GameKeyBinding` with `shift`), Shift+arrows skip, C T, Ctrl+D H O M B (Doom, the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, `[ ] , .` categories (Summons = the tiles of `PlayerPuppetList`'s entities, `PuppetItem`s,
+  category): digits, Shift+digits (the card as the hand buffer reads it; `GameKeyBinding` with `shift`), Shift+arrows skip, C T, Ctrl+D H O M B (Doom, the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, Alt+H (the hand), `[ ] , .` categories (Summons = the tiles of `PlayerPuppetList`'s entities, `PuppetItem`s,
   left out of "Bombs and items"; danger zones
   step by region, "5, 1 to 5, 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
   targets events are), Alt+Backspace; the game's own fight keys are `Input/GameKeyBinding`s, the keys

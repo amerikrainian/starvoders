@@ -195,6 +195,7 @@ bind.fight.objective=目標
 bind.fight.mech=機甲
 bind.fight.bombs=炸彈
 bind.fight.mech.jump=跳到機甲
+bind.fight.hand=跳到手牌
 bind.fight.cat.next=下一類別
 bind.fight.cat.prev=上一類別
 bind.fight.item.next=類別中的下一個

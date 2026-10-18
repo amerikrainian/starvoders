@@ -6,6 +6,7 @@
 - Compress the run into one tab stop.
 - Cards, artifacts, and rewards now get rendered as horizontal rows.
 - Fixed invader cards not showing descriptions on an encounter screen.
+- Your hand now gets rendered below the grid. Since it might be a little more annoying to go to it now, alt+h jumps to it.
 
 ## V0.0.9
 

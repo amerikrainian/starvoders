@@ -17,9 +17,9 @@ using Screen = StarVoders.Core.Screens.Screen;
 namespace StarVoders.Module.Screens
 {
     /// <summary>
-    /// The fight (<c>EncounterScene</c>). Stops: the hand (each card "name, cost, description", Enter
-    /// playing it as the game's click does, unplayable cards disabled with the game's reason); the
-    /// spells (a Keeper's, when there are any: Enter casts); the rack (End Turn, the Transformer's
+    /// The fight (<c>EncounterScene</c>). Stops: the board with the hand as a strip under its bottom
+    /// row (each card "name, cost, description", Enter playing it as the game's click does,
+    /// unplayable cards disabled with the game's reason; card n under column n); the spells (a Keeper's, when there are any: Enter casts); the rack (End Turn, the Transformer's
     /// Draw on the Power panel, Rewind with the Chrono Tokens left, the draw and discard piles with their
     /// counts); the status (turn x/y, Doom, Heat, Power and its Battery, Mana and its gain a turn, where the mech has them, Stars,
     /// the objective, the artifacts). Labels are the game's own strings (its <c>*_Misc</c> keys).
@@ -73,20 +73,7 @@ namespace StarVoders.Module.Screens
                 b.PopContext();
             }
 
-            BuildBoard(b);
-
-            // The hand as one strip, left to right as the digits count it.
-            b.BeginStop("fight:hand");
-            b.PushContext(null);
-            var hand = FightState.Hand();
-            if (hand.Count > 0)
-            {
-                b.StartRow("fight:hand");
-                foreach (var card in hand)
-                    b.AddItem(ControlId.Structural("fight:card:" + card.GetInstanceID()), Card(card));
-                b.EndRow();
-            }
-            b.PopContext();
+            BuildBoard(b, selection);
 
             // A Keeper's spells, in the Mana panel's slots (cast by clicking): their own stop, when
             // there are any.
@@ -175,6 +162,7 @@ namespace StarVoders.Module.Screens
 
         private const string BoardStop = "fight:board";
         private static string _lastZone;
+        private static (int X, int Y)? _lastTile; // the cell last focused, for a target choice begun from the hand
 
         public static ControlId TileId(int x, int y) => ControlId.Structural("fight:tile:" + x + "," + y);
 
@@ -187,9 +175,22 @@ namespace StarVoders.Module.Screens
             return (int.Parse(parts[0]), int.Parse(parts[1]));
         }
 
+        public static ControlId CardId(CardView card) => ControlId.Structural("fight:card:" + card.GetInstanceID());
+
+        /// <summary>Whether the focus is on a card of the hand.</summary>
+        public static bool FocusedOnHand()
+        {
+            var id = (Navigation.Active as GraphNavigator)?.FocusedNode?.Id?.StructuralKey as string;
+            return id != null && id.StartsWith("fight:card:");
+        }
+
         // The grid, top row first so Up goes up the board; the rows share a key, so Up and Down keep
-        // the column. Focus first lands on the mech.
-        private static void BuildBoard(GraphBuilder b)
+        // the column. Focus first lands on the mech. Under the bottom row, in the same stop, the hand
+        // as one strip in hand order: card n under column n (a strict row: Down from a column with no
+        // card under it, or Up from a card past the last column, stays put). While a target is chosen
+        // on the board the hand is keyed apart, so no arrow leaves the cells for a card (Enter there
+        // would click it); Alt+H still reaches it.
+        private static void BuildBoard(GraphBuilder b, FightState.TargetSet selection)
         {
             var board = FightBoard.Read();
             var grid = FightState.View?.GridView;
@@ -202,6 +203,15 @@ namespace StarVoders.Module.Screens
                     b.AddItem(TileId(x, y), Cell(x, y));
                 b.EndRow();
             }
+            var hand = FightState.Hand();
+            if (hand.Count == 0) return;
+            bool apart = selection != null && selection.OnBoard;
+            b.PushContext(null);
+            b.StartRow(apart ? "fight:hand" : BoardStop, strictColumns: true);
+            foreach (var card in hand)
+                b.AddItem(CardId(card), Card(card));
+            b.EndRow();
+            b.PopContext();
         }
 
         private static TileView Tile(int x, int y)
@@ -396,8 +406,14 @@ namespace StarVoders.Module.Screens
                     // landing on the board says it; Enter on any cell plays it.
                     string prompt = set.Tiles.Count > 0 || set.Arrows.Count > 0 ? FightState.Prompt() : null;
                     if (prompt != null) Speech.Say(prompt);
+                    // Onto a cell: the one last on, else the mech (the stop's memory may be a hand card).
                     var at = FocusedTile();
-                    if (at == null) Navigation.Active?.FocusStop(BoardStop);
+                    if (at == null)
+                    {
+                        var to = _lastTile ?? FightKeys.MechTile();
+                        if (to.HasValue) Navigation.Active?.MoveTo(TileId(to.Value.X, to.Value.Y));
+                        else Navigation.Active?.FocusStop(BoardStop);
+                    }
                     else { var tile = Tile(at.Value.X, at.Value.Y); if (tile != null) FightState.Hover(tile); }
                 }
                 else Navigation.Active?.FocusStop(TargetsStop);
@@ -406,7 +422,9 @@ namespace StarVoders.Module.Screens
             }
             if (selecting) SayStrikeChanges();
             _wasSelecting = selecting;
-            if (!(Navigation.Active is GraphNavigator nav) || !Equals(nav.FocusedNode?.StopKey, BoardStop)) _lastZone = null;
+            var on = FocusedTile();
+            if (on.HasValue) _lastTile = on;
+            else _lastZone = null; // off the cells (the hand counts): the zone is named again on return
         }
 
         // Says the strike marks once they settle on a set other than the last said. Settling on no

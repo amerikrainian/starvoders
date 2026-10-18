@@ -17,7 +17,8 @@ namespace StarVoders.Module.Fight
     /// <summary>
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
     /// card, Shift with them reads it as the hand buffer does; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom, Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
-    /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech; [ and ] cycle
+    /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech, Alt+H to the hand (under the grid; Home and End there
+    /// are its first and last card); [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
     /// Summons (a Keeper's puppets), bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
@@ -76,6 +77,8 @@ namespace StarVoders.Module.Fight
             });
             InputManager.Register("fight.mech.jump", "Go to the mech", InputCategory.Game, () => JumpTo(Mech()))
                 .AddBinding(new KeyboardBinding(KeyCode.M, shift: true));
+            InputManager.Register("fight.hand", "Go to the hand", InputCategory.Game, JumpToHand)
+                .AddBinding(new KeyboardBinding(KeyCode.H, alt: true));
             InputManager.Register("fight.cat.next", "Next category", InputCategory.Game, () => Category(1))
                 .AddBinding(new KeyboardBinding(KeyCode.RightBracket));
             InputManager.Register("fight.cat.prev", "Previous category", InputCategory.Game, () => Category(-1))
@@ -137,6 +140,9 @@ namespace StarVoders.Module.Fight
             return at.HasValue ? FightBoard.CoordText(at.Value.X, at.Value.Y) : null;
         }
 
+        /// <summary>The mech's 0-based tile, or null.</summary>
+        internal static (int X, int Y)? MechTile() => Mech();
+
         private static (int X, int Y)? Mech()
         {
             var board = FightBoard.Read();
@@ -160,6 +166,15 @@ namespace StarVoders.Module.Fight
         // bottom row; silent when already there. Off the board, Home and End are the navigator's own (these keys shadow them).
         private static void Edge(string uiKey, Func<FightBoard, int, int, (int X, int Y)> to)
         {
+            // On the hand, Home and End are its first and last card.
+            if (EncounterScreen.FocusedOnHand())
+            {
+                var hand = Fight.Hand();
+                if (uiKey == null || hand.Count == 0) return;
+                var card = EncounterScreen.CardId(uiKey == UiActions.Home ? hand[0] : hand[hand.Count - 1]);
+                if (!Equals((Navigation.Active as GraphNavigator)?.FocusedNode?.Id, card)) Navigation.Active?.MoveTo(card);
+                return;
+            }
             var at = EncounterScreen.FocusedTile();
             var board = at.HasValue ? FightBoard.Read() : null;
             if (board == null)
@@ -186,6 +201,15 @@ namespace StarVoders.Module.Fight
             if (from.HasValue && from.Value.Equals(tile.Value)) { if (speak) Navigation.AnnounceCurrent(); return; }
             if (Navigation.Active?.MoveTo(EncounterScreen.TileId(tile.Value.X, tile.Value.Y), speak) == true)
                 _back = from;
+        }
+
+        // Alt+H: the first card of the hand, under the grid; Alt+Backspace returns to the cell.
+        private static void JumpToHand()
+        {
+            var hand = Fight.Hand();
+            if (hand.Count == 0) return;
+            var from = EncounterScreen.FocusedTile();
+            if (Navigation.Active?.MoveTo(EncounterScreen.CardId(hand[0])) == true && from.HasValue) _back = from;
         }
 
         private static void JumpBack()

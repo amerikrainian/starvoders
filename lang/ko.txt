@@ -195,6 +195,7 @@ bind.fight.objective=목표
 bind.fight.mech=메카
 bind.fight.bombs=폭탄
 bind.fight.mech.jump=메카로 이동
+bind.fight.hand=손패로 이동
 bind.fight.cat.next=다음 분류
 bind.fight.cat.prev=이전 분류
 bind.fight.item.next=분류의 다음

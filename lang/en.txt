@@ -197,6 +197,7 @@ bind.fight.objective=Objective
 bind.fight.mech=Mech
 bind.fight.bombs=Bombs
 bind.fight.mech.jump=Go to the mech
+bind.fight.hand=Go to the hand
 bind.fight.cat.next=Next category
 bind.fight.cat.prev=Previous category
 bind.fight.item.next=Next in category

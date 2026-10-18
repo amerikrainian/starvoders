@@ -195,6 +195,7 @@ bind.fight.objective=目標
 bind.fight.mech=メカ
 bind.fight.bombs=爆弾
 bind.fight.mech.jump=メカへ移動
+bind.fight.hand=手札へ移動
 bind.fight.cat.next=次のカテゴリ
 bind.fight.cat.prev=前のカテゴリ
 bind.fight.item.next=カテゴリの次

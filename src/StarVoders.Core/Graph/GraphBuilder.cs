@@ -39,6 +39,7 @@ namespace StarVoders.Core.Graph
             public object Key;
             public object StopKey;
             public Func<int> Entry;
+            public bool Strict;
         }
 
         private sealed class RawEdge
@@ -209,12 +210,16 @@ namespace StarVoders.Core.Graph
         /// above/below get column-preserving vertical navigation. <paramref name="entry"/> is the index
         /// of the item a vertical move INTO the row lands on when no column says otherwise (the first
         /// by default): a row of tabs that select on landing names its selected one, so coming up from
-        /// the content under them does not switch tabs. Asked when the render is wired.</summary>
-        public GraphBuilder StartRow(object rowKey = null, Func<int> entry = null)
+        /// the content under them does not switch tabs. Asked when the render is wired.
+        /// <paramref name="strictColumns"/>: a vertical move between this row and its neighbour goes
+        /// only to the same position in a row of the same key; with none there (the other row is
+        /// shorter, or keyed otherwise) there is no move at all, rather than the entry item (the
+        /// fight's hand under the grid: card n under column n, nothing under the columns past it).</summary>
+        public GraphBuilder StartRow(object rowKey = null, Func<int> entry = null, bool strictColumns = false)
         {
             if (_currentRow != null) throw new InvalidOperationException("Cannot start a row while another is open");
             if (_currentColumn != null) throw new InvalidOperationException("Cannot start a row inside an open column");
-            _currentRow = new Row { Key = rowKey, StopKey = _stopKey, Entry = entry };
+            _currentRow = new Row { Key = rowKey, StopKey = _stopKey, Entry = entry, Strict = strictColumns };
             return this;
         }
 
@@ -535,10 +540,10 @@ namespace StarVoders.Core.Graph
                     for (int pos = 0; pos < row.Items.Count; pos++)
                     {
                         var node = row.Items[pos];
-                        if (r > 0)
-                            node.Transitions[GraphDir.Up] = new Transition(VerticalTarget(row, rows[r - 1], pos));
-                        if (r < rows.Count - 1)
-                            node.Transitions[GraphDir.Down] = new Transition(VerticalTarget(row, rows[r + 1], pos));
+                        var up = r > 0 ? VerticalTarget(row, rows[r - 1], pos) : null;
+                        if (up != null) node.Transitions[GraphDir.Up] = new Transition(up);
+                        var down = r < rows.Count - 1 ? VerticalTarget(row, rows[r + 1], pos) : null;
+                        if (down != null) node.Transitions[GraphDir.Down] = new Transition(down);
                         if (pos > 0)
                             node.Transitions[GraphDir.Left] = new Transition(row.Items[pos - 1].Id);
                         if (pos < row.Items.Count - 1)
@@ -550,10 +555,12 @@ namespace StarVoders.Core.Graph
 
         // Where vertical navigation from position pos lands in the adjacent row: the same position when
         // the rows share a non-null key (column nav) and it exists there, else the first item.
+        // Null: no vertical move (a strict row with nothing in that column).
         private static ControlId VerticalTarget(Row from, Row to, int pos)
         {
             if (from.Key != null && to.Key != null && Equals(from.Key, to.Key) && pos < to.Items.Count)
                 return to.Items[pos].Id;
+            if (from.Strict || to.Strict) return null;
             return EntryOf(to).Id;
         }
     }
