@@ -575,6 +575,20 @@ namespace StarVoders.Module.Fight
 
             public bool OnBoard => Tiles.Count > 0 || PlayArea != null || Arrows.Count > 0;
 
+            /// <summary>Every target is a card of the hand (Exhaust's "Choose a card to purge"): the
+            /// game outlines them where the hand draws them, so the choice is answered in the hand.</summary>
+            public bool InHand;
+
+            /// <summary>Whether the card view is one of the targets (by native pointer: a proxy is a
+            /// fresh object per cast).</summary>
+            public bool HasCard(CardView view)
+            {
+                if (view == null) return false;
+                foreach (var o in Others)
+                    if (o.Pointer == view.Pointer) return true;
+                return false;
+            }
+
             public bool HasTile(int x, int y)
             {
                 foreach (var t in Tiles)
@@ -630,6 +644,11 @@ namespace StarVoders.Module.Fight
                 set.Others.Add(item);
             }
             if (set.Arrows.Count > 0) set.Origin = ArrowOrigin();
+            if (!set.OnBoard && set.Others.Count > 0)
+            {
+                var hand = Hand();
+                set.InHand = set.Others.TrueForAll(o => hand.Exists(h => h.Pointer == o.Pointer));
+            }
             return set;
         }
 

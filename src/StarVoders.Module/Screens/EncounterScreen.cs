@@ -63,7 +63,7 @@ namespace StarVoders.Module.Screens
             // A selection the board cannot answer (cards to choose) is a list of its targets; one on
             // the grid (tiles, the play area, arrows) is answered on the board itself.
             var selection = FightState.Selecting ? FightState.ReadTargets() : null;
-            if (selection != null && !selection.OnBoard && selection.Others.Count > 0)
+            if (selection != null && !selection.OnBoard && selection.Others.Count > 0 && !selection.InHand)
             {
                 var board = FightBoard.Read();
                 b.BeginStop(TargetsStop);
@@ -272,6 +272,8 @@ namespace StarVoders.Module.Screens
         // cell gives: the tile itself, the play area (from any cell), or the arrow toward the cell.
         private static void ActivateCell(int x, int y)
         {
+            // A choice among the hand's cards runs: no cell answers it.
+            if (HandChoice() != null) { Speech.Say(Strings.FightNotTarget, interrupt: true); return; }
             var tile = Tile(x, y);
             var set = FightState.Selecting ? FightState.ReadTargets() : null;
             if (set == null || !set.OnBoard)
@@ -416,6 +418,14 @@ namespace StarVoders.Module.Screens
                     }
                     else { var tile = Tile(at.Value.X, at.Value.Y); if (tile != null) FightState.Hover(tile); }
                 }
+                else if (set.InHand)
+                {
+                    // Cards of the hand to choose (a purge): answered where the game outlines them.
+                    string prompt = FightState.Prompt();
+                    if (prompt != null) Speech.Say(prompt);
+                    var first = FightState.Hand().Find(set.HasCard);
+                    if (first != null) Navigation.Active?.MoveTo(CardId(first));
+                }
                 else Navigation.Active?.FocusStop(TargetsStop);
                 _strikeSeen = _strikeSaid = null;
                 _strikeStable = 0;
@@ -512,25 +522,42 @@ namespace StarVoders.Module.Screens
                 ControlType = ControlTypes.Text,
                 Announcements = new List<NodeAnnouncement>
                 {
-                    GameNodes.LabelPart(name),
+                    // While a choice among the hand's cards runs, the ones it takes say so first, as cells do.
+                    GameNodes.LabelPart(() => HandTarget(view) ? Strings.FightTarget + ", " + name() : name()),
                     new NodeAnnouncement(() => FightState.CardUpgrade(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => Cost(view.CardModel, view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.PaymentNote(view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.DrawnRepeat(view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.ModifierTraits(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.CardTraits(view.CardModel), kind: AnnouncementKinds.Value),
-                    GameNodes.DisabledPart(() => Playable(view)),
-                    new NodeAnnouncement(() => Playable(view) ? null : GameText.Of(view._unplayableText), kind: AnnouncementKinds.Value),
+                    // Not playable says nothing while a choice in the hand runs: the card is a choice then.
+                    GameNodes.DisabledPart(() => Playable(view) || HandChoice() != null),
+                    new NodeAnnouncement(() => Playable(view) || HandChoice() != null ? null : GameText.Of(view._unplayableText), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(view.CardModel)),
                     GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(view.CardModel)),
                 },
                 SearchText = name,
                 OnFocus = () => FightState.Hover(view),
-                OnActivate = () => FightState.Click(view),
+                // In a choice among the hand's cards, Enter answers it on a target and refuses others.
+                OnActivate = () =>
+                {
+                    var choice = HandChoice();
+                    if (choice != null && !choice.HasCard(view)) { Speech.Say(Strings.FightNotTarget, interrupt: true); return; }
+                    FightState.Click(view);
+                },
                 Details = () => FightState.CardInfoLines(view.CardModel),
                 OnSecondary = () => SayDetails(FightState.CardInfoLines(view.CardModel)),
             };
         }
+
+        // The running selection when it is a choice among the hand's cards, else null.
+        private static FightState.TargetSet HandChoice()
+        {
+            var set = FightState.Selecting ? FightState.ReadTargets() : null;
+            return set != null && set.InHand ? set : null;
+        }
+
+        private static bool HandTarget(CardView view) => HandChoice()?.HasCard(view) == true;
 
         /// <summary>Backspace, the game's right click ("more info"): the focused thing's details,
         /// read out at once, the ones the ui buffer steps through.</summary>

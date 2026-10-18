@@ -373,8 +373,13 @@ separately. Host F6 uses the same OS read.
   prompt said, focus to the board or kept there with the game's hover synced; Enter on a cell =
   the tile, else the play area from any cell, else the arrow toward the cell from the selection's
   `BaseCoord` or the mech, else "not a target"; "target" marks valid tiles and the cells next to
-  the origin in a valid direction; a "targets" category). Only selections without grid targets
-  (cards) get the Targets list stop. Direction selections are untested (no such card yet).
+  the origin in a valid direction; a "targets" category). A selection whose targets are all
+  cards of the hand (`TargetSet.InHand`: Exhaust's "Choose a card to purge"; the game outlines them
+  in place, it draws no list) is answered IN THE HAND: prompt said, focus to the first target card,
+  targets read "target, <card>", Enter on another card or on a cell says "not a target", Escape
+  cancels (tested with `CreateCardTask(Il2CppSystem.Enum.ToObject(Il2CppType.Of<CardName>(), ...),
+  Pile: Hand, rarity: new Il2CppSystem.Nullable<Rarity>())`; the rarity must not be null). Only other
+  selections without grid targets (cards elsewhere, if any) get the Targets list stop. Direction selections are untested (no such card yet).
 - Strike marks (`Fight.StrikeTiles`): tiles whose `TileView._targetPreviewRenderer` (or `Front`) is
   enabled, set by `EnableTargetTile` from `StrikeTileEffectTask` and kin in preview mode, and by
   delayed artillery. A card's preview runs on hover only in mouse mode (`OnViewItemHoverEnter`
