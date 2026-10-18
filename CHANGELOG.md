@@ -3,6 +3,7 @@
 ## V0.1.0
 
 - We now allow you to rebind in-game actions.
+- Compress the run into one tab stop.
 
 ## V0.0.9
 

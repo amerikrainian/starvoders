@@ -284,11 +284,13 @@ separately. Host F6 uses the same OS read.
   screen beneath).
 - Encounter choice (`GlobeScene`, `GlobeController : CampaignSceneController`): stops tip (while
   `TipManager.CurrentTip` shows in this scene; Enter = `Tip.Destroy(true)`, what a finished tip
-  box's click does), encounters (`CurrentRoomChoicePanels`; invaders by `EnemyEntityModel.EnemyID
-  .EnemyName`, reward by its tooltip title; invader descriptions and every tooltip in the ui
-  buffer), Proceed/Reroll (`ButtonEnabled`), then `UI/CampaignNodes` (Doom, Stars, Deck; the act
-  timeline: kind from the active `Pip`/`StarPip`/`BossPip` child named by the map tooltip's
-  legend, cleared = `XPip.enabled`, current = first not cleared). **Clicking the encounter that is
+  box's click does), then ONE stop of horizontal rows, top to bottom: the act timeline and the
+  status (`UI/CampaignNodes` `Map`/`Status` with `row: true`; the other run screens keep them as
+  their own stops; timeline kind from the active `Pip`/`StarPip`/`BossPip` child named by the map
+  tooltip's legend, cleared = `XPip.enabled`, current = first not cleared, Up into the row lands
+  on it), the encounters (`CurrentRoomChoicePanels`, the landing: selected, else first; invaders
+  by `EnemyEntityModel.EnemyID.EnemyName`, reward by its tooltip title; invader descriptions and
+  every tooltip in the ui buffer), Proceed, then Reroll under it (`ButtonEnabled`). **Clicking the encounter that is
   already selected is `ProceedButton.OnClick` (the fight starts)**, as in the game, and the
   tutorial preselects its one encounter: never Enter on an encounter through the driver.
 - Game strings: `Interop/GameLoc` (`<EnemyName>_EntityTitle`/`_EntityDesc`,

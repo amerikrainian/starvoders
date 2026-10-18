@@ -13,17 +13,16 @@ namespace StarVoders.Module.Screens
 {
     /// <summary>
     /// The run's encounter choice (<c>GlobeScene</c>, "Choose an Encounter"). Stops: the tutorial tip
-    /// while one shows (Enter dismisses it, as its click does); the encounters, each "title,
-    /// [selected,] invaders: names, reward[, bonus, curse...]", Enter clicking it as the mouse does
-    /// (selecting it; on the selected one, proceeding into the fight),
-    /// its tooltips and its invaders' descriptions in the ui buffer; Proceed and Reroll (with the
-    /// Chrono Tokens left); the run status (Doom, Stars, Deck); the act timeline. Focus starts on
-    /// the encounters.
+    /// while one shows (Enter dismisses it, as its click does); then one stop of rows, top to bottom:
+    /// the act timeline, the run status (Doom, Stars, Deck), the encounters, Proceed, then Reroll under it (with
+    /// the Chrono Tokens left). Each encounter reads "title, [selected,] invaders: names, reward[,
+    /// bonus, curse...]", Enter clicking it as the mouse does (selecting it; on the selected one,
+    /// proceeding into the fight), its tooltips and its invaders' descriptions in the ui buffer.
+    /// Focus starts on the encounters (the selected one, else the first).
     /// </summary>
     public sealed class GlobeScreen : Screen
     {
         public override string Key => "globe";
-        public override object InitialFocusStop => "globe:encounters";
 
         private static GlobeController Controller => GameScenes.Controller<GlobeController>();
 
@@ -68,28 +67,34 @@ namespace StarVoders.Module.Screens
                 });
             }
 
-            b.BeginStop("globe:encounters");
-            b.PushContext(null);
+            b.BeginStop("globe:run");
+            CampaignNodes.Map(b, c.MapPanel, "globe", row: true);
+            CampaignNodes.Status(b, c, "globe", row: true);
+
+            var shown = new List<int>();
             var panels = c.CurrentRoomChoicePanels;
             if (panels != null)
                 for (int i = 0; i < panels.Count; i++)
-                {
-                    var panel = panels[i];
-                    if (!ViewNodes.IsShown(panel)) continue;
-                    b.AddItem(ControlId.Structural("globe:room" + i), Encounter(panel));
-                }
-            b.PopContext();
+                    if (ViewNodes.IsShown(panels[i])) shown.Add(i);
+            if (shown.Count > 0)
+            {
+                b.PushContext(null);
+                b.StartRow();
+                foreach (int i in shown)
+                    b.AddItem(ControlId.Structural("globe:room" + i), Encounter(panels[i]));
+                b.EndRow();
+                b.PopContext();
+                // Landing: the first encounter, or the selected one (the stop's selected member wins).
+                b.SetStart(ControlId.Structural("globe:room" + shown[0]));
+            }
 
-            b.BeginStop("globe:actions");
+            // Proceed, then Reroll under it: each its own row.
             b.PushContext(null, positions: false);
             var proceed = c.ProceedButton;
             if (ViewNodes.IsShown(proceed))
                 b.AddItem(ControlId.Structural("globe:proceed"), ViewNodes.Button(proceed, enabled: () => proceed.ButtonEnabled));
             CampaignNodes.Reroll(b, c.RerollButton, "globe:reroll");
             b.PopContext();
-
-            CampaignNodes.Status(b, c, "globe");
-            CampaignNodes.Map(b, c.MapPanel, "globe");
         }
 
         private static NodeVtable Encounter(RoomChoicePanel panel)

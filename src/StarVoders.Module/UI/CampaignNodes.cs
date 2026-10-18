@@ -75,14 +75,16 @@ namespace StarVoders.Module.UI
             return int.TryParse(left, out int l) && int.TryParse(max, out int m) ? Strings.Position(l, m) : left;
         }
 
-        /// <summary>Doom, Stars and Deck, one stop.</summary>
-        public static void Status(GraphBuilder b, CampaignSceneController c, string key)
+        /// <summary>Doom, Stars and Deck, one stop; with <paramref name="row"/>, a row of the current
+        /// stop instead.</summary>
+        public static void Status(GraphBuilder b, CampaignSceneController c, string key, bool row = false)
         {
             var portrait = c.CampaignPortraitView;
             if (portrait == null || !portrait.gameObject.activeInHierarchy) return;
             // Short: no positions, the descriptions in the ui buffer and on Backspace.
-            b.BeginStop(key + ":status");
+            if (!row) b.BeginStop(key + ":status");
             b.PushContext(null, positions: false);
+            if (row) b.StartRow();
 
             var doomTip = DoomTip(portrait);
             b.AddItem(ControlId.Structural(key + ":doom"), Stat(() => DoomLabel(portrait), () => GameText.Of(portrait.DoomText), doomTip));
@@ -95,6 +97,7 @@ namespace StarVoders.Module.UI
             if (ViewNodes.IsShown(deck))
                 b.AddItem(ControlId.Structural(key + ":deck"),
                     ViewNodes.Button(deck, () => GameText.Of(portrait.DeckTooltipTitleText) ?? GameText.Of(portrait.DeckNumberText)));
+            if (row) b.EndRow();
             b.PopContext();
         }
 
@@ -162,8 +165,9 @@ namespace StarVoders.Module.UI
         /// <summary>The act timeline, one stop: its nodes in order, each "kind[, cleared | current]",
         /// the boss node with the boss preview's line. The kinds are the map tooltip's own legend
         /// (combat, non-combat special, boss, in that order, then its summary line). A cleared node
-        /// draws its cross; the current one is the first not crossed out.</summary>
-        public static void Map(GraphBuilder b, AViewItem panel, string key)
+        /// draws its cross; the current one is the first not crossed out. With <paramref name="row"/>,
+        /// a row of the current stop instead.</summary>
+        public static void Map(GraphBuilder b, AViewItem panel, string key, bool row = false)
         {
             if (!ViewNodes.IsShown(panel)) return;
             var map = panel.GetComponentInChildren<MapView>();
@@ -171,17 +175,28 @@ namespace StarVoders.Module.UI
             var tip = Under<StarVaders.TooltipTrigger>(panel, "MapTooltipTrigger");
             var act = Under<TMP_Text>(panel, "CurrentAct");
 
-            b.BeginStop(key + ":map");
+            bool any = false;
+            foreach (var n in map.nodes) any |= n != null;
+            if (!any) return; // an empty row cannot be built
+            if (!row) b.BeginStop(key + ":map");
             var (title, legend) = Tooltip(tip);
             string actText = GameText.Of(act);
             b.PushContext(actText != null && title != null ? title + ", " + actText : title ?? actText);
-            int current = -1;
+            int current = -1, currentItem = 0, items = 0;
+            for (int i = 0; i < map.nodes.Count && current < 0; i++)
+            {
+                var node = map.nodes[i];
+                if (node == null) continue;
+                if (!Cleared(node)) { current = i; currentItem = items; }
+                items++;
+            }
+            // Moving into the row lands on the current stop.
+            if (row) b.StartRow(entry: () => currentItem);
             for (int i = 0; i < map.nodes.Count; i++)
             {
                 var node = map.nodes[i];
                 if (node == null) continue;
-                bool cleared = node.XPip != null && node.XPip.enabled && node.XPip.gameObject.activeSelf;
-                if (!cleared && current < 0) current = i;
+                bool cleared = Cleared(node);
                 int kind = Kind(node);
                 bool isCurrent = i == current;
                 string word = kind >= 0 && kind < legend.Count ? legend[kind] : null;
@@ -199,8 +214,11 @@ namespace StarVoders.Module.UI
                     SearchText = () => word,
                 });
             }
+            if (row) b.EndRow();
             b.PopContext();
         }
+
+        private static bool Cleared(MapNode node) => node.XPip != null && node.XPip.enabled && node.XPip.gameObject.activeSelf;
 
         // 0 combat, 1 non-combat special, 2 boss: which pip the node draws.
         private static int Kind(MapNode node)
