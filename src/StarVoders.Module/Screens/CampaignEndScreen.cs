@@ -75,7 +75,10 @@ namespace StarVoders.Module.Screens
             b.PushContext(null, positions: false);
             foreach (var name in new[] { "UnlockButton", "ProceedButton", "StatsButton", "RestartButton" })
             {
-                var item = GameScenes.Item(c, name);
+                // Unlock's view item is its child ButtonTemplate, under the controller's UnlockButton.
+                var item = name == "UnlockButton"
+                    ? (c.UnlockButton != null ? c.UnlockButton.GetComponentInChildren<AViewItem>() : null)
+                    : GameScenes.Item(c, name);
                 if (!ViewNodes.IsShown(item)) continue;
                 var pressed = item.TryCast<PressedButtonView>();
                 b.AddItem(ControlId.Structural("campaignend:" + name),
