@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.1.1
+
+- Fixed the unlock button detection breaking after I refactored the interface to be more condenced. My bad.
+
 ## V0.1.0
 
 - We now allow you to rebind in-game actions.
