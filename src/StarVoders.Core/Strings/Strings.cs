@@ -271,6 +271,7 @@ namespace StarVoders.Core.Strings
             D("bind.fight.coords", "Coordinates"),
             D("bind.fight.turn", "Turn"),
             D("bind.fight.doom", "Doom"),
+            D("bind.run.stars", "Stars"),
             D("bind.fight.heat", "Heat"),
             D("bind.fight.objective", "Objective"),
             D("bind.fight.mech", "Mech"),

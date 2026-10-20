@@ -197,6 +197,7 @@ bind.fight.dir.downright=Sağ aşağı git
 bind.fight.coords=Koordinatlar
 bind.fight.turn=Tur
 bind.fight.doom=Kıyamet
+bind.run.stars=Yıldızlar
 bind.fight.heat=Isı
 bind.fight.objective=Hedef
 bind.fight.mech=Mech

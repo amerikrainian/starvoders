@@ -197,6 +197,7 @@ bind.fight.dir.downright=向右下移动
 bind.fight.coords=坐标
 bind.fight.turn=回合
 bind.fight.doom=末日
+bind.run.stars=星星
 bind.fight.heat=热量
 bind.fight.objective=目标
 bind.fight.mech=机甲

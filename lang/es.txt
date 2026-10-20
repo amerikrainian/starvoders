@@ -197,6 +197,7 @@ bind.fight.dir.downright=Mover abajo a la derecha
 bind.fight.coords=Coordenadas
 bind.fight.turn=Turno
 bind.fight.doom=Perdición
+bind.run.stars=Estrellas
 bind.fight.heat=Calor
 bind.fight.objective=Objetivo
 bind.fight.mech=Mech

@@ -197,6 +197,7 @@ bind.fight.dir.downright=오른쪽 아래로 이동
 bind.fight.coords=좌표
 bind.fight.turn=턴
 bind.fight.doom=파멸
+bind.run.stars=스타
 bind.fight.heat=열기
 bind.fight.objective=목표
 bind.fight.mech=메카

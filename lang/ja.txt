@@ -197,6 +197,7 @@ bind.fight.dir.downright=右下へ移動
 bind.fight.coords=座標
 bind.fight.turn=ターン
 bind.fight.doom=破滅
+bind.run.stars=スター
 bind.fight.heat=ヒート
 bind.fight.objective=目標
 bind.fight.mech=メカ

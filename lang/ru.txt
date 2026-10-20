@@ -197,6 +197,7 @@ bind.fight.dir.downright=Вниз вправо
 bind.fight.coords=Координаты
 bind.fight.turn=Ход
 bind.fight.doom=Гибель
+bind.run.stars=Звёзды
 bind.fight.heat=Нагрев
 bind.fight.objective=Цель
 bind.fight.mech=Мех

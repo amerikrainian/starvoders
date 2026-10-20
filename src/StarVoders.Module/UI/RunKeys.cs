@@ -6,7 +6,7 @@ using StarVoders.Module.Interop;
 namespace StarVoders.Module.UI
 {
     /// <summary>
-    /// The Run key category: keys that read the run itself (Ctrl+D Doom), live in the fight, on the
+    /// The Run key category: keys that read the run itself (Ctrl+D Doom, Ctrl+S Stars), live in the fight, on the
     /// run's screens between fights and on the overlays above them (pause menu, deck viewer, more
     /// info, the Compendium from the pause menu, tips) while a run scene is underneath; not on the
     /// main menu's own Compendium.
@@ -35,6 +35,18 @@ namespace StarVoders.Module.UI
                 ? Core.Strings.Strings.Position(player.doomAmount, player.maxDoom)
                 : player.doomAmount.ToString();
             string title = GameLoc.Get("DoomTitle_Misc");
+            return title != null ? title + " " + figure : figure;
+        }
+
+        /// <summary>"Stars 16200": in a fight its counter, between fights the run's player data, which
+        /// holds a hundredth of what the game draws (the portrait's 16200 is 162).</summary>
+        public static string StarsLine()
+        {
+            if (Fight.Fight.Controller != null) return Screens.EncounterScreen.Stars();
+            var player = DataManager.PlayerData;
+            if (player == null || player.isEmpty) return null;
+            string figure = (player.starbucksAmount * 100).ToString();
+            string title = GameLoc.Get("StarPanelTitle_Misc");
             return title != null ? title + " " + figure : figure;
         }
     }

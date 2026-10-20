@@ -37,6 +37,7 @@ Live in a fight, between fights and on the menus over them (pause menu, deck, Co
 | Key | Function |
 | --- | --- |
 | Ctrl+D | Doom |
+| Ctrl+S | Stars |
 
 ## The Fight: The Game's Keys
 

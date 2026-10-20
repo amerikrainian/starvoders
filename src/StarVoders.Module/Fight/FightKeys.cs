@@ -17,8 +17,8 @@ namespace StarVoders.Module.Fight
     /// <summary>
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
     /// card, Shift with them reads it as the hand buffer does; I J K L move as the arrows, U O N M
-    /// diagonally on the board; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom (a Run
-    /// key: live anywhere in a run), Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
+    /// diagonally on the board; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom and Ctrl+S
+    /// Stars (Run keys: live anywhere in a run), Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
     /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech, Alt+H to the hand (under the grid; Home and End there
     /// are its first and last card); [ and ] cycle
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
@@ -79,6 +79,7 @@ namespace StarVoders.Module.Fight
             Read("fight.turn", "Turn", KeyCode.T, EncounterScreen.TurnText);
             // Doom reads the run, so it is live anywhere in one (RunKeys), not only in the fight.
             Read("fight.doom", "Doom", KeyCode.D, ctrl: true, line: RunKeys.DoomLine, category: InputCategory.Run);
+            Read("run.stars", "Stars", KeyCode.S, ctrl: true, line: RunKeys.StarsLine, category: InputCategory.Run);
             Read("fight.heat", "Energy", KeyCode.H, ctrl: true, line: () => { var lines = Fight.Resources(); return lines.Count > 0 ? string.Join(", ", lines) : null; });
             Read("fight.objective", "Objective", KeyCode.O, ctrl: true, line: EncounterScreen.Objective);
             Read("fight.mech", "Mech", KeyCode.M, ctrl: true, line: MechLine);
