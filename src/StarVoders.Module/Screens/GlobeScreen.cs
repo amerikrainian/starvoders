@@ -99,9 +99,7 @@ namespace StarVoders.Module.Screens
         private static NodeVtable Encounter(RoomChoicePanel panel)
         {
             var encounter = panel.TryCast<EncounterRoomChoicePanel>();
-            Func<string> title = () =>
-                panel.SpecialTitle != null && panel.SpecialTitle.activeInHierarchy && GameText.Of(panel.SpecialTitleText) != null
-                    ? GameText.Of(panel.SpecialTitleText) : GameText.Of(panel.TitleText);
+            Func<string> title = () => Title(panel);
             var vt = new NodeVtable
             {
                 ControlType = ControlTypes.Button,
@@ -119,6 +117,31 @@ namespace StarVoders.Module.Screens
                 Details = () => Details(panel, encounter),
             };
             return vt;
+        }
+
+        // The drawn title. A Void Zone shows its special title over the plain one; the Holes! and
+        // Cloudy panels are prefabs of their own that hide TitleText (it keeps the placeholder
+        // "Abandoned =") and draw the name in "TitleText (1)", not wired as SpecialTitleText.
+        private static string Title(RoomChoicePanel panel)
+        {
+            if (panel.SpecialTitle != null && panel.SpecialTitle.activeInHierarchy && GameText.Of(panel.SpecialTitleText) != null)
+                return GameText.Of(panel.SpecialTitleText);
+            if (panel.TitleText != null && panel.TitleText.gameObject.activeInHierarchy)
+                return GameText.Of(panel.TitleText);
+            foreach (var tmp in panel.GetComponentsInChildren<TMP_Text>(false))
+                if (tmp.name.StartsWith("TitleText") && GameText.Of(tmp) != null) return GameText.Of(tmp);
+            return GameText.Of(panel.TitleText);
+        }
+
+        // The special tiles a room lays out at the start of its fight (its OnStartTaskList's
+        // HolesEventSpecificTask, CloudyEventSpecificTask), which the panel names but never explains.
+        private static TileStatus? RoomTiles(RoomChoicePanel panel)
+        {
+            var room = panel.RoomModel;
+            if (room == null) return null;
+            if (room.TryCast<AbandonedSmartRoomModel>() != null) return TileStatus.Hole;
+            if (room.TryCast<CloudySmartRoomModel>() != null) return TileStatus.Cloud;
+            return null;
         }
 
         // What the panel draws besides its title: the invaders, the reward, a bonus or curse line, a
@@ -172,6 +195,13 @@ namespace StarVoders.Module.Screens
         private static IEnumerable<string> Details(RoomChoicePanel panel, EncounterRoomChoicePanel encounter)
         {
             var lines = new List<string>();
+            var tiles = RoomTiles(panel);
+            if (tiles.HasValue)
+            {
+                string d = Fight.FightBoard.StatusDescription(tiles.Value);
+                string n = Fight.FightBoard.StatusName(tiles.Value);
+                lines.Add(d != null ? Strings.FightLabelled(n, d) : n);
+            }
             if (encounter != null)
                 foreach (var enemy in Enemies(encounter))
                 {
