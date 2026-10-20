@@ -1,5 +1,13 @@
 # Changelog
 
+## V0.1.2
+
+- Fixed special encounters like Holes! and Cloudy reading a placeholder title instead of their name. Their tile rule (e.g., what a Hole does) is now in the encounter's details.
+- Ctrl+D (Doom) now works anywhere in a run, not just in fights. Ctrl+S reads your Stars the same way.
+- I, J, K and L now move like the arrows in fights, and U, O, N and M move diagonally on the board.
+- Cells now read what's on them before their coordinates, and the coordinates lose their comma.
+- Combo gained after you end your turn, e.g., from rockets, is now announced.
+
 ## V0.1.1
 
 - Fixed the unlock button detection breaking after I refactored the interface to be more condenced. My bad.
