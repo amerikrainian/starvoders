@@ -59,6 +59,15 @@ namespace StarVoders.Module.Input
             }
         }
 
+        /// <summary>Whether a key went down this frame for which <paramref name="counts"/> holds.</summary>
+        public static bool AnyPressed(Func<KeyCode, bool> counts)
+        {
+            Refresh();
+            foreach (var kv in s_vk)
+                if (s_down[kv.Value] && !s_prev[kv.Value] && counts(kv.Key)) return true;
+            return false;
+        }
+
         /// <summary>The Windows virtual-key code of a Unity key, or 0 when it has none here.</summary>
         public static int VirtualKey(KeyCode key) => s_vk.TryGetValue(key, out int vk) ? vk : 0;
 
