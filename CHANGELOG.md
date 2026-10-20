@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.1.3
+
+- Card/artifact rarities now show in buffers.
+- Fixed typeahead search being a bit too eager on the press any button to play screen.
+
 ## V0.1.2
 
 - Fixed special encounters like Holes! and Cloudy reading a placeholder title instead of their name. Their tile rule (e.g., what a Hole does) is now in the encounter's details.
