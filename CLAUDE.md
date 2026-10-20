@@ -339,7 +339,11 @@ separately. Host F6 uses the same OS read.
   draws them: the cost icons, a `Minus` icon is a point taken off (only those = Free), the `_repeatText`
   "x3", Purge/Flow added = modded vs default card args; test: `AddPlayCardModTask` reusing a live
   mod's `StartCondition`, then `RemovePlayCardModTask`; Burnt/Frozen are traits (7, 12), read with
-  the rest; "not enough Power" = the game's `CardView.WillUnpowered` (darkened icons), "spends Battery"
+  the rest; the rarity after the traits, on every card node and pickup (`Fight.CardRarity`: More Info's set,
+  Starter/Common/Rare/Legendary by `Rarity*_Misc`, plus Cosmic, the mod's word (the art's icon,
+  `CardImageView.SetRarityIcon`, marks it; Starter's only with the `AcademyPack`); Created/Junk/
+  Trader... are shown nowhere, so silent; More Info's own `RarityText` is a panel line; artifacts the same, after the trait, `Fight.ArtifactRarity`:
+  Starter/Common/Legendary/Special, Modifier/Created silent); "not enough Power" = the game's `CardView.WillUnpowered` (darkened icons), "spends Battery"
   = `PlayCardCostTask`'s rule (the mark shows only in its preview); not read: the keep mark (only
   the deck viewer draws it), the autoplay and freeze previews (they need the game's hover preview,
   mouse mode only), the burn warning. A Gunner's cards all cost Heat (`BaseEnergyCost`): test Power by

@@ -346,7 +346,7 @@ namespace StarVoders.Module.Screens
             if (card != null)
             {
                 var parts = new List<string> { FightState.CardName(card) };
-                foreach (var part in new[] { FightState.CardUpgrade(card), Cost(card, cardView), FightState.CardTraits(card),
+                foreach (var part in new[] { FightState.CardUpgrade(card), Cost(card, cardView), FightState.CardTraits(card), FightState.CardRarity(card),
                     FightState.CardDescription(card), FightState.CardUpgradeDescription(card) })
                     if (!string.IsNullOrEmpty(part)) parts.Add(part);
                 yield return Strings.FightLabelled(FightBoard.PickupLabel, string.Join(", ", parts));
@@ -530,6 +530,7 @@ namespace StarVoders.Module.Screens
                     new NodeAnnouncement(() => FightState.DrawnRepeat(view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.ModifierTraits(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.CardTraits(view.CardModel), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.CardRarity(view.CardModel), kind: AnnouncementKinds.Value),
                     // Not playable says nothing while a choice in the hand runs: the card is a choice then.
                     GameNodes.DisabledPart(() => Playable(view) || HandChoice() != null),
                     new NodeAnnouncement(() => Playable(view) || HandChoice() != null ? null : GameText.Of(view._unplayableText), kind: AnnouncementKinds.Value),

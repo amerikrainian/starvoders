@@ -134,6 +134,8 @@ namespace StarVoders.Core.Strings
             D("fight.turn", "Turn {0}/{1}"),
             D("fight.turn_open", "Turn {0}"),
             D("fight.cost", "{0} {1}"),
+            // A Cosmic card's rarity (Infinity Bomb, Transmute...): the game's art marks it but names it nowhere; the other rarities are the game's words.
+            D("fight.rarity.cosmic", "Cosmic"),
             // A Stinger card's payment, {0} the game's word: it will dip into Battery, or Power and Battery together fall short.
             D("fight.spends", "spends {0}"),
             D("fight.not_enough", "not enough {0}"),
@@ -502,6 +504,7 @@ namespace StarVoders.Core.Strings
         /// <summary>"Turn 3/8"; "Turn 3" in a fight with no turn limit (the game's MaxTurns is -1).</summary>
         public static string FightTurn(int turn, int turns) => turns > 0 ? F("fight.turn", turn, turns) : F("fight.turn_open", turn);
         public static string FightCost(int amount, string resource) => F("fight.cost", amount, resource);
+        public static string FightRarityCosmic => Get("fight.rarity.cosmic");
         /// <summary>"spends Battery": playing the card takes Battery (the game marks it while previewing).</summary>
         public static string FightSpends(string resource) => F("fight.spends", resource);
         /// <summary>"not enough Power": the card's cost is more than there is (the game darkens its cost).</summary>

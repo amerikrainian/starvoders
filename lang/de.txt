@@ -82,6 +82,7 @@ map.current=aktuell
 fight.turn=Zug {0}/{1}
 fight.turn_open=Zug {0}
 fight.cost={0} {1}
+fight.rarity.cosmic=Kosmisch
 fight.spends=verbraucht {0}
 fight.not_enough=nicht genug {0}
 shop.was=vorher {0}

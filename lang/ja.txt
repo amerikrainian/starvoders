@@ -82,6 +82,7 @@ map.current=現在地
 fight.turn=ターン {0}/{1}
 fight.turn_open=ターン {0}
 fight.cost={1} {0}
+fight.rarity.cosmic=コズミック
 fight.spends={0}を消費
 fight.not_enough={0}が足りない
 shop.was=定価 {0}

@@ -135,6 +135,36 @@ namespace StarVoders.Module.Fight
             return names.Count > 0 ? string.Join(", ", names) : null;
         }
 
+        /// <summary>The card's rarity, on every card wherever it shows: the ones the game names (its
+        /// more info's Starter, Common, Rare, Legendary, <c>Rarity*_Misc</c>) and Cosmic, which its art
+        /// marks but nothing names (the mod's word); the others (Created, Junk, Trader...) are never
+        /// shown, so none.</summary>
+        public static string CardRarity(CardModel card)
+        {
+            if (card == null) return null;
+            try
+            {
+                var rarity = card.Rarity;
+                switch (rarity)
+                {
+                    case Rarity.Starter:
+                    case Rarity.Common:
+                    case Rarity.Rare:
+                    case Rarity.Legendary:
+                        return GameLoc.Get("Rarity" + rarity + "_Misc");
+                    case Rarity.Cosmic:
+                        return StarVoders.Core.Strings.Strings.FightRarityCosmic;
+                    default:
+                        return null;
+                }
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: reading the rarity of " + card.CardName + " failed: " + e.Message);
+                return null;
+            }
+        }
+
         private static List<CardTrait> Traits(CardModel card)
         {
             var traits = new List<CardTrait>();
@@ -223,6 +253,33 @@ namespace StarVoders.Module.Fight
         /// <summary>The panel's trait line: "Spell" for a spell, else "Artifact".</summary>
         public static string ArtifactTrait(ArtifactModel model) =>
             model == null ? null : GameLoc.Get((model.IsSpell ? "Spell" : "Artifact") + "_Keyword");
+
+        /// <summary>The artifact's rarity, as a card's (<see cref="CardRarity"/>): the ones the game
+        /// names, <c>Rarity*_Misc</c> (Starter, Common, Legendary, Special; its more info writes all but
+        /// Starter); Modifier and Created have no word and are never shown, so none.</summary>
+        public static string ArtifactRarity(ArtifactModel model)
+        {
+            if (model == null) return null;
+            try
+            {
+                var rarity = model.Rarity;
+                switch (rarity)
+                {
+                    case Rarity.Starter:
+                    case Rarity.Common:
+                    case Rarity.Legendary:
+                    case Rarity.Special:
+                        return GameLoc.Get("Rarity" + rarity + "_Misc");
+                    default:
+                        return null;
+                }
+            }
+            catch (Exception e)
+            {
+                CoreLog.Warning("Fight: reading the rarity of " + model.ArtifactName + " failed: " + e.Message);
+                return null;
+            }
+        }
 
         /// <summary>A spell's "Cooldown: 3" (the game's <c>Cooldown_Misc</c> with its base cooldown), as
         /// its panel draws it; null for other artifacts.</summary>

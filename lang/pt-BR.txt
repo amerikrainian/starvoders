@@ -82,6 +82,7 @@ map.current=atual
 fight.turn=Turno {0}/{1}
 fight.turn_open=Turno {0}
 fight.cost={0} {1}
+fight.rarity.cosmic=Cósmica
 fight.spends=gasta {0}
 fight.not_enough={0} insuficiente
 shop.was=antes {0}

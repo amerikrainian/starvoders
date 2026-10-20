@@ -150,6 +150,7 @@ namespace StarVoders.Module.Screens
                     new NodeAnnouncement(() => FightState.CardUpgrade(card), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => EncounterScreen.Cost(card, view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.CardTraits(card), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.CardRarity(card), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(card)),
                     GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(card)),
                 },

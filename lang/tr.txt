@@ -82,6 +82,7 @@ map.current=şu anki
 fight.turn=Tur {0}/{1}
 fight.turn_open=Tur {0}
 fight.cost={0} {1}
+fight.rarity.cosmic=Kozmik
 fight.spends={0} harcar
 fight.not_enough=yetersiz {0}
 shop.was=eski fiyat {0}

@@ -90,6 +90,7 @@ namespace StarVoders.Module.UI
                     new NodeAnnouncement(() => FightState.CardUpgrade(card), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => EncounterScreen.Cost(card, view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.CardTraits(card), kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(() => FightState.CardRarity(card), kind: AnnouncementKinds.Value),
                     GameNodes.TooltipPart(() => FightState.CardDescription(card)),
                     GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(card)),
                 },
@@ -105,7 +106,7 @@ namespace StarVoders.Module.UI
             };
         }
 
-        /// <summary>An artifact as its panel shows it: "name, trait, cooldown (a spell's), description",
+        /// <summary>An artifact as its panel shows it: "name, trait, rarity, cooldown (a spell's), description",
         /// its more info in the ui buffer and on Backspace. Enter is its click only when
         /// <paramref name="clickable"/> (a reward; the viewer's artifacts do nothing). A fight's rack
         /// passes <paramref name="cooldown"/> false: the panel's figure is the spell's base cooldown.
@@ -118,6 +119,7 @@ namespace StarVoders.Module.UI
             {
                 GameNodes.LabelPart(name),
                 new NodeAnnouncement(() => FightState.ArtifactTrait(model), kind: AnnouncementKinds.Value),
+                new NodeAnnouncement(() => FightState.ArtifactRarity(model), kind: AnnouncementKinds.Value),
             };
             if (cooldown) parts.Add(new NodeAnnouncement(() => FightState.ArtifactCooldown(model), kind: AnnouncementKinds.Value));
             parts.Add(GameNodes.TooltipPart(() => FightState.ArtifactDescription(model)));

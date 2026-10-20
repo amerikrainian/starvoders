@@ -82,6 +82,7 @@ map.current=actuel
 fight.turn=Tour {0}/{1}
 fight.turn_open=Tour {0}
 fight.cost={0} {1}
+fight.rarity.cosmic=Cosmique
 fight.spends=dépense {0}
 fight.not_enough=pas assez de {0}
 shop.was=avant {0}

@@ -84,6 +84,7 @@ map.current=current
 fight.turn=Turn {0}/{1}
 fight.turn_open=Turn {0}
 fight.cost={0} {1}
+fight.rarity.cosmic=Cosmic
 fight.spends=spends {0}
 fight.not_enough=not enough {0}
 shop.was=was {0}
