@@ -366,7 +366,12 @@ separately. Host F6 uses the same OS read.
   test pickups: `QueueTask(new CreateRandomCardsAsPickupNearbyTask())`).
 - Fight events (`Fight/FightEvents`, Core `Fight/FightDiff` with tests): snapshot at settle
   points (task engine idle 3 frames, or waiting on the player: a selection or a click tip, else
-  an enemy turn's changes would wait for the next card to resolve), diff, speak each event as its own queued entry,
+  an enemy turn's changes would wait for the next card to resolve; End Turn to the next turn is ONE busy stretch,
+  so `FightEvents.Phases`, a prefix on `TaskEngine.LogTaskExecution` (the game's per-task log call in
+  `ProcessTask`, live engine only, not preview), also snapshots as `EnemyPhaseTask` and `StartTurnTask`
+  start, the phase taken from the task (the model leaves the player's turn at the discard): end-of-turn
+  effects, then "Invader Turn" and what the invaders did, then the new turn; the combo is caught before
+  `StartTurnTask` resets it to 0), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
   pickups by card id: "Pickup: Dash appears at 4 7", "Pickup: Dash destroyed" when gone and not drawn. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.

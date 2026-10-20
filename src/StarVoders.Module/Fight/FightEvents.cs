@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using StarVaders;
 using StarVoders.Core;
 using StarVoders.Core.Fight;
@@ -17,7 +18,11 @@ namespace StarVoders.Module.Fight
     /// off what is being said and nothing the mod says on its own cuts it off, and appended to the
     /// combat log (<see cref="Log"/>, the combat buffer). The log is uncapped and cleared when a new
     /// fight starts. Polled from the module tick; snapshots are plain data, nothing native is kept.
+    /// End Turn to the next turn is one busy stretch (the end of the turn, the invaders' phase, the
+    /// next turn's start) with nothing settling, so <see cref="Phases"/> adds two snapshots inside it:
+    /// as the invaders' phase starts and as the player's turn starts, before it resets the combo.
     /// </summary>
+    [HarmonyPatch]
     internal static class FightEvents
     {
         /// <summary>Every event line of the current fight, oldest first.</summary>
@@ -84,12 +89,43 @@ namespace StarVoders.Module.Fight
             var now = Take();
             if (now == null) return;
             if (_settled == null) { _settled = now; return; }
+            Publish(now);
+        }
+
+        // Speak and log what changed since the last snapshot, then keep this one.
+        private static void Publish(FightSnapshot now)
+        {
             var lines = FightDiff.Lines(_settled, now);
             _settled = now;
             if (lines.Count == 0) return;
             Log.AddRange(lines);
             // One speech entry per event, all queued, in order.
             foreach (var line in lines) Speech.Say(line);
+        }
+
+        // The game logs each task as it starts it (TaskEngine.LogTaskExecution, from ProcessTask):
+        // the phase boundaries of the busy stretch after End Turn. What the end of the player's turn
+        // did (end-of-turn strikes, their combo) is said before the invaders' turn, what the invaders
+        // did before the new turn, and the combo before StartTurnTask sets it back to 0. The phase
+        // is the task's, not the model's: the model leaves the player's turn at the discard, before
+        // the end-of-turn effects are over.
+        [HarmonyPatch(typeof(TaskEngine), nameof(TaskEngine.LogTaskExecution))]
+        [HarmonyPrefix]
+        private static void Phases(TaskEngine __instance, ATask task)
+        {
+            try
+            {
+                if (_settled == null || task == null || __instance.IsPreviewMode) return;
+                var c = Fight.Controller;
+                if (c == null || c.EncounterEnded || c.TaskEngine == null || c.TaskEngine.Pointer != __instance.Pointer) return;
+                bool enemyPhase = task.TryCast<EnemyPhaseTask>() != null;
+                if (!enemyPhase && task.TryCast<StartTurnTask>() == null) return;
+                var now = Take();
+                if (now == null) return;
+                now.PlayerTurn = enemyPhase; // still the player's until the invaders' phase starts
+                Publish(now);
+            }
+            catch (Exception e) { CoreLog.Warning("FightEvents: a phase snapshot failed: " + e.Message); }
         }
 
         private static bool WaitingOnTip()
