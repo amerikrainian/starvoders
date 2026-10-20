@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StarVaders;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Core.UI;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
@@ -28,6 +29,7 @@ namespace StarVoders.Module.Screens
     public sealed class PackmasterScreen : Screen
     {
         public override string Key => "packmaster";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
 
         private const string CardsStop = "packmaster:cards";
         private const float MaxWait = 3f;

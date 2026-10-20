@@ -14,7 +14,10 @@ namespace StarVoders.Core.Input
         Global,
         /// <summary>Screen/menu navigation: live when the focused screen declares it.</summary>
         UI,
-        /// <summary>In-run gameplay keys (the battle/run readers), declared by the run screens.</summary>
+        /// <summary>The fight's gameplay keys (the board, the hand, the fight's glances), declared by the fight screen.</summary>
         Game,
+        /// <summary>Keys that read the run itself (Doom), live anywhere in a run: declared by the fight,
+        /// the run's screens between fights and the overlays above them while a run is underneath.</summary>
+        Run,
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StarVaders;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
 using TMPro;
@@ -24,6 +25,7 @@ namespace StarVoders.Module.Screens
     public sealed class SpecialRewardScreen : Screen
     {
         public override string Key => "specialreward";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
 
         private const string RewardsStop = "specialreward:rewards";
         private const float MaxWait = 3f;

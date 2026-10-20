@@ -215,6 +215,7 @@ mod.key_category={0} 按鍵
 mod.category.global=全域
 mod.category.ui=介面
 mod.category.game=遊戲
+mod.category.run=本局
 bind.mod.menu=模組選單
 bind.mod.help=此處可用按鍵
 screen.help=此處可用按鍵

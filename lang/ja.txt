@@ -215,6 +215,7 @@ mod.key_category={0} キー
 mod.category.global=グローバル
 mod.category.ui=UI
 mod.category.game=ゲーム
+mod.category.run=ラン
 bind.mod.menu=モッドメニュー
 bind.mod.help=ここで使えるキー
 screen.help=ここで使えるキー

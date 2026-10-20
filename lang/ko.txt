@@ -215,6 +215,7 @@ mod.key_category={0} 키
 mod.category.global=전역
 mod.category.ui=UI
 mod.category.game=게임
+mod.category.run=런
 bind.mod.menu=모드 메뉴
 bind.mod.help=여기서 쓸 수 있는 키
 screen.help=여기서 쓸 수 있는 키

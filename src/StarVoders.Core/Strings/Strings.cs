@@ -286,12 +286,14 @@ namespace StarVoders.Core.Strings
             D("mod.close", "Close"),
             D("mod.speak_positions", "Speak list positions"),
             D("mod.focus_on_launch", "Keyboard navigation on at launch"),
-            // {0} = the key category, one of the three names below.
+            // {0} = the key category, one of the four names below.
             D("mod.key_category", "{0} keys"),
-            // The key categories of the "All keys" list: live everywhere, on the focused screen, in a run.
+            // The key categories of the "All keys" list: live everywhere, on the focused screen, in a
+            // fight, anywhere in a run.
             D("mod.category.global", "Global"),
             D("mod.category.ui", "UI"),
             D("mod.category.game", "Game"),
+            D("mod.category.run", "Run"),
             D("bind.mod.menu", "Mod menu"),
             // The context-sensitive key help (F1): the keys that do something on this screen, on this
             // control. Enter on a row runs it.

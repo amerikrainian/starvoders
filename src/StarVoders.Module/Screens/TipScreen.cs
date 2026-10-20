@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Core.UI;
 using StarVoders.Module.UI;
 using Screen = StarVoders.Core.Screens.Screen;
@@ -14,6 +15,7 @@ namespace StarVoders.Module.Screens
     public sealed class TipScreen : Screen
     {
         public override string Key => "tip";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
         public override int Layer => 40;
         public override bool Exclusive => true;
         public override bool AllowsTypeahead => false;

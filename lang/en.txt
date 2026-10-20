@@ -217,6 +217,7 @@ mod.key_category={0} keys
 mod.category.global=Global
 mod.category.ui=UI
 mod.category.game=Game
+mod.category.run=Run
 bind.mod.menu=Mod menu
 bind.mod.help=Keys here
 screen.help=Keys here

@@ -215,6 +215,7 @@ mod.key_category={0}: клавиши
 mod.category.global=общие
 mod.category.ui=интерфейс
 mod.category.game=игра
+mod.category.run=забег
 bind.mod.menu=Меню мода
 bind.mod.help=Клавиши здесь
 screen.help=Клавиши здесь

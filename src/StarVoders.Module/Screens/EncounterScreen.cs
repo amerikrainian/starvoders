@@ -30,7 +30,7 @@ namespace StarVoders.Module.Screens
         public override bool AllowsTypeahead => false;
         public override object InitialFocusStop => BoardStop;
 
-        private static readonly InputCategory[] Categories = { InputCategory.Game, InputCategory.UI };
+        private static readonly InputCategory[] Categories = { InputCategory.Game, InputCategory.Run, InputCategory.UI };
         public override IReadOnlyList<InputCategory> InputCategories => Categories;
 
         public override IEnumerable<ElementAction> GetActions()

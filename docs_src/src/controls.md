@@ -30,6 +30,14 @@ Every key the mod binds, by group. Keys are keyboard only. F1 shows the subset t
 | Ctrl+Right / Ctrl+Left | Next / previous buffer |
 | Ctrl+Up / Ctrl+Down | Next / previous line |
 
+## In a Run
+
+Live in a fight, between fights and on the menus over them (pause menu, deck, Compendium).
+
+| Key | Function |
+| --- | --- |
+| Ctrl+D | Doom |
+
 ## The Fight: The Game's Keys
 
 These are the game's own actions, so they follow its Controls options. The defaults:
@@ -50,7 +58,6 @@ These are the game's own actions, so they follow its Controls options. The defau
 | --- | --- |
 | C | Coordinates of the focused cell |
 | T | Turn |
-| Ctrl+D | Doom |
 | Ctrl+H | Your energy: Heat, Power and Battery, or Mana and its gain a turn |
 | Ctrl+O | Objective |
 | Ctrl+M | The mech: its state and tile |

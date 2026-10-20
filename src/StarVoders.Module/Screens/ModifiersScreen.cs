@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using StarVaders;
 using StarVoders.Core;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
 using StarVoders.Module.Interop;
@@ -24,6 +25,7 @@ namespace StarVoders.Module.Screens
     public sealed class ModifiersScreen : Screen
     {
         public override string Key => "modifiers";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
         public override int Layer => 35;
         public override bool Exclusive => true;
 

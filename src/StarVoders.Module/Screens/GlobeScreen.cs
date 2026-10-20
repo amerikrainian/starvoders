@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StarVaders;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
 using StarVoders.Module.Interop;
@@ -23,6 +24,7 @@ namespace StarVoders.Module.Screens
     public sealed class GlobeScreen : Screen
     {
         public override string Key => "globe";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
 
         private static GlobeController Controller => GameScenes.Controller<GlobeController>();
 

@@ -215,6 +215,7 @@ mod.key_category=Teclas: {0}
 mod.category.global=globais
 mod.category.ui=interface
 mod.category.game=jogo
+mod.category.run=partida
 bind.mod.menu=Menu do mod
 bind.mod.help=Teclas aqui
 screen.help=Teclas aqui

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StarVaders;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Core.Strings;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
@@ -25,6 +26,7 @@ namespace StarVoders.Module.Screens
     public sealed class WorkshopScreen : Screen
     {
         public override string Key => "workshop";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
 
         private static ShopController Controller => GameScenes.Controller<ShopController>();
 

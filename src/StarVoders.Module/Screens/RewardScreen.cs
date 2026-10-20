@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using StarVaders;
 using StarVoders.Core.Graph;
+using StarVoders.Core.Input;
 using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
 using Screen = StarVoders.Core.Screens.Screen;
@@ -18,6 +19,7 @@ namespace StarVoders.Module.Screens
     public sealed class RewardScreen : Screen
     {
         public override string Key => "reward";
+        public override IReadOnlyList<InputCategory> InputCategories => RunKeys.Categories;
 
         private static RewardController Controller => GameScenes.Controller<RewardController>();
 

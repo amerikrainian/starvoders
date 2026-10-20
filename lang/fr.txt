@@ -215,6 +215,7 @@ mod.key_category=Touches {0}
 mod.category.global=globales
 mod.category.ui=d'interface
 mod.category.game=de jeu
+mod.category.run=de partie
 bind.mod.menu=Menu du mod
 bind.mod.help=Touches ici
 screen.help=Touches ici
