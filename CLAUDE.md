@@ -324,11 +324,11 @@ separately. Host F6 uses the same OS read.
   running selection's answer alike). Model: `EncounterController.EncounterModel` (`GridModel`:
   `GridShape`, not fixed: 5x7 and 5x9 seen, so read it, `Coord` 0-based with y UP; `ModelItemDict` holds every model, dead entities
   kept; an entity's coord via `GetEntityCoord(model.ID.Cast<EntityID>())`). Spoken tiles are
-  "x, y" 1-based, row 1 at the bottom. Stops: Targets (while `SelectionController.IsSelecting`:
+  "x y" 1-based, row 1 at the bottom. Stops: Targets (while `SelectionController.IsSelecting`:
   `EncounterView.ViewsItems` filtered by `IsSatisfied`, under `ScreenView.SelectionPrompt`; focus
   jumps there; Escape = `SelectionController.Cancel` + preview/display board/hover resets; a card
   that needs no target still asks for the `PlayAreaView`, read "Play"), Board (rows top first,
-  shared row key, lands on the mech; cell = target mark, coords, zone on crossing, contents),
+  shared row key, lands on the mech; cell = target mark, entity, coords, zone on crossing, the rest ("mech, 3 2")),
   Hand (in the Board's stop, a strip under the bottom row, `strictColumns`: card n under column n,
   Down from a column with no card or Up from a card past the last column stays; keyed apart while a
   target is chosen on the board, so no arrow reaches a card; a choice begun from the hand moves focus
@@ -356,7 +356,7 @@ separately. Host F6 uses the same OS read.
   `StringDatabase.GetTable("Everything").SharedData.Entries`). Keys in `Fight/FightKeys` (Game
   category): digits, Shift+digits (the card as the hand buffer reads it; `GameKeyBinding` with `shift`), Shift+arrows skip, C T, Ctrl+D H O M B (Doom: a Run-category key (`UI/RunKeys`, with Ctrl+S Stars), live in any screen declaring `RunKeys.Categories`, i.e. the run's screens and the overlays over a run scene, from `DataManager.PlayerData` between fights (Stars: `starbucksAmount` is a hundredth of the drawn figure); the energy (`Fight.Resources`), objective, mech, bombs: `GridModel.PlayerBombList` of the game's constant 3, plus Summons `PlayerPuppetList` over `PuppetLimitView._maxPuppets` for a Keeper or while one is out; the bomb counter popup is spoken only during a target choice, once), Shift+M, Alt+H (the hand), I J K L as the arrows, U O N M the board's diagonals (silent at its edge), `[ ] , .` categories (Summons = the tiles of `PlayerPuppetList`'s entities, `PuppetItem`s,
   left out of "Bombs and items"; danger zones
-  step by region, "5, 1 to 5, 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
+  step by region, "5 1 to 5 5, targeted by Shooter 2", merged by `Core/Fight/TileRanges` as the
   targets events are), Alt+Backspace; the game's own fight keys are `Input/GameKeyBinding`s, the keys
   of the game's action (`PlayerInput.actions` of the fight's handler: one asset, the main menu loads
   the saved rebinds into it, `effectivePath` carries them), so its Options rebinding carries over:
@@ -368,7 +368,7 @@ separately. Host F6 uses the same OS read.
   points (task engine idle 3 frames, or waiting on the player: a selection or a click tip, else
   an enemy turn's changes would wait for the next card to resolve), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
-  pickups by card id: "Pickup: Dash appears at 4, 7", "Pickup: Dash destroyed" when gone and not drawn. Ticked before `ScreenManager` so an event
+  pickups by card id: "Pickup: Dash appears at 4 7", "Pickup: Dash destroyed" when gone and not drawn. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
 - Choosing a target (`Fight.ReadTargets`: the selection's targets sorted into tiles, `PlayAreaView`,
   `DirectionSelectionArrow`s, others): a selection with grid targets is answered ON THE BOARD (its

@@ -228,8 +228,8 @@ namespace StarVoders.Module.Screens
             {
                 ControlType = ControlTypes.Text,
                 SpeaksOwnPosition = true,
-                // One part, in speechchem's order: the target and strike marks, the coordinates,
-                // the zone when crossed into, then what is there.
+                // One part: the target and strike marks, the entity, the coordinates, the zone
+                // when crossed into, then the rest of what is there ("mech, 3 2").
                 Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => CellText(x, y)) },
                 SearchText = () => FightBoard.CoordText(x, y),
                 IsSelected = () => IsMech(x, y),
@@ -245,11 +245,14 @@ namespace StarVoders.Module.Screens
             var parts = new List<string>();
             if (IsTarget(x, y)) parts.Add(Strings.FightTarget);
             if (FightState.Strike(x, y)) parts.Add(Strings.FightStrike);
+            var board = FightBoard.Read();
+            var entity = board?.At(x, y);
+            if (entity != null) parts.Add(board.Describe(entity));
             parts.Add(FightBoard.CoordText(x, y));
             string zone = ZoneCrossing(x, y);
             if (zone != null) parts.Add(zone);
-            string contents = CellContents(FightBoard.Read(), x, y);
-            if (contents != null) parts.Add(contents);
+            string around = CellContents(board, x, y, entity: false);
+            if (around != null) parts.Add(around);
             return string.Join(", ", parts);
         }
 
@@ -301,14 +304,15 @@ namespace StarVoders.Module.Screens
             return zone == "middle" ? null : Strings.FightZone(zone);
         }
 
-        /// <summary>What a tile holds and what threatens it, after its coordinates: the entity with
-        /// its state, the danger, the tile's status, a card pickup. Null for an empty, safe tile.</summary>
-        internal static string CellContents(FightBoard board, int x, int y)
+        /// <summary>What a tile holds and what threatens it: the entity with its state (unless
+        /// <paramref name="entity"/> is false: the cell's readout puts it before the coordinates), the
+        /// danger, the tile's status, a card pickup. Null for an empty, safe tile.</summary>
+        internal static string CellContents(FightBoard board, int x, int y, bool entity = true)
         {
             if (board == null) return null;
             var parts = new List<string>();
-            var entity = board.At(x, y);
-            if (entity != null) parts.Add(board.Describe(entity));
+            var on = entity ? board.At(x, y) : null;
+            if (on != null) parts.Add(board.Describe(on));
             string danger = board.Danger(x, y);
             if (danger != null) parts.Add(danger);
             var status = board.Status(x, y);

@@ -115,7 +115,7 @@ namespace StarVoders.Tests
             var lines = FightDiff.Lines(
                 Snap(Migo(1, 2, 6), Migo(2, 4, 6), Migo(3, 1, 7)),
                 Snap(Migo(1, 2, 5), Migo(2, 3, 6), Migo(3, 2, 5)));
-            Assert.Equal(new[] { "Migo 1 to row 5", "Migo 2 to column 3", "Migo 3 to 2, 5" }, lines);
+            Assert.Equal(new[] { "Migo 1 to row 5", "Migo 2 to column 3", "Migo 3 to 2 5" }, lines);
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace StarVoders.Tests
             var lines = FightDiff.Lines(
                 Snap(Migo(1, 2, 6, health: 3), Migo(2, 4, 6)),
                 Snap(Migo(1, 2, 6, health: 2), Migo(3, 5, 7)));
-            Assert.Equal(new[] { "Migo 1: 2 health", "Migo 3 appears at 5, 7", "Migo 2 destroyed" }, lines);
+            Assert.Equal(new[] { "Migo 1: 2 health", "Migo 3 appears at 5 7", "Migo 2 destroyed" }, lines);
         }
 
         [Fact]
@@ -189,7 +189,7 @@ namespace StarVoders.Tests
             var after = Snap();
             after.Pickups.Add(new PickupSnap { Key = "Kunai#1", Name = "Pickup: Kunai", X = 2, Y = 5 });
             after.Hand.Add(new CardSnap { Key = "Sting#1", Name = "Sting" });
-            Assert.Equal(new[] { "Pickup: Kunai appears at 2, 5", "Pickup: Dash destroyed", "Drew Sting" },
+            Assert.Equal(new[] { "Pickup: Kunai appears at 2 5", "Pickup: Dash destroyed", "Drew Sting" },
                 FightDiff.Lines(before, after));
         }
 
@@ -220,7 +220,7 @@ namespace StarVoders.Tests
                 new DangerSnap { Who = "Shooter 2", X = 4, Y = 1 },
                 new DangerSnap { Who = "Shooter 2", X = 4, Y = 2 },
             });
-            Assert.Equal(new[] { "Shooter 2 targets 4, 1 to 4, 2" }, FightDiff.Lines(before, after));
+            Assert.Equal(new[] { "Shooter 2 targets 4 1 to 4 2" }, FightDiff.Lines(before, after));
         }
     }
 }

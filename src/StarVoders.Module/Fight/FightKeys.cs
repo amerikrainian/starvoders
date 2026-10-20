@@ -24,7 +24,7 @@ namespace StarVoders.Module.Fight
     /// the board's categories (while choosing a target, the cells that take it; invaders, mech,
     /// Summons (a Keeper's puppets), bombs and items, pickups, danger zones; only those with something in them), comma and period step through the current one in reading order
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
-    /// as its targets are announced ("5, 1 to 5, 5, targeted by Shooter 2", the cursor to its first
+    /// as its targets are announced ("5 1 to 5 5, targeted by Shooter 2", the cursor to its first
     /// tile); Alt+Backspace jumps back to where a jump left from; Shift+arrows skip cells that read
     /// the same; Home and End go to the row's ends, Page Up and Page Down to the column's.
     /// The game's own fight keys are its actions' keys, read from the game (<see cref="GameKeyBinding"/>,

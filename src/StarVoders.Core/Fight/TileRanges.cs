@@ -5,8 +5,8 @@ namespace StarVoders.Core.Fight
 {
     /// <summary>
     /// A set of tiles said as the shapes it is made of, best effort: a whole row or column by name
-    /// ("column 5"), a rectangle or a straight run by its corners ("5, 1 to 5, 5"), a diagonal run as
-    /// one ("diagonal 1, 1 to 3, 3"), and what is left tile by tile. Greedy: the shape covering the
+    /// ("column 5"), a rectangle or a straight run by its corners ("5 1 to 5 5"), a diagonal run as
+    /// one ("diagonal 1 1 to 3 3"), and what is left tile by tile. Greedy: the shape covering the
     /// most tiles not yet said goes first; shapes may overlap (a cross is its row and its column), but
     /// each must add at least two new tiles. Spoken bottom row first, then left to right.
     /// </summary>

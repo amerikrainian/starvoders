@@ -170,7 +170,7 @@ namespace StarVoders.Core.Strings
             D("fight.dir.ne", "up right"),
             D("fight.dir.sw", "down left"),
             D("fight.dir.se", "down right"),
-            D("fight.coord", "{0}, {1}"),
+            D("fight.coord", "{0} {1}"),
             // Your mech on the board.
             D("fight.mech", "mech"),
             // The board: a valid target tile, an entity's health and charge, the zones (the bottom 3 rows where invaders add Doom, the rows they spawn in; the rows between are unnamed), "label: value" (Danger Zone: Migo 1).

@@ -53,7 +53,7 @@ namespace StarVoders.Core.Fight
             lines.AddRange(Destroyed(gone));
 
             // New Danger Zones, per attacker in the order they first appear, their tiles merged into
-            // shapes (TileRanges): "Shooter 1 targets 2, 1 to 2, 5". Zones that clear are not said:
+            // shapes (TileRanges): "Shooter 1 targets 2 1 to 2 5". Zones that clear are not said:
             // the strike or its cancelling is.
             var known = new HashSet<string>();
             foreach (var d in before.Dangers) known.Add(d.Who + "@" + d.X + "," + d.Y);
