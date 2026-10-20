@@ -68,6 +68,8 @@ These are the game's own actions, so they follow its Controls options. The defau
 | Key | Function |
 | --- | --- |
 | Arrows | Move one cell |
+| I / K / J / L | As Up / Down / Left / Right |
+| U / O / N / M | Move diagonally: up left, up right, down left, down right |
 | Shift+Arrows | Skip past cells that read the same |
 | Home / End | First / last column of the row |
 | Page Up / Page Down | Top / bottom row of the column |

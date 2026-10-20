@@ -16,7 +16,8 @@ namespace StarVoders.Module.Fight
 {
     /// <summary>
     /// The fight's keys (the Game category, live while the fight screen is): digits play the nth
-    /// card, Shift with them reads it as the hand buffer does; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom (a Run
+    /// card, Shift with them reads it as the hand buffer does; I J K L move as the arrows, U O N M
+    /// diagonally on the board; read keys speak one thing (C coordinates, T turn, Ctrl+D Doom (a Run
     /// key: live anywhere in a run), Ctrl+H the energy (Heat, Power and Battery, or Mana and its gain), Ctrl+O
     /// objective, Ctrl+M the mech, Ctrl+B the bombs and a Keeper's Summons) and are silent where there is nothing to read; Shift+M goes to the mech, Alt+H to the hand (under the grid; Home and End there
     /// are its first and last card); [ and ] cycle
@@ -64,6 +65,15 @@ namespace StarVoders.Module.Fight
                 .AddBinding(new KeyboardBinding(KeyCode.PageUp));
             InputManager.Register("fight.edge.bottom", "Bottom row", InputCategory.Game, () => Edge(null, (b, x, y) => (x, 0)))
                 .AddBinding(new KeyboardBinding(KeyCode.PageDown));
+            // Letter moves, the right hand's cluster: I J K L are the arrows, U O N M the diagonals.
+            Arrow("fight.dir.up", "Move up", KeyCode.I, UiActions.Up);
+            Arrow("fight.dir.down", "Move down", KeyCode.K, UiActions.Down);
+            Arrow("fight.dir.left", "Move left", KeyCode.J, UiActions.Left);
+            Arrow("fight.dir.right", "Move right", KeyCode.L, UiActions.Right);
+            Diagonal("fight.dir.upleft", "Move up left", KeyCode.U, -1, 1);
+            Diagonal("fight.dir.upright", "Move up right", KeyCode.O, 1, 1);
+            Diagonal("fight.dir.downleft", "Move down left", KeyCode.N, -1, -1);
+            Diagonal("fight.dir.downright", "Move down right", KeyCode.M, 1, -1);
 
             Read("fight.coords", "Coordinates", KeyCode.C, Coords);
             Read("fight.turn", "Turn", KeyCode.T, EncounterScreen.TurnText);
@@ -117,6 +127,30 @@ namespace StarVoders.Module.Fight
                 catch (Exception e) { CoreLog.Warning("FightKeys: " + key + " failed: " + e.Message); }
                 if (!string.IsNullOrEmpty(text)) Speech.Say(text, interrupt: true);
             }).AddBinding(new KeyboardBinding(code, ctrl: ctrl));
+        }
+
+        // A letter standing in for an arrow: the arrow's own press, wherever focus is in the fight.
+        private static void Arrow(string key, string label, KeyCode code, string uiKey)
+        {
+            InputManager.Register(key, label, InputCategory.Game, () =>
+            {
+                var arrow = InputManager.Find(uiKey);
+                if (arrow != null) Navigation.DispatchJustPressed(arrow);
+            }).AddBinding(new KeyboardBinding(code)).Repeating();
+        }
+
+        // A diagonal step on the board (dy up); silent off the board or at its edge, as an arrow there.
+        private static void Diagonal(string key, string label, KeyCode code, int dx, int dy)
+        {
+            InputManager.Register(key, label, InputCategory.Game, () =>
+            {
+                var at = EncounterScreen.FocusedTile();
+                var board = at.HasValue ? FightBoard.Read() : null;
+                if (board == null) return;
+                int x = at.Value.X + dx, y = at.Value.Y + dy;
+                if (x < 0 || y < 0 || x >= board.Columns || y >= board.Rows) return;
+                Navigation.Active?.MoveTo(EncounterScreen.TileId(x, y));
+            }).AddBinding(new KeyboardBinding(code)).Repeating();
         }
 
         // Shift plus a card key: the card that key plays, as the hand buffer reads it; silent past the hand.
