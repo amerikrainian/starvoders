@@ -368,8 +368,9 @@ separately. Host F6 uses the same OS read.
   points (task engine idle 3 frames, or waiting on the player: a selection or a click tip, else
   an enemy turn's changes would wait for the next card to resolve; End Turn to the next turn is ONE busy stretch,
   so `FightEvents.Phases`, a prefix on `TaskEngine.LogTaskExecution` (the game's per-task log call in
-  `ProcessTask`, live engine only, not preview), also snapshots as `EnemyPhaseTask` and `StartTurnTask`
-  start, the phase taken from the task (the model leaves the player's turn at the discard): end-of-turn
+  `ProcessTask`, live engine only, not preview), also snapshots as `EnemyPhaseTask`, each
+  `ProcessEnemyPhaseActionTask`/`ProcessEnemyStartTurnActionTask` (each invader's action, chronological) and
+  `StartTurnTask` start, the phase taken from the task (the model leaves the player's turn at the discard): end-of-turn
   effects, then "Invader Turn" and what the invaders did, then the new turn; the combo is caught before
   `StartTurnTask` resets it to 0), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
