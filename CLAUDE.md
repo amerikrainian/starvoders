@@ -292,7 +292,9 @@ separately. Host F6 uses the same OS read.
   "DECK (10 cards, 3 artifacts)": skipped; the special line is read instead ("…: Cosmic Dust", its
   description in the buffer). The status row's Deck reads "Deck, 12 cards, 2 artifacts" from
   `DataManager.PlayerData` (the game's title "DECK (12 card, 2 artifact)" shouts and has no plural); Stars
-  is `GameText.Calm`ed ("STARS" -> "Stars").
+  is `GameText.Calm`ed ("STARS" -> "Stars"). A curse's "+ PERMANENT" (`CurseText`) is read after its
+  curse modifier ("Dark Channel, Permanent"): `SetCurseMod` alone shows it (with `IsCursed`,
+  `CurseArtifactName` and the modifier's icon; `SetCurse` is never called), so the two always pair.
 - Encounter choice (`GlobeScene`, `GlobeController : CampaignSceneController`): stops tip (while
   `TipManager.CurrentTip` shows in this scene; Enter = `Tip.Destroy(true)`, what a finished tip
   box's click does), then ONE stop of horizontal rows, top to bottom: the act timeline and the

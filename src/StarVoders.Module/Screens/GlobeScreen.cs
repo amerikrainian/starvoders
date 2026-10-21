@@ -177,7 +177,12 @@ namespace StarVoders.Module.Screens
                 }
             }
             if (panel.BonusObject != null && panel.BonusObject.activeInHierarchy) Add(parts, panel.BonusText);
-            if (panel.CurseObject != null && panel.CurseObject.activeInHierarchy) Add(parts, panel.CurseText);
+            // The curse's "+ PERMANENT" belongs to the curse modifier: the game's SetCurseMod alone shows
+            // it, with that modifier's icon (IsCursed, CurseArtifactName), so it is read after the
+            // modifier's name ("Dark Channel, Permanent"), not between the other modifiers.
+            string permanent = null;
+            if (panel.CurseObject != null && panel.CurseObject.activeInHierarchy)
+                permanent = GameText.Calm(GameText.Of(panel.CurseText)?.TrimStart('+', ' '));
             if (panel.DifficultyModObject != null && panel.DifficultyModObject.activeInHierarchy)
             {
                 string mod = Artifact(panel.DifficultyModArtifact);
@@ -186,8 +191,13 @@ namespace StarVoders.Module.Screens
             if (panel.CurseModArtifact != null && ViewNodes.IsShown(panel.CurseModArtifact))
             {
                 string mod = Artifact(panel.CurseModArtifact);
-                if (mod != null) parts.Add(mod);
+                if (mod != null)
+                {
+                    parts.Add(permanent != null ? mod + ", " + permanent : mod);
+                    permanent = null;
+                }
             }
+            if (!string.IsNullOrEmpty(permanent)) parts.Add(permanent);
             foreach (var trigger in panel.GetComponentsInChildren<StarVaders.TooltipTrigger>(false))
                 if (trigger != null && trigger.gameObject.name.StartsWith("Image"))
                 {
