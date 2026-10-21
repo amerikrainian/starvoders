@@ -1,6 +1,15 @@
 # Controls
 
-Every key the mod binds, by group. Keys are keyboard only. F1 shows the subset that does something where you are; that is usually what you want.
+Every key the mod binds, by group, as it comes. Keys are keyboard only. F1 shows the subset that does something where you are; that is usually what you want.
+
+## Changing keys
+
+The mod menu's All keys lists the mod's keys by group (Global, Navigation, Fight, Run). Enter on an action opens its keys: Enter on a key replaces or removes it, Add key gives the action another, and Reset to default puts its keys back. A new key is the first one you press, with whatever Ctrl, Shift and Alt you hold; Escape cancels. A key another action of the same group already has is refused, and the capture waits for another. A key used in another group is taken, and you are told what else it does: where both groups are live, the deeper one wins (in a fight, the fight's keys over navigation's). Changes save at once. Reset all keys, at the end of All keys, puts every key back.
+
+Two exceptions:
+
+- The fight keys the game itself binds (the card digits, End turn, the piles, Rewind, More info) follow the game's Options, so they are changed there, and the list says so.
+- The mod menu, Enter, Escape, Up and Down always keep at least one key.
 
 ## Global
 

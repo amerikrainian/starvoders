@@ -71,6 +71,16 @@ namespace StarVoders.Module.Input
             }
         }
 
+        public override IEnumerable<string> Combos
+        {
+            get
+            {
+                var names = new List<string>();
+                foreach (var key in Keys()) names.Add((Shift ? "Shift+" : "") + KeyboardBinding.KeyName(key));
+                return names;
+            }
+        }
+
         public override string Type => "game";
 
         // The game's action name: the keys themselves are the game's to say.

@@ -69,6 +69,10 @@ namespace StarVoders.Module
 
             GameScenes.Start();
             RegisterInput();
+            // The registered keys are the defaults; the player's own replace them (KeyBindings).
+            KeyBindings.Snapshot();
+            KeyBindings.Load(host.Settings.Store.GetString(KeyBindings.StoreKey, ""));
+            KeyBindings.Persist = saved => host.Settings.Store.SetString(KeyBindings.StoreKey, saved);
             RegisterScreens();
             try { _harmony.PatchAll(typeof(ModuleMain).Assembly); }
             catch (Exception e) { host.LogError("Harmony patching failed: " + e); }
@@ -216,7 +220,7 @@ namespace StarVoders.Module
             try { TextEdit.Shutdown(); } catch (Exception e) { _host?.LogError("[dispose] text edit: " + e); }
             try { FocusMode.Shutdown(restore); } catch (Exception e) { _host?.LogError("[dispose] focus: " + e); }
             try { ScreenManager.Shutdown(); } catch (Exception e) { _host?.LogError("[dispose] screens: " + e); }
-            try { InputManager.Clear(); } catch (Exception e) { _host?.LogError("[dispose] input: " + e); }
+            try { KeyBindings.Clear(); InputManager.Clear(); } catch (Exception e) { _host?.LogError("[dispose] input: " + e); }
             try { LanguageSync.Stop(); } catch (Exception e) { _host?.LogError("[dispose] language: " + e); }
             try { GameScenes.Shutdown(); } catch (Exception e) { _host?.LogError("[dispose] scenes: " + e); }
             try { _harmony?.UnpatchSelf(); } catch (Exception e) { _host?.LogError("[dispose] harmony: " + e); }

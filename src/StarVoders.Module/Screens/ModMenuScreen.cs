@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using StarVoders.Core.Graph;
 using StarVoders.Core.Input;
+using StarVoders.Core.Screens;
 using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
 using StarVoders.Module.UI;
@@ -103,8 +105,9 @@ namespace StarVoders.Module.Screens
         }
     }
 
-    /// <summary>Every key the mod binds, by category, whatever the screen: "what it does: its keys".
-    /// The keys that do something HERE are <see cref="HelpScreen"/>'s (F1).</summary>
+    /// <summary>Every key the mod binds, whatever the screen, as its categories ("Global keys",
+    /// "Fight keys"...), each opening its actions (<see cref="CategoryKeysScreen"/>); Reset all keys
+    /// ends the list. The keys that do something HERE are <see cref="HelpScreen"/>'s (F1).</summary>
     public sealed class KeyHelpScreen : Screen
     {
         public override string Key => "mod.keys";
@@ -114,20 +117,71 @@ namespace StarVoders.Module.Screens
 
         public override void Build(GraphBuilder b)
         {
-            b.PushContext(null, null, positions: false); // the screen name says "All keys"
+            b.PushContext(null, null); // the screen name says "All keys"
             foreach (InputCategory category in Enum.GetValues(typeof(InputCategory)))
             {
-                var actions = new List<InputAction>();
-                foreach (var action in InputManager.Actions)
-                    if (action.Category == category) actions.Add(action);
-                if (actions.Count == 0) continue;
-                b.PushContext(Strings.ModKeyCategory(category.ToString()));
-                foreach (var action in actions)
+                var c = category;
+                if (!InputManager.Actions.Any(a => a.Category == c)) continue;
+                b.AddItem(ControlId.Structural("keys:" + c), GameNodes.Button(() => Strings.ModKeyCategory(c.ToString()),
+                    () => PushChild(new CategoryKeysScreen(c))));
+            }
+            b.AddItem(ControlId.Structural("keys:resetall"), GameNodes.Button(() => Strings.KeysResetAll, AskResetAll, AnyChanged));
+            b.PopContext();
+        }
+
+        private static bool AnyChanged()
+        {
+            foreach (var a in InputManager.Actions)
+                if (KeyBindings.IsRebindable(a) && !KeyBindings.IsDefault(a)) return true;
+            return false;
+        }
+
+        private static void AskResetAll()
+        {
+            // No first: focus lands on it.
+            ChoiceSubmenuScreen.Open(Strings.KeysResetAllAsk, new[]
+            {
+                new ChoiceOption(Strings.KeysNo, null),
+                new ChoiceOption(Strings.KeysYes, () =>
                 {
-                    var a = action;
-                    b.AddItem(ControlId.Structural("keys:" + a.Key), GameNodes.Text(() => Strings.HelpRow(a.DisplayLabel, a.BindingsDisplay)));
-                }
-                b.PopContext();
+                    KeyBindings.ResetAll();
+                    Core.Speech.Say(Strings.KeysResetAllDone, interrupt: true);
+                }),
+            });
+        }
+
+        public override IEnumerable<ElementAction> GetActions()
+        {
+            yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ => ParentScreen?.RemoveChild(this));
+        }
+    }
+
+    /// <summary>One category's actions, "what it does: its keys". Enter on an action opens its keys
+    /// to change (<see cref="ActionKeysScreen"/>); the fight's keys that follow the game's own
+    /// bindings are rebound in the game's Options instead, and say so.</summary>
+    public sealed class CategoryKeysScreen : Screen
+    {
+        private readonly InputCategory _category;
+
+        public CategoryKeysScreen(InputCategory category) => _category = category;
+
+        public override string Key => "mod.categorykeys";
+        public override bool KeptThroughTransitions => true;
+        public override string ScreenName => Strings.ModKeyCategory(_category.ToString());
+        public override bool IsActive() => false; // only ever a child of the key list
+
+        public override void Build(GraphBuilder b)
+        {
+            b.PushContext(null, null, positions: false); // the screen name says the category
+            foreach (var action in InputManager.Actions)
+            {
+                if (action.Category != _category) continue;
+                var a = action;
+                Func<string> row = () => Strings.HelpRow(a.DisplayLabel, a.BindingsDisplay);
+                if (KeyBindings.IsRebindable(a))
+                    b.AddItem(ControlId.Structural("keys:" + a.Key), GameNodes.Button(row, () => PushChild(new ActionKeysScreen(a))));
+                else
+                    b.AddItem(ControlId.Structural("keys:" + a.Key), GameNodes.Text(() => row() + ", " + Strings.KeysGame));
             }
             b.PopContext();
         }

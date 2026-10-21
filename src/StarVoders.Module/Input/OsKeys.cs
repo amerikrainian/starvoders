@@ -68,6 +68,20 @@ namespace StarVoders.Module.Input
             return false;
         }
 
+        /// <summary>The first key (in the map's order) that went down this frame and for which
+        /// <paramref name="counts"/> holds, or null: a rebind's capture. Keypad Enter is never named
+        /// (it shares Enter's virtual key, so a press of either reads as Enter).</summary>
+        public static KeyCode? FirstPressed(Func<KeyCode, bool> counts)
+        {
+            Refresh();
+            foreach (var kv in s_vk)
+                if (kv.Key != KeyCode.KeypadEnter && s_down[kv.Value] && !s_prev[kv.Value] && counts(kv.Key)) return kv.Key;
+            return null;
+        }
+
+        public static bool IsModifier(KeyCode key) => key == KeyCode.LeftShift || key == KeyCode.RightShift
+            || key == KeyCode.LeftControl || key == KeyCode.RightControl || key == KeyCode.LeftAlt || key == KeyCode.RightAlt;
+
         /// <summary>The Windows virtual-key code of a Unity key, or 0 when it has none here.</summary>
         public static int VirtualKey(KeyCode key) => s_vk.TryGetValue(key, out int vk) ? vk : 0;
 

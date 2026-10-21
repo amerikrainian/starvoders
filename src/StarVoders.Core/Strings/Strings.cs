@@ -310,8 +310,8 @@ namespace StarVoders.Core.Strings
             // The key categories of the "All keys" list: live everywhere, on the focused screen, in a
             // fight, anywhere in a run.
             D("mod.category.global", "Global"),
-            D("mod.category.ui", "UI"),
-            D("mod.category.game", "Game"),
+            D("mod.category.ui", "Navigation"),
+            D("mod.category.game", "Fight"),
             D("mod.category.run", "Run"),
             D("bind.mod.menu", "Mod menu"),
             // The context-sensitive key help (F1): the keys that do something on this screen, on this
@@ -325,6 +325,33 @@ namespace StarVoders.Core.Strings
             D("rebind.prompt", "Press a key for {0}, Escape cancels"),
             // The new key is also one of the mod's: {0} = the key, {1} = what the mod does with it.
             D("rebind.conflict", "{0} is also {1}"),
+            // The mod's own key rebinding (the mod menu's All keys).
+            // The fight's keys that follow the game's own bindings: rebound in the game's Options, not here.
+            D("keys.game", "set in the game's Options"),
+            D("keys.add", "Add key"),
+            // An action's reset; read "Reset to default: Ctrl+M" with its default keys.
+            D("keys.reset", "Reset to default"),
+            D("keys.reset_all", "Reset all keys"),
+            D("keys.reset_all.ask", "Reset all keys to their defaults?"),
+            D("keys.reset_all.done", "All keys reset"),
+            D("keys.yes", "Yes"),
+            D("keys.no", "No"),
+            D("keys.none", "No keys"),
+            D("keys.replace", "Replace"),
+            D("keys.remove", "Remove"),
+            // {0} = the key.
+            D("keys.removed", "Removed {0}"),
+            // Why a protected action's last key cannot be removed (the mod menu, Enter, Escape, Up, Down).
+            D("keys.needed", "its last key, cannot be removed"),
+            // {0} = the action's keys after the reset.
+            D("keys.reset.done", "Reset to {0}"),
+            D("keys.cancelled", "Cancelled"),
+            // The key being replaced pressed again; {0} = the key.
+            D("keys.kept", "Kept {0}"),
+            // Refused: {0} = the key, {1} = the action that has it.
+            D("keys.taken", "{0} is already {1}, press another key"),
+            // {0} = the new key.
+            D("keys.bound", "Bound to {0}"),
         };
 
         private static readonly Dictionary<string, string> _defaults = BuildDefaults();
@@ -587,6 +614,24 @@ namespace StarVoders.Core.Strings
         public static string HelpRow(string label, string keys) => F("help.row", label, keys);
         public static string RebindPrompt(string action) => F("rebind.prompt", action);
         public static string RebindConflict(string key, string what) => F("rebind.conflict", key, what);
+        public static string KeysGame => Get("keys.game");
+        public static string KeysAdd => Get("keys.add");
+        public static string KeysReset => Get("keys.reset");
+        public static string KeysResetAll => Get("keys.reset_all");
+        public static string KeysResetAllAsk => Get("keys.reset_all.ask");
+        public static string KeysResetAllDone => Get("keys.reset_all.done");
+        public static string KeysYes => Get("keys.yes");
+        public static string KeysNo => Get("keys.no");
+        public static string KeysNone => Get("keys.none");
+        public static string KeysReplace => Get("keys.replace");
+        public static string KeysRemove => Get("keys.remove");
+        public static string KeysRemoved(string key) => F("keys.removed", key);
+        public static string KeysNeeded => Get("keys.needed");
+        public static string KeysResetDone(string keys) => F("keys.reset.done", keys);
+        public static string KeysCancelled => Get("keys.cancelled");
+        public static string KeysKept(string key) => F("keys.kept", key);
+        public static string KeysTaken(string key, string action) => F("keys.taken", key, action);
+        public static string KeysBound(string key) => F("keys.bound", key);
         public static string ModClose => Get("mod.close");
         public static string ModSpeakPositions => Get("mod.speak_positions");
         public static string ModFocusOnLaunch => Get("mod.focus_on_launch");

@@ -500,6 +500,20 @@ System.Reflection.Metadata 7.0, the game's runtime has 6.0: `CSharpEvaluator.Ins
 7.0 copies and throws on the first eval or two. **Never press a control that starts a tutorial or a run, or changes
 the save, through the driver without asking**: verify screens by reading them.
 
+## Rebinding the mod's keys
+`Core/Input/KeyBindings` (tested): the registered bindings are the defaults (`Snapshot` after
+`RegisterInput`), the store's `key_bindings` string (`mod.menu=keyboard:M|ctrl,shift keyboard:F10;...`,
+one entry per action differing from its defaults, unknown actions kept) is `Load`ed over them, every
+change saves at once. Rebindable = every default binding's type has a deserializer (so the `game`
+`GameKeyBinding`s, the game's Options' keys, are not). Conflicts within a category or with Global are
+refused (`InputBinding.Combos`, a game key's current keys included); other categories only overlap
+and are named. `Protected` (ui.up/down/activate/back, mod.menu) keep one key. UI: the mod menu's All
+keys = the categories (`CategoryKeysScreen`), an action's keys (`ActionKeysScreen`), the capture
+(`BindKeyScreen`: `CapturesRawInput`, every key up, `OsKeys.FirstPressed` of a non-modifier with the
+held modifiers, bare Escape cancels, every key up again before closing). Test with real keys (the
+scratch sender: pass the sequence as ONE comma-separated string; `powershell -File` does not split
+arrays).
+
 ## Keys
 F1 key help, arrows, Tab/Shift+Tab, Enter, Backspace (secondary), Escape (on a screen with no
 Back of its own, `Navigation.BackFallback` = `UI/Pause`: the scene's `PauseButtonView` click, as the
