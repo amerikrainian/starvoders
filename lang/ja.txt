@@ -133,6 +133,7 @@ fight.cat.pickups=ピックアップ
 fight.cat.danger=危険ゾーン
 fight.cat.line={0}, {1}
 fight.nottarget=対象外
+fight.nochoices=選択肢なし
 fight.cat.targets=対象
 fight.nothing=なし
 fight.ev.enemyturn=敵のターン

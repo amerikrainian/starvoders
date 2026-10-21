@@ -133,6 +133,7 @@ fight.cat.pickups=Подбираемое
 fight.cat.danger=Опасные зоны
 fight.cat.line={0}, {1}
 fight.nottarget=не цель
+fight.nochoices=нет вариантов
 fight.cat.targets=Цели
 fight.nothing=ничего
 fight.ev.enemyturn=Ход врагов

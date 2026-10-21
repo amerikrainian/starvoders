@@ -392,6 +392,13 @@ separately. Host F6 uses the same OS read.
   cancels (tested with `CreateCardTask(Il2CppSystem.Enum.ToObject(Il2CppType.Of<CardName>(), ...),
   Pile: Hand, rarity: new Il2CppSystem.Nullable<Rarity>())`; the rarity must not be null). Only other
   selections without grid targets (cards elsewhere, if any) get the Targets list stop. Direction selections are untested (no such card yet).
+  Repeats: a repeat's selection (`Selection.IsRepeat`; Flamethrower x2's second burn, not its first) shows
+  Skip Repeats (`EncounterView.CancelRepeatsSelectionPanel`, click = `SelectionController.Cancel(true)`), and
+  while it shows the game's Cancel key IS that button (`EncounterKeyInputController.OnCancel`); a plain
+  `Cancel(false)` just starts the same repeat again, so a repeat with nothing to choose softlocked the mod's
+  Escape. The button is the rack's first item; a selection the game found empty (`!HadValidChoices`, set as
+  it starts) says its prompt + "no choices" and focus goes to Skip Repeats. Test: the reported save
+  (`profile_0.zip`), Flamethrower x2 with Shift as the only other card.
 - Strike marks (`Fight.StrikeTiles`): tiles whose `TileView._targetPreviewRenderer` (or `Front`) is
   enabled, set by `EnableTargetTile` from `StrikeTileEffectTask` and kin in preview mode, and by
   delayed artillery. A card's preview runs on hover only in mouse mode (`OnViewItemHoverEnter`

@@ -94,6 +94,12 @@ namespace StarVoders.Module.Screens
             // (and on Backspace) rather than spoken on every visit.
             b.BeginStop("fight:rack");
             b.PushContext(null, positions: false);
+            // Skip Repeats, while a repeating card's selection offers it: the only way out of a
+            // repeat with nothing left to choose.
+            var skip = FightState.SkipRepeatsPanel;
+            if (skip != null)
+                b.AddItem(SkipRepeatsId, GameNodes.Button(() => GameText.Of(skip.Text) ?? ViewNodes.Label(skip),
+                    FightState.SkipRepeats, () => FightState.CanSkipRepeats));
             var endTurn = view.EndTurnView;
             if (ViewNodes.IsShown(endTurn))
                 b.AddItem(ControlId.Structural("fight:endturn"), Button(endTurn, () => GameLoc.Get("EndTurnTitle_Misc"),
@@ -432,9 +438,30 @@ namespace StarVoders.Module.Screens
             }
             if (selecting) SayStrikeChanges();
             _wasSelecting = selecting;
+            NoChoicesUpdate();
             var on = FocusedTile();
             if (on.HasValue) _lastTile = on;
             else _lastZone = null; // off the cells (the hand counts): the zone is named again on return
+        }
+
+        private static readonly ControlId SkipRepeatsId = ControlId.Structural("fight:skiprepeats");
+        private bool _wasNoChoices, _toSkipRepeats;
+
+        // A selection that accepts nothing (Flamethrower x2's second burn with no card left): the game
+        // waits on it all the same, drawing Skip Repeats as the way on. Its prompt is said with "no
+        // choices", and focus goes to Skip Repeats once the button is in the graph.
+        private void NoChoicesUpdate()
+        {
+            bool none = FightState.NoChoices;
+            if (none && !_wasNoChoices)
+            {
+                string prompt = FightState.Prompt();
+                Speech.Say(prompt != null ? prompt + ", " + Strings.FightNoChoices : Strings.FightNoChoices);
+                _toSkipRepeats = true;
+            }
+            if (!none || !FightState.CanSkipRepeats) _toSkipRepeats = false;
+            else if (_toSkipRepeats && Navigation.Active != null && Navigation.Active.MoveTo(SkipRepeatsId)) _toSkipRepeats = false;
+            _wasNoChoices = none;
         }
 
         // Says the strike marks once they settle on a set other than the last said. Settling on no

@@ -596,6 +596,19 @@ namespace StarVoders.Module.Fight
             }
         }
 
+        /// <summary>Whether the running selection accepts nothing, by the game's own verdict
+        /// (<c>SelectionHasValidChoices</c>, recorded as <see cref="SelectionController.HadValidChoices"/>
+        /// when the selection starts): a repeat's burn with no card left in hand.</summary>
+        public static bool NoChoices
+        {
+            get
+            {
+                var sc = Controller?.SelectionController;
+                try { return sc != null && sc.IsSelecting && !sc.HadValidChoices; }
+                catch { return false; }
+            }
+        }
+
         /// <summary>The view items the running selection accepts, by the game's own test
         /// (<see cref="SelectionController.IsSatisfied"/>), in the encounter's view order.</summary>
         public static List<AEncounterViewItem> Targets()
@@ -776,22 +789,62 @@ namespace StarVoders.Module.Fight
             return prompt != null && prompt.gameObject.activeInHierarchy ? GameText.Of(prompt) : null;
         }
 
+        /// <summary>The game's Skip Repeats button (<c>CancelRepeatsPanel</c>) while it shows: a card
+        /// repeating its selection (Flamethrower x2 burns a card per repeat) offers it, and a repeat
+        /// with nothing left to choose can only end through it.</summary>
+        public static CancelRepeatsSelectionPanelView SkipRepeatsPanel
+        {
+            get
+            {
+                var panel = View?.CancelRepeatsSelectionPanel;
+                return panel != null && panel.gameObject.activeInHierarchy ? panel : null;
+            }
+        }
+
+        /// <summary>Whether Skip Repeats would act: its click and the Cancel key skip only a repeat
+        /// selection (<see cref="Selection.IsRepeat"/>).</summary>
+        public static bool CanSkipRepeats
+        {
+            get
+            {
+                var sc = Controller?.SelectionController;
+                try { return SkipRepeatsPanel != null && sc != null && sc.IsSelecting && sc.CurrentSelection != null && sc.CurrentSelection.IsRepeat; }
+                catch { return false; }
+            }
+        }
+
+        /// <summary>The Skip Repeats button's click (<c>SelectionController.Cancel(true)</c>: the
+        /// remaining repeats are dropped, the card resolves).</summary>
+        public static void SkipRepeats()
+        {
+            var panel = SkipRepeatsPanel;
+            if (panel == null) return;
+            try { panel.OnClick(); }
+            catch (Exception e) { CoreLog.Warning("Fight: Skip Repeats failed: " + e.Message); }
+        }
+
+        /// <summary>Whether the Cancel key acts, in the game's order (<c>EncounterKeyInputController.OnCancel</c>):
+        /// while Skip Repeats shows, the key is that button and nothing else; otherwise it cancels a
+        /// cancellable selection.</summary>
         public static bool Cancellable
         {
             get
             {
+                if (SkipRepeatsPanel != null) return CanSkipRepeats;
                 var sc = Controller?.SelectionController;
                 try { return sc != null && sc.IsSelecting && sc.IsCancellable(); }
                 catch { return false; }
             }
         }
 
-        /// <summary>Cancel the selection as the game's Cancel key does: the selection, then the
+        /// <summary>Cancel the selection as the game's Cancel key does: Skip Repeats while it shows
+        /// (a plain cancel of a repeat only starts the same repeat again), else the selection, then the
         /// previews, info panel and hover it left behind.</summary>
         public static void Cancel()
         {
             var c = Controller;
             if (c == null || !Cancellable) return;
+            if (SkipRepeatsPanel != null) { SkipRepeats(); return; }
             try
             {
                 c.SelectionController.Cancel(false);

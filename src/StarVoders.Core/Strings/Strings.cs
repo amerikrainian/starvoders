@@ -194,6 +194,8 @@ namespace StarVoders.Core.Strings
             D("fight.cat.line", "{0}, {1}"),
             // Choosing a target on the board: Enter on a cell the selection does not accept; the category of the valid tiles.
             D("fight.nottarget", "not a target"),
+            // A selection with nothing it accepts (a repeat's burn with no card left), after its prompt.
+            D("fight.nochoices", "no choices"),
             D("fight.cat.targets", "Targets"),
             D("fight.nothing", "nothing"),
             // Fight events, spoken and logged: {0} a name, {1} a tile "x, y" or a row or column number. The combat buffer's name.
@@ -525,6 +527,7 @@ namespace StarVoders.Core.Strings
         public static string FightCategory(string category) => Get("fight.cat." + category);
         public static string FightCategoryLine(string category, int count) => F("fight.cat.line", category, count);
         public static string FightNotTarget => Get("fight.nottarget");
+        public static string FightNoChoices => Get("fight.nochoices");
         public static string FightNothing => Get("fight.nothing");
         public static string FightEnemyTurn => Get("fight.ev.enemyturn");
         public static string FightAppears(string name, string where) => F("fight.ev.appears", name, where);

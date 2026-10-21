@@ -133,6 +133,7 @@ fight.cat.pickups=拾取物
 fight.cat.danger=危险区
 fight.cat.line={0}, {1}
 fight.nottarget=不是目标
+fight.nochoices=无可选项
 fight.cat.targets=目标
 fight.nothing=无
 fight.ev.enemyturn=敌方回合

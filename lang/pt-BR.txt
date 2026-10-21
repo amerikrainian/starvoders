@@ -133,6 +133,7 @@ fight.cat.pickups=Coletáveis
 fight.cat.danger=Zonas de perigo
 fight.cat.line={0}, {1}
 fight.nottarget=não é um alvo
+fight.nochoices=nada para escolher
 fight.cat.targets=Alvos
 fight.nothing=nada
 fight.ev.enemyturn=Turno inimigo

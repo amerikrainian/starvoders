@@ -133,6 +133,7 @@ fight.cat.pickups=획득물
 fight.cat.danger=위험 구역
 fight.cat.line={0}, {1}
 fight.nottarget=대상 아님
+fight.nochoices=선택지 없음
 fight.cat.targets=대상
 fight.nothing=없음
 fight.ev.enemyturn=적의 턴
