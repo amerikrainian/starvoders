@@ -183,12 +183,8 @@ namespace StarVoders.Module.Fight
 
         private static (int X, int Y)? Mech()
         {
-            var board = FightBoard.Read();
-            if (board == null) return null;
-            for (int y = 0; y < board.Rows; y++)
-                for (int x = 0; x < board.Columns; x++)
-                    if (board.At(x, y)?.TryCast<PlayerEntityModel>() != null) return (x, y);
-            return null;
+            // The player's tile: the mech, or the Summon a Keeper haunts (read as "Sol, haunted").
+            return FightBoard.Read()?.PlayerTile;
         }
 
         // "mech, 3, 2[, shielded...]".
@@ -287,7 +283,7 @@ namespace StarVoders.Module.Fight
                         case "targets": member = EncounterScreen.IsTarget(x, y); break;
                         case "invaders": member = e?.TryCast<EnemyEntityModel>() != null; break;
                         case "shocked": member = e != null && e.IsShocked; break;
-                        case "mech": member = e?.TryCast<PlayerEntityModel>() != null; break;
+                        case "mech": member = board.PlayerTile == (x, y); break;
                         case "summons": member = board.IsSummon(x, y); break;
                         case "items": member = e?.TryCast<ItemEntityModel>() != null && !board.IsSummon(x, y); break;
                         default: member = board.Pickup(x, y) != null; break;

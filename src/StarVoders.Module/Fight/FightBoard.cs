@@ -28,6 +28,8 @@ namespace StarVoders.Module.Fight
         private readonly HashSet<(int, int)> _spawn = new HashSet<(int, int)>();
         private readonly HashSet<(int, int)> _summons = new HashSet<(int, int)>();
         public readonly List<AEntityModel> Entities = new List<AEntityModel>();
+        // The player's tile (0-based), null while it is off the board (a Keeper with no Summon).
+        private (int X, int Y)? _player;
 
         private FightBoard(EncounterModel model)
         {
@@ -60,10 +62,22 @@ namespace StarVoders.Module.Fight
                     var id = entity.ID.Cast<EntityID>();
                     if (!grid.IsEntityOnGrid(id)) continue;
                     var c = grid.GetEntityCoord(id, false);
-                    board._at[(c.x, c.y)] = entity;
+                    // A Keeper haunting a Summon shares its tile: the cell is the Summon's ("Sol,
+                    // haunted"), the player's tile kept apart.
+                    bool player = entity.TryCast<PlayerEntityModel>() != null;
+                    if (player) board._player = (c.x, c.y);
+                    if (!player || !board._at.ContainsKey((c.x, c.y))) board._at[(c.x, c.y)] = entity;
                     board.Entities.Add(entity);
                 }
                 foreach (var numbers in board._kinds.Values) numbers.Sort();
+                // The player's tile by the game's own reckoning: a Keeper has no entity of its own,
+                // its id standing for the Summon it haunts (GetPlayerCoord is that Summon's tile).
+                var playerId = grid.PlayerID;
+                if (playerId != null && grid.IsEntityOnGrid(playerId))
+                {
+                    var p = grid.GetPlayerCoord();
+                    board._player = (p.x, p.y);
+                }
                 foreach (var c in grid.GetSpawnCoords()) board._spawn.Add((c.x, c.y));
                 var summons = grid.PlayerPuppetList;
                 if (summons != null)
@@ -75,6 +89,17 @@ namespace StarVoders.Module.Fight
         }
 
         public AEntityModel At(int x, int y) => _at.TryGetValue((x, y), out var e) ? e : null;
+
+        /// <summary>The player's tile (0-based): the mech's, or the Summon a Keeper haunts; null while
+        /// the player is off the board.</summary>
+        public (int X, int Y)? PlayerTile => _player;
+
+        /// <summary>Whether the entity is the Summon the player haunts (it shares the player's tile).</summary>
+        public bool IsHaunted(AEntityModel entity)
+        {
+            if (entity == null || _player == null || entity.TryCast<PlayerEntityModel>() != null) return false;
+            return ReferenceEquals(At(_player.Value.X, _player.Value.Y), entity) || At(_player.Value.X, _player.Value.Y)?.Pointer == entity.Pointer;
+        }
 
         /// <summary>Whether the tile holds one of the player's Summons (the game's puppets:
         /// <see cref="GridModel.PlayerPuppetList"/>, a Keeper's).</summary>
@@ -128,11 +153,14 @@ namespace StarVoders.Module.Fight
             if (entity == null) return null;
             var parts = new List<string>();
             foreach (var trait in Traits(entity)) parts.Add(GameLoc.Get(trait + "_Keyword"));
+            if (ActivateReady(entity)) parts.Add(Strings.FightReady(GameLoc.Get("Activate_Keyword") ?? "Activate"));
             if (entity.TryCast<PlayerEntityModel>() == null && entity.Health > 1) parts.Add(Strings.FightHealth(entity.Health));
             if (entity.IsShielded) parts.Add(ShieldName(entity) ?? GameLoc.Get("Shielded_Keyword"));
             parts.Add(ImmuneName(entity));
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));
-            if (entity.Charge > 0) parts.Add(Strings.FightCharge(entity.Charge));
+            string channel = ChannelText(entity);
+            if (channel != null) parts.Add(channel);
+            else if (entity.Charge > 0) parts.Add(Strings.FightCharge(entity.Charge));
             parts.RemoveAll(string.IsNullOrEmpty);
             return parts.Count > 0 ? string.Join(", ", parts) : null;
         }
@@ -173,6 +201,45 @@ namespace StarVoders.Module.Fight
             return lines;
         }
 
+        /// <summary>Whether the entity's Activate (a Summon's once-a-turn ability, used by clicking it:
+        /// Enter on its cell) is ready: the game marks it with the hidden <see cref="EntityTrait.Charged"/>
+        /// trait, taken on use and given back by a recharge.</summary>
+        public static bool ActivateReady(AEntityModel entity)
+        {
+            try
+            {
+                if (entity == null) return false;
+                if (entity.HiddenTraits != null && entity.HiddenTraits.Contains(EntityTrait.Charged)) return true;
+                return entity.Traits != null && entity.Traits.Contains(EntityTrait.Charged);
+            }
+            catch { return false; }
+        }
+
+        /// <summary>"channelling 1 Doom" while the game counts the invader as channelling
+        /// (<see cref="GridModel.IsChannelingDoom"/>: the game's "WARNING! +1 Doom" over it), its charge
+        /// being the Doom it will add; "channelling Doom" when it has none (Doom Ritual's pick). Null
+        /// otherwise, when a charge is just a charge.</summary>
+        public static string ChannelText(AEntityModel entity)
+        {
+            try
+            {
+                var grid = Fight.Model?.GridModel;
+                if (entity == null || grid == null || entity.TryCast<EnemyEntityModel>() == null) return null;
+                if (!grid.IsChannelingDoom(entity.ID.Cast<EntityID>())) return null;
+                string doom = GameLoc.Get("DoomTitle_Misc") ?? "Doom";
+                return entity.Charge > 0 ? Strings.FightChannelling(entity.Charge, doom) : Strings.FightChannellingDoom(doom);
+            }
+            catch (Exception e) { CoreLog.Warning("FightBoard: reading channelling failed: " + e.Message); return null; }
+        }
+
+        /// <summary>The game's explanation of a channelling invader: the bottom rows' channel, else the
+        /// attack's ("cannot be stopped unless it is destroyed"); null when it is not channelling.</summary>
+        public string ChannelLine(AEntityModel entity, int x, int y)
+        {
+            if (ChannelText(entity) == null) return null;
+            return GameLoc.Get(Zone(x, y) == "doom" ? "TileDoom_InfoLine" : "AttackDoom_InfoLine");
+        }
+
         /// <summary>"Immune" while strikes cannot harm the entity (<see cref="AEntityModel.IsInvulnerable"/>:
         /// the Mothership gains and loses it; the tile's hover icons draw it), else null. The game has
         /// no keyword for it, only its floating "Immune!" and the "Immunity: ..." info line, so the
@@ -211,6 +278,7 @@ namespace StarVoders.Module.Fight
         {
             string name = Name(entity);
             string state = State(entity);
+            if (IsHaunted(entity)) state = state != null ? Strings.FightHaunted + ", " + state : Strings.FightHaunted;
             return state != null ? name + ", " + state : name;
         }
 
@@ -278,7 +346,38 @@ namespace StarVoders.Module.Fight
             return card != null ? Strings.FightLabelled(label, Fight.CardName(card)) : label;
         }
 
-        public static string PickupLabel => GameLoc.Get("Pickup_Keyword") ?? "Pickup";
+        /// <summary>"Pickup", or "Booby Trap" while Kaia's Booby Traps make every pickup one (the game
+        /// names it only in its explanation, "Booby Trap: When destroyed...").</summary>
+        public static string PickupLabel => BoobyTraps() ? BoobyTrapWord() ?? PickupWord : PickupWord;
+
+        private static string PickupWord => GameLoc.Get("Pickup_Keyword") ?? "Pickup";
+
+        /// <summary>The game's explanation of a booby trap while the artifact is in play, else null.</summary>
+        public static string BoobyTrapLine => BoobyTraps() ? GameLoc.Get("BoobyTrap_InfoLine") : null;
+
+        private static string BoobyTrapWord()
+        {
+            string line = GameLoc.Get("BoobyTrap_InfoLine");
+            int colon = line != null ? line.IndexOf(':') : -1;
+            return colon > 0 ? line.Substring(0, colon).Trim() : null;
+        }
+
+        // Whether the fight has Booby Traps (an artifact, not destroyed).
+        private static bool BoobyTraps()
+        {
+            try
+            {
+                var dict = Fight.View?.ArtifactViewDict;
+                if (dict == null) return false;
+                foreach (var kv in dict)
+                {
+                    var art = kv.Value?.ArtifactModel;
+                    if (art != null && !art.Destroyed && art.ArtifactName == ArtifactName.BoobyTrap) return true;
+                }
+            }
+            catch { }
+            return false;
+        }
 
         public bool HasPickup(int x, int y)
         {

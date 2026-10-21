@@ -99,12 +99,12 @@ namespace StarVoders.Module.UI
 
             var stars = StarsTip(portrait);
             b.AddItem(ControlId.Structural(key + ":stars"), Stat(
-                () => Tooltip(stars).Title, () => Number(portrait.StarbucksText), stars));
+                () => GameText.Calm(Tooltip(stars).Title), () => Number(portrait.StarbucksText), stars));
 
             var deck = c.DeckView;
             if (ViewNodes.IsShown(deck))
                 b.AddItem(ControlId.Structural(key + ":deck"),
-                    ViewNodes.Button(deck, () => GameText.Of(portrait.DeckTooltipTitleText) ?? GameText.Of(portrait.DeckNumberText)));
+                    ViewNodes.Button(deck, () => DeckLabel() ?? GameText.Of(portrait.DeckTooltipTitleText) ?? GameText.Of(portrait.DeckNumberText)));
             if (row) b.EndRow();
             b.PopContext();
         }
@@ -122,8 +122,17 @@ namespace StarVoders.Module.UI
                 lines.Add(label != null ? label + " " + value : value);
             }
             Add(DoomLabel(portrait), GameText.Of(portrait.DoomText));
-            Add(Tooltip(StarsTip(portrait)).Title, Number(portrait.StarbucksText));
+            Add(GameText.Calm(Tooltip(StarsTip(portrait)).Title), Number(portrait.StarbucksText));
             return lines;
+        }
+
+        /// <summary>"Deck, 12 cards, 2 artifacts", from the run's deck: the game's own title, "DECK (12
+        /// card, 2 artifact)", shouts and never says the plural. Null without a run.</summary>
+        private static string DeckLabel()
+        {
+            var player = DataManager.PlayerData;
+            if (player == null || player.deckCardDataList == null || player.artifactList == null) return null;
+            return Strings.StatusDeck(GameLoc.Get("Deck_Misc") ?? "Deck", player.deckCardDataList.Count, player.artifactList.Count);
         }
 
         private static StarVaders.TooltipTrigger DoomTip(CampaignPortraitView portrait) =>

@@ -48,7 +48,11 @@ namespace StarVoders.Core.Fight
                 if ((was.Immune != null) != (e.Immune != null))
                     lines.Add(e.Immune != null ? S.FightLabelled(e.Name, e.Immune) : S.FightUnimmune(e.Name));
                 if (was.Shocked != e.Shocked) lines.Add(e.Shocked ? S.FightShocked(e.Name) : S.FightUnshocked(e.Name));
-                if (was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
+                // Channelling Doom (its amount is the charge): "Martian 6: channelling 1 Doom"; a plain
+                // charge only while neither channels.
+                if (was.Channel != e.Channel)
+                    lines.Add(e.Channel != null ? S.FightLabelled(e.Name, e.Channel) : S.FightUnchannelled(e.Name));
+                else if (e.Channel == null && was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
             }
             var gone = new List<EntitySnap>();
             foreach (var e in before.Entities)
@@ -79,6 +83,16 @@ namespace StarVoders.Core.Fight
             foreach (var p in before.Pickups)
                 if (!after.Pickups.Exists(q => q.Key == p.Key) && !inHand.Contains(p.Key))
                     lines.Add(S.FightDestroyed(p.Name));
+
+            // Artifacts gained or lost mid-fight; a first snapshot with none (the panel still filling)
+            // gains nothing.
+            if (before.Artifacts.Count > 0)
+            {
+                foreach (var a in after.Artifacts)
+                    if (!before.Artifacts.Exists(b => b.Key == a.Key)) lines.Add(S.FightArtifactGained(a.Name));
+                foreach (var a in before.Artifacts)
+                    if (!after.Artifacts.Exists(b => b.Key == a.Key)) lines.Add(S.FightArtifactLost(a.Name));
+            }
 
             if (after.Combo > before.Combo && after.ComboText != null) lines.Add(after.ComboText);
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);

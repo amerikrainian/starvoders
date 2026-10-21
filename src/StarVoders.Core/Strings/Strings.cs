@@ -179,6 +179,14 @@ namespace StarVoders.Core.Strings
             D("fight.target", "target"),
             D("fight.health", "{0} health"),
             D("fight.charge", "charge {0}"),
+            // The Summon a Keeper haunts (rides inside, sharing its tile): "Sol, haunted, 2 1".
+            D("fight.haunted", "haunted"),
+            // An ability ready to use: {0} = the game's word for it ("Activate ready": a Summon's once-a-turn ability).
+            D("fight.ready", "{0} ready"),
+            // An invader channelling Doom (the game draws "WARNING! +1 Doom" over it): {0} = the Doom it adds, {1} = the game's word "Doom"; without an amount ({0} = the word); and its stopping.
+            D("fight.channel", "channelling {0} {1}"),
+            D("fight.channel.doom", "channelling {0}"),
+            D("fight.ev.unchannel", "{0} stops channelling"),
             D("fight.zone.doom", "doom rows"),
             D("fight.zone.spawn", "spawn rows"),
             D("fight.danger", "{0}: {1}"),
@@ -216,6 +224,9 @@ namespace StarVoders.Core.Strings
             D("fight.ev.unshocked", "{0} loses shock"),
             // Immunity lost (gained reads as "Mothership: Immune", the game's word).
             D("fight.ev.unimmune", "{0} loses immunity"),
+            // An artifact or spell gained or lost mid-fight: {0} = its name.
+            D("fight.ev.artifact.gained", "Gained {0}"),
+            D("fight.ev.artifact.lost", "Lost {0}"),
             D("fight.ev.drew", "Drew {0}"),
             // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
             D("fight.ev.targets", "{0} targets {1}"),
@@ -297,6 +308,13 @@ namespace StarVoders.Core.Strings
             D("bind.fight.discard", "Discard pile"),
             D("bind.fight.rewind", "Rewind"),
             D("bind.fight.moreinfo", "More info"),
+
+            // The run's deck in the status row: {0} = the game's "Deck", {1} = its cards, {2} = its artifacts (the count forms below).
+            D("status.deck", "{0}, {1}, {2}"),
+            D("count.card.one", "1 card"),
+            D("count.card", "{0} cards"),
+            D("count.artifact.one", "1 artifact"),
+            D("count.artifact", "{0} artifacts"),
 
             D("screen.mod_menu", "StarVoders"),
             D("mod.settings", "Settings"),
@@ -554,6 +572,11 @@ namespace StarVoders.Core.Strings
         public static string FightTarget => Get("fight.target");
         public static string FightHealth(int health) => F("fight.health", health);
         public static string FightCharge(int charge) => F("fight.charge", charge);
+        public static string FightHaunted => Get("fight.haunted");
+        public static string FightReady(string ability) => F("fight.ready", ability);
+        public static string FightChannelling(int amount, string doom) => F("fight.channel", amount, doom);
+        public static string FightChannellingDoom(string doom) => F("fight.channel.doom", doom);
+        public static string FightUnchannelled(string name) => F("fight.ev.unchannel", name);
         public static string FightZone(string zone) => Get("fight.zone." + zone);
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
         public static string FightCategory(string category) => Get("fight.cat." + category);
@@ -574,6 +597,8 @@ namespace StarVoders.Core.Strings
         public static string FightShocked(string name) => F("fight.ev.shocked", name);
         public static string FightUnshocked(string name) => F("fight.ev.unshocked", name);
         public static string FightUnimmune(string name) => F("fight.ev.unimmune", name);
+        public static string FightArtifactGained(string name) => F("fight.ev.artifact.gained", name);
+        public static string FightArtifactLost(string name) => F("fight.ev.artifact.lost", name);
         public static string FightDrew(string cards) => F("fight.ev.drew", cards);
         public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
         public static string FightTargeted(string who) => F("fight.targeted", who);
@@ -606,6 +631,8 @@ namespace StarVoders.Core.Strings
         public static string BufferEnemies => Get("buffer.enemies");
 
 
+        public static string StatusDeck(string deck, int cards, int artifacts) => F("status.deck", deck,
+            cards == 1 ? Get("count.card.one") : F("count.card", cards), artifacts == 1 ? Get("count.artifact.one") : F("count.artifact", artifacts));
         public static string ScreenModMenu => Get("screen.mod_menu");
         public static string ModSettings => Get("mod.settings");
         public static string ModKeyHelp => Get("mod.key_help");

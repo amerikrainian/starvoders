@@ -21,6 +21,9 @@ namespace StarVoders.Core.Fight
         /// <summary>The game's word for immunity ("Immune") while strikes cannot harm the entity, else null.</summary>
         public string Immune;
         public int Charge;
+        /// <summary>"channelling 1 Doom" while the invader channels Doom (its charge is then the Doom it
+        /// adds, said here instead), else null.</summary>
+        public string Channel;
         /// <summary>Health changes are not spoken for the mech (it has none to lose).</summary>
         public bool IsMech;
     }
@@ -69,5 +72,8 @@ namespace StarVoders.Core.Fight
         public List<CardSnap> Hand = new List<CardSnap>();
         public List<DangerSnap> Dangers = new List<DangerSnap>();
         public List<PickupSnap> Pickups = new List<PickupSnap>();
+        /// <summary>The fight's artifacts and spells (the game's id as the key), gained or lost mid-fight
+        /// (Booby Traps from a card, a spell used up).</summary>
+        public List<CardSnap> Artifacts = new List<CardSnap>();
     }
 }

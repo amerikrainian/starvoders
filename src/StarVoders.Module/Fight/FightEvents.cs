@@ -121,6 +121,16 @@ namespace StarVoders.Module.Fight
                 if (_settled == null || task == null || __instance.IsPreviewMode) return;
                 var c = Fight.Controller;
                 if (c == null || c.EncounterEnded || c.TaskEngine == null || c.TaskEngine.Pointer != __instance.Pointer) return;
+                // Overheating (a card pushing Heat past the Heat sink burns it and ends the turn): the
+                // game's floating "Overheat!", after what the card did so far.
+                if (task.TryCast<OverheatTask>() != null)
+                {
+                    var before = Take();
+                    if (before != null) Publish(before);
+                    string overheat = GameLoc.Get("FloatTextOverheat_Misc");
+                    if (overheat != null) { Speech.Say(overheat); Log.Add(overheat); }
+                    return;
+                }
                 bool enemyPhase = task.TryCast<EnemyPhaseTask>() != null;
                 bool action = task.TryCast<ProcessEnemyPhaseActionTask>() != null || task.TryCast<ProcessEnemyStartTurnActionTask>() != null;
                 if (!enemyPhase && !action && task.TryCast<StartTurnTask>() == null) return;
@@ -180,6 +190,7 @@ namespace StarVoders.Module.Fight
                         Immune = FightBoard.ImmuneName(entity),
                         Shocked = entity.IsShocked,
                         Charge = entity.Charge,
+                        Channel = FightBoard.ChannelText(entity),
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,
                     });
                 }
@@ -196,6 +207,16 @@ namespace StarVoders.Module.Fight
                         if (pickup != null)
                             snap.Pickups.Add(new PickupSnap { Key = pickup.CardID.CardName + "#" + pickup.CardID.Number, Name = board.Pickup(x, y), X = x + 1, Y = y + 1 });
                     }
+                // The artifacts and spells the fight shows, by the game's id.
+                var artifacts = view.ArtifactViewDict;
+                if (artifacts != null)
+                    foreach (var kv in artifacts)
+                    {
+                        var art = kv.Value?.ArtifactModel;
+                        if (art == null || art.Destroyed) continue;
+                        snap.Artifacts.Add(new CardSnap { Key = kv.Value.Pointer.ToString(), Name = GameLoc.ArtifactName(art.ArtifactName) ?? art.ArtifactName.ToString() });
+                    }
+
                 // The hand pile as the model has it: a card being played is still in it, so choosing
                 // its target and cancelling reads as nothing.
                 var play = view.CardPlayView;

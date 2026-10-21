@@ -286,6 +286,13 @@ separately. Host F6 uses the same OS read.
   on `SceneLoader.IsTransitioning` and the prompt fades before unloading, so once answered the
   screen stays up with no nodes until the scene goes (standing down hands a second Enter to the
   screen beneath).
+- Special rewards on an encounter ("Gain 2 copies of a random LEGENDARY card", "Gain the following
+  SPECIAL artifact:" + the drawn `ArtifactSpecialView`): the game has no reward tooltip for them
+  (`ToolTipTitle_SpecialReward_Misc` is missing), so the Reward trigger keeps the prefab's placeholder
+  "DECK (10 cards, 3 artifacts)": skipped; the special line is read instead ("…: Cosmic Dust", its
+  description in the buffer). The status row's Deck reads "Deck, 12 cards, 2 artifacts" from
+  `DataManager.PlayerData` (the game's title "DECK (12 card, 2 artifact)" shouts and has no plural); Stars
+  is `GameText.Calm`ed ("STARS" -> "Stars").
 - Encounter choice (`GlobeScene`, `GlobeController : CampaignSceneController`): stops tip (while
   `TipManager.CurrentTip` shows in this scene; Enter = `Tip.Destroy(true)`, what a finished tip
   box's click does), then ONE stop of horizontal rows, top to bottom: the act timeline and the
@@ -379,10 +386,26 @@ separately. Host F6 uses the same OS read.
   `StartTurnTask` resets it to 0), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
   pickups by card id: "Pickup: Dash appears at 4 7", "Pickup: Dash destroyed" when gone and not drawn.
+  Doom channelling: `GridModel.IsChannelingDoom(id)` (the game's "WARNING! +1 Doom"); the invader's
+  `Charge` is then the Doom it adds, so it reads "channelling 1 Doom" instead of "charge 1" ("channelling
+  Doom" at charge 0: Doom Ritual's pick), events on start/stop, details `TileDoom_InfoLine` (in the doom
+  rows) or `AttackDoom_InfoLine`. Artifacts gained or lost mid-fight are events (`ArtifactViewDict` by view
+  pointer). Overheating says the game's "Overheat!" when `OverheatTask` starts (the task-log prefix); the
+  Heat sink is the Heat maximum ("Heat 0/5" after Fire Starter). Booby Traps (Kaia's artifact) name every
+  pickup "Booby Trap" (the word before the colon of `BoobyTrap_InfoLine`) and add that line to its details.
   Immunity (`AEntityModel.IsInvulnerable`, the Mothership's comes and goes) has no keyword: read "Immune"
   (`FloatTextImmune_Misc` without its "!") in the entity's state and its gain ("Mothership: Immune") and
   loss, details `Invulnerable_InfoLine`; test by setting the flag on an invader through `/eval`. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
+- The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts
+  (`CurrentPuppet`), `GetPlayerCoord` is that Summon's tile, and `ModelItemDict` has no player. So the
+  board's `PlayerTile` comes from `GetPlayerCoord` (while `IsEntityOnGrid(PlayerID)`), the cell is the
+  Summon's, read "Sol, haunted" (details add `Haunt_InfoLine`), and Ctrl+M, Shift+M, the Mech category and
+  the landing use that tile; with no Summon the landing is the bottom-left cell. A Summon's once-a-turn
+  Activate (Enter on its cell: the game's click) is ready while it has the hidden `EntityTrait.Charged`
+  ("Activate ready"); recharge cards add it back (`AddTraitTask`). The summon counter popup ("1/3") takes
+  `Summon_Keyword` (`PopupReader.Labelled`). Test Keeper mechanics in a Xenn run: Sol & Luna, Align,
+  Implode, Astral Call.
 - Choosing a target (`Fight.ReadTargets`: the selection's targets sorted into tiles, `PlayAreaView`,
   `DirectionSelectionArrow`s, others): a selection with grid targets is answered ON THE BOARD (its
   prompt said, focus to the board or kept there with the game's hover synced; Enter on a cell =
@@ -398,7 +421,10 @@ separately. Host F6 uses the same OS read.
   variant (Jab, Power, Quick, Flicker, Left Foot, Spirit, Jab'racadabra) is ONE selection taking an
   adjacent entity's tile OR the `EncounterView.ExtraSelectionPanel` ("Draw 1 Card",
   `Selection.ExtraSelectionChoice`); the prompt names the extras ("Choose an entity, or Draw 1 Card")
-  and focus stays on the board (with no entity adjacent, the list alone, focused). Direction selections are untested (no such card yet).
+  and focus stays on the board (with no entity adjacent, the list alone, focused). Direction selections (Discharge, Kunai's throw, a Summon's push) are answered on the board: the cells
+  next to the origin read "target". A card can chain selections (Kunai: a hand card, then a direction;
+  Nether Lash: two entities): `EncounterScreen` tracks the game's `CurrentSelection` pointer
+  (`Fight.SelectionId`), so each step is announced and focused as a new one.
   Repeats: a repeat's selection (`Selection.IsRepeat`; Flamethrower x2's second burn, not its first) shows
   Skip Repeats (`EncounterView.CancelRepeatsSelectionPanel`, click = `SelectionController.Cancel(true)`), and
   while it shows the game's Cancel key IS that button (`EncounterKeyInputController.OnCancel`); a plain

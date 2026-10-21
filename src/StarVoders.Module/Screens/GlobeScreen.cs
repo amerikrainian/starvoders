@@ -165,11 +165,16 @@ namespace StarVoders.Module.Screens
                     parts.Add((label != null ? label + ": " : "") + string.Join(", ", names));
                 }
                 // The reward by its tooltip's title ("Card Reward"), plainer than the caption ("Card").
-                string reward = CampaignNodes.Tooltip(Trigger(encounter, "Reward")).Title;
-                if (reward != null) parts.Add(reward);
-                else Add(parts, encounter.RewardText);
-                Add(parts, encounter.SpecialRewardText);
-                Add(parts, encounter.ArtifactSpecialRewardText);
+                // A special reward is its own line instead: the game has no tooltip for it, so the
+                // reward's tooltip keeps the prefab's placeholder ("DECK (10 cards, 3 artifacts)").
+                string special = SpecialReward(encounter);
+                if (special != null) parts.Add(special);
+                else
+                {
+                    string reward = CampaignNodes.Tooltip(Trigger(encounter, "Reward")).Title;
+                    if (reward != null) parts.Add(reward);
+                    else Add(parts, encounter.RewardText);
+                }
             }
             if (panel.BonusObject != null && panel.BonusObject.activeInHierarchy) Add(parts, panel.BonusText);
             if (panel.CurseObject != null && panel.CurseObject.activeInHierarchy) Add(parts, panel.CurseText);
@@ -217,7 +222,7 @@ namespace StarVoders.Module.Screens
                     foreach (var info in Fight.Fight.EntityInfoLines(enemy))
                         if (!lines.Contains(info)) lines.Add(info);
                 }
-            foreach (var view in new[] { panel.DifficultyModArtifact, panel.CurseModArtifact })
+            foreach (var view in new[] { encounter?.ArtifactSpecialView, panel.DifficultyModArtifact, panel.CurseModArtifact })
             {
                 if (view == null || !ViewNodes.IsShown(view)) continue;
                 var model = view.ArtifactModel;
@@ -226,8 +231,11 @@ namespace StarVoders.Module.Screens
                 string d = Fight.Fight.ArtifactDescription(model);
                 if (n != null) lines.Add(d != null ? n + ": " + d : n);
             }
+            bool special = encounter != null && SpecialReward(encounter) != null;
             foreach (var trigger in panel.GetComponentsInChildren<StarVaders.TooltipTrigger>(false))
             {
+                // A special reward's reward tooltip is the placeholder (above).
+                if (special && trigger.gameObject.name == "Reward") continue;
                 string line = CampaignNodes.TooltipLine(trigger);
                 if (line != null && !lines.Contains(line)) lines.Add(line);
             }
@@ -256,6 +264,22 @@ namespace StarVoders.Module.Screens
         {
             var model = view != null ? view.ArtifactModel : null;
             return model != null ? GameLoc.ArtifactName(model.ArtifactName) : null;
+        }
+
+        // "Gain 2 copies of a random LEGENDARY card", or "Gain the following SPECIAL artifact: Cosmic
+        // Dust" (the artifact is only drawn); null for an ordinary reward.
+        private static string SpecialReward(EncounterRoomChoicePanel encounter)
+        {
+            var art = encounter.ArtifactSpecialRewardText;
+            if (art != null && art.gameObject.activeInHierarchy)
+            {
+                string text = GameText.Of(art)?.TrimEnd(':', ' ', '\uFF1A');
+                string name = ViewNodes.IsShown(encounter.ArtifactSpecialView) ? Artifact(encounter.ArtifactSpecialView) : null;
+                if (text == null) return name;
+                return name != null ? Strings.FightLabelled(text, name) : text;
+            }
+            var card = encounter.SpecialRewardText;
+            return card != null && card.gameObject.activeInHierarchy ? GameText.Of(card) : null;
         }
 
         private static void Add(List<string> parts, TMP_Text tmp)

@@ -596,6 +596,16 @@ namespace StarVoders.Module.Fight
             }
         }
 
+        /// <summary>The running selection's native pointer (a new one per step a card chains), or zero.</summary>
+        public static IntPtr SelectionId
+        {
+            get
+            {
+                try { return Controller?.SelectionController?.CurrentSelection?.Pointer ?? IntPtr.Zero; }
+                catch { return IntPtr.Zero; }
+            }
+        }
+
         /// <summary>Whether the running selection accepts nothing, by the game's own verdict
         /// (<c>SelectionHasValidChoices</c>, recorded as <see cref="SelectionController.HadValidChoices"/>
         /// when the selection starts): a repeat's burn with no card left in hand.</summary>

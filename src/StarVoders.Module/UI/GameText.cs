@@ -62,6 +62,22 @@ namespace StarVoders.Module.UI
             return TextUtil.StripRichText(text);
         }
 
+        /// <summary>A title the game writes in capitals ("STARS") as a word ("Stars"): spoken capitals
+        /// read as an acronym or a shout. Left alone when any letter is lower case already, or there
+        /// is no cased letter (CJK).</summary>
+        public static string Calm(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            bool upper = false;
+            foreach (char ch in text)
+            {
+                if (char.IsLower(ch)) return text;
+                if (char.IsUpper(ch)) upper = true;
+            }
+            if (!upper) return text;
+            return text.Substring(0, 1) + text.Substring(1).ToLowerInvariant();
+        }
+
         /// <summary>A TMP text's clean text, or null when it is missing or blank.</summary>
         public static string Of(TMPro.TMP_Text tmp)
         {

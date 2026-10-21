@@ -53,9 +53,9 @@ namespace StarVoders.Module.Readers
                 Overlay(overlay._replenishCanvasGroup);
             }
             foreach (var bombs in GameScenes.Components<BombLimitView>())
-                if (bombs != null) Counter(bombs.CanvasGroup, bombs.BombLimitText, onlyWhileSelecting: true);
+                if (bombs != null) Counter(bombs.CanvasGroup, bombs.BombLimitText, "Bombs_Keyword", onlyWhileSelecting: true);
             foreach (var puppets in GameScenes.Components<PuppetLimitView>())
-                if (puppets != null) Counter(puppets.CanvasGroup, puppets.PuppetLimitText);
+                if (puppets != null) Counter(puppets.CanvasGroup, puppets.PuppetLimitText, "Summon_Keyword");
             if (Time.frameCount % 5 == 0)
             {
                 Bubbles();
@@ -86,6 +86,16 @@ namespace StarVoders.Module.Readers
             if (!Tips.WaitsForClick(tip)) Speech.Say(text);
         }
 
+        // A counter drawn as a bare figure ("1/3", beside its icon) takes the game's word for what it
+        // counts: "Summon 1/3", as Ctrl+B says it.
+        private static string Labelled(string text, string labelKey)
+        {
+            if (text == null) return null;
+            foreach (char ch in text) if (char.IsLetter(ch)) return text;
+            string label = GameLoc.Get(labelKey);
+            return label != null ? label + " " + text : text;
+        }
+
         // An overlay fading in speaks its text once it is half shown; fully faded out, it may again.
         private static void Overlay(CanvasGroup group)
         {
@@ -104,7 +114,7 @@ namespace StarVoders.Module.Readers
         // it stays up (two bombs placed in a row); faded out, it forgets. The bomb counter speaks only
         // while a target is chosen: on the board it shows when a bomb is hovered, and the count is
         // Ctrl+B's (FightKeys).
-        private static void Counter(CanvasGroup group, TMPro.TMP_Text tmp, bool onlyWhileSelecting = false)
+        private static void Counter(CanvasGroup group, TMPro.TMP_Text tmp, string labelKey, bool onlyWhileSelecting = false)
         {
             if (group == null) return;
             var ptr = group.Pointer;
@@ -121,7 +131,7 @@ namespace StarVoders.Module.Readers
             {
                 s_previewed[ptr] = alpha;
                 if (alpha < Shown) return;
-                string shown = GameText.Of(tmp);
+                string shown = Labelled(GameText.Of(tmp), labelKey);
                 s_counters[ptr] = shown;
                 if (shown == null || (s_selectionSaid.TryGetValue(ptr, out var once) && once == shown)) return;
                 s_selectionSaid[ptr] = shown;
@@ -137,7 +147,7 @@ namespace StarVoders.Module.Readers
                 s_counters.Remove(ptr);
             }
             if (alpha < Shown) return;
-            string text = GameText.Of(tmp);
+            string text = Labelled(GameText.Of(tmp), labelKey);
             if (text == null || (s_counters.TryGetValue(ptr, out var said) && said == text)) return;
             s_counters[ptr] = text;
             Speech.Say(text);

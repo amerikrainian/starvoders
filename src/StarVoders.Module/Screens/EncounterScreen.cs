@@ -260,7 +260,15 @@ namespace StarVoders.Module.Screens
             return string.Join(", ", parts);
         }
 
-        private static bool IsMech(int x, int y) => FightBoard.Read()?.At(x, y)?.TryCast<PlayerEntityModel>() != null;
+        // The landing: the player's tile, or with the player off the board (a Keeper with no Summon)
+        // the bottom-left cell, above the first card.
+        private static bool IsMech(int x, int y)
+        {
+            var board = FightBoard.Read();
+            if (board == null) return false;
+            var player = board.PlayerTile;
+            return player.HasValue ? player.Value.X == x && player.Value.Y == y : x == 0 && y == 0;
+        }
 
         /// <summary>Whether the running selection takes this cell: a valid tile, or the cell next to
         /// the arrows' origin in a valid direction. A play-area selection marks nothing (any cell
@@ -336,6 +344,10 @@ namespace StarVoders.Module.Screens
                 yield return d != null ? Strings.FightLabelled(board.Name(entity), d) : board.Describe(entity);
                 var traits = FightBoard.TraitLines(entity);
                 foreach (var line in traits) yield return line;
+                string channel = board.ChannelLine(entity, x, y);
+                if (channel != null) yield return channel;
+                // The haunted Summon is the Keeper's mech: the game's word on it.
+                if (board.IsHaunted(entity)) { string haunt = GameLoc.Get("Haunt_InfoLine"); if (haunt != null) yield return haunt; }
                 foreach (var line in FightState.EntityInfoLines(entity))
                     if (!traits.Contains(line)) yield return line;
             }
@@ -357,6 +369,8 @@ namespace StarVoders.Module.Screens
                     FightState.CardDescription(card), FightState.CardUpgradeDescription(card) })
                     if (!string.IsNullOrEmpty(part)) parts.Add(part);
                 yield return Strings.FightLabelled(FightBoard.PickupLabel, string.Join(", ", parts));
+                string trap = FightBoard.BoobyTrapLine;
+                if (trap != null) yield return trap;
                 foreach (var line in FightState.CardInfoLines(card)) yield return line;
             }
             else if (board.HasPickup(x, y)) yield return FightBoard.PickupLabel;
@@ -392,6 +406,9 @@ namespace StarVoders.Module.Screens
 
         private const string TargetsStop = "fight:targets";
         private bool _wasSelecting;
+        // The game's selection last seen: a card can chain them (Kunai: a card of the hand, then a
+        // direction; Nether Lash: two entities), each a new one to announce and focus.
+        private IntPtr _selectionSeen;
         // The strike marks while a selection runs: the game previews the strike of the target under
         // the cursor (a Titan Rocket's area follows it), a few frames after the hover, so the marks are
         // said once they have held still for StrikeStableFrames, and again whenever they settle on a
@@ -407,7 +424,8 @@ namespace StarVoders.Module.Screens
         {
             var set = FightState.Selecting ? FightState.ReadTargets() : null;
             bool selecting = set != null;
-            if (selecting && !_wasSelecting)
+            IntPtr selection = selecting ? FightState.SelectionId : IntPtr.Zero;
+            if (selecting && (!_wasSelecting || selection != _selectionSeen))
             {
                 if (set.OnBoard)
                 {
@@ -427,7 +445,7 @@ namespace StarVoders.Module.Screens
                     var at = FocusedTile();
                     if (at == null)
                     {
-                        var to = _lastTile ?? FightKeys.MechTile();
+                        var to = _lastTile ?? FightKeys.MechTile() ?? FirstTarget(set);
                         if (to.HasValue) Navigation.Active?.MoveTo(TileId(to.Value.X, to.Value.Y));
                         else Navigation.Active?.FocusStop(BoardStop);
                     }
@@ -447,6 +465,7 @@ namespace StarVoders.Module.Screens
             }
             if (selecting) SayStrikeChanges();
             _wasSelecting = selecting;
+            _selectionSeen = selection;
             NoChoicesUpdate();
             var on = FocusedTile();
             if (on.HasValue) _lastTile = on;
@@ -471,6 +490,18 @@ namespace StarVoders.Module.Screens
             if (!none || !FightState.CanSkipRepeats) _toSkipRepeats = false;
             else if (_toSkipRepeats && Navigation.Active != null && Navigation.Active.MoveTo(SkipRepeatsId)) _toSkipRepeats = false;
             _wasNoChoices = none;
+        }
+
+        // The first tile a selection takes, top row first; null when it takes none.
+        private static (int X, int Y)? FirstTarget(FightState.TargetSet set)
+        {
+            (int X, int Y)? best = null;
+            foreach (var tile in set.Tiles)
+            {
+                var c = tile.TileModel.Coord;
+                if (best == null || c.y > best.Value.Y || (c.y == best.Value.Y && c.x < best.Value.X)) best = (c.x, c.y);
+            }
+            return best;
         }
 
         // Says the strike marks once they settle on a set other than the last said. Settling on no

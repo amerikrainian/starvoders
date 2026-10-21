@@ -76,6 +76,34 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Channelling_reads_instead_of_its_charge_and_its_end_is_said()
+        {
+            var plain = Migo(1, 2, 6);
+            var channel = Migo(1, 2, 6);
+            channel.Charge = 1;
+            channel.Channel = "channelling 1 Doom";
+            Assert.Equal(new[] { "Migo 1: channelling 1 Doom" }, FightDiff.Lines(Snap(plain), Snap(channel)));
+            Assert.Equal(new[] { "Migo 1 stops channelling" }, FightDiff.Lines(Snap(channel), Snap(plain)));
+            var charged = Migo(1, 2, 6);
+            charged.Charge = 2;
+            Assert.Equal(new[] { "Migo 1: charge 2" }, FightDiff.Lines(Snap(plain), Snap(charged)));
+        }
+
+        [Fact]
+        public void Artifacts_gained_or_lost_mid_fight_are_said_but_not_on_the_first_read()
+        {
+            var empty = Snap();
+            var one = Snap();
+            one.Artifacts.Add(new CardSnap { Key = "1", Name = "Cosmic Bond" });
+            var two = Snap();
+            two.Artifacts.Add(new CardSnap { Key = "1", Name = "Cosmic Bond" });
+            two.Artifacts.Add(new CardSnap { Key = "2", Name = "Booby Traps" });
+            Assert.Empty(FightDiff.Lines(empty, one));
+            Assert.Equal(new[] { "Gained Booby Traps" }, FightDiff.Lines(one, two));
+            Assert.Equal(new[] { "Lost Booby Traps" }, FightDiff.Lines(two, one));
+        }
+
+        [Fact]
         public void A_fight_without_a_turn_limit_says_the_turn_alone()
         {
             var before = Snap(Migo(1, 2, 6));
