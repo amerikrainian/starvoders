@@ -1,5 +1,15 @@
 # Changelog
 
+## V0.1.4
+
+- Replaying cards for which you cannot meet the conditions now offers the game's skip repeats button. You can also press escape as it will now have the same effect.
+- When playing jabs, we should no longer randomly lose the draw option.
+- Enemies now report when they're immune when scrolling over them.
+- Per request, entities with shock have their own category.
+- Per request, you can now rebind mod keys, keeping in mind some actions are game-specific and must be done in options as opposed to mod settings.
+- Haunting should properly read now.
+- Booby traps are now labeled as such.
+
 ## V0.1.3
 
 - Card/artifact rarities now show in buffers.
