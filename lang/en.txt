@@ -136,6 +136,7 @@ fight.cat.danger=Danger zones
 fight.cat.line={0}, {1}
 fight.nottarget=not a target
 fight.nochoices=no choices
+fight.prompt.or={0}, or {1}
 fight.cat.targets=Targets
 fight.nothing=nothing
 fight.ev.enemyturn=Enemy turn

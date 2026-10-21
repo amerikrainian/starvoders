@@ -390,8 +390,12 @@ separately. Host F6 uses the same OS read.
   in place, it draws no list) is answered IN THE HAND: prompt said, focus to the first target card,
   targets read "target, <card>", Enter on another card or on a cell says "not a target", Escape
   cancels (tested with `CreateCardTask(Il2CppSystem.Enum.ToObject(Il2CppType.Of<CardName>(), ...),
-  Pile: Hand, rarity: new Il2CppSystem.Nullable<Rarity>())`; the rarity must not be null). Only other
-  selections without grid targets (cards elsewhere, if any) get the Targets list stop. Direction selections are untested (no such card yet).
+  Pile: Hand, rarity: new Il2CppSystem.Nullable<Rarity>())`; the rarity must not be null). Every other
+  non-grid target gets the Targets list stop (before the board), also beside grid targets: every Jab
+  variant (Jab, Power, Quick, Flicker, Left Foot, Spirit, Jab'racadabra) is ONE selection taking an
+  adjacent entity's tile OR the `EncounterView.ExtraSelectionPanel` ("Draw 1 Card",
+  `Selection.ExtraSelectionChoice`); the prompt names the extras ("Choose an entity, or Draw 1 Card")
+  and focus stays on the board (with no entity adjacent, the list alone, focused). Direction selections are untested (no such card yet).
   Repeats: a repeat's selection (`Selection.IsRepeat`; Flamethrower x2's second burn, not its first) shows
   Skip Repeats (`EncounterView.CancelRepeatsSelectionPanel`, click = `SelectionController.Cancel(true)`), and
   while it shows the game's Cancel key IS that button (`EncounterKeyInputController.OnCancel`); a plain

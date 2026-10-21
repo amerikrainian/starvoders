@@ -134,6 +134,7 @@ fight.cat.danger=Tehlike bölgeleri
 fight.cat.line={0}, {1}
 fight.nottarget=hedef değil
 fight.nochoices=seçenek yok
+fight.prompt.or={0}, veya {1}
 fight.cat.targets=Hedefler
 fight.nothing=hiçbir şey
 fight.ev.enemyturn=Düşman turu

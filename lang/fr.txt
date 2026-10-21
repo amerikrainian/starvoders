@@ -134,6 +134,7 @@ fight.cat.danger=Zones de danger
 fight.cat.line={0}, {1}
 fight.nottarget=pas une cible
 fight.nochoices=aucun choix
+fight.prompt.or={0}, ou {1}
 fight.cat.targets=Cibles
 fight.nothing=rien
 fight.ev.enemyturn=Tour ennemi

@@ -60,10 +60,11 @@ namespace StarVoders.Module.Screens
             if (c == null) return;
             var view = c.EncounterView;
 
-            // A selection the board cannot answer (cards to choose) is a list of its targets; one on
-            // the grid (tiles, the play area, arrows) is answered on the board itself.
+            // What the board cannot answer (cards to choose, a Jab's "Draw 1 Card" panel) is a list of
+            // those targets; the grid's (tiles, the play area, arrows) are answered on the board itself.
+            // A selection can take both: a Jab takes an adjacent entity or the draw.
             var selection = FightState.Selecting ? FightState.ReadTargets() : null;
-            if (selection != null && !selection.OnBoard && selection.Others.Count > 0 && !selection.InHand)
+            if (selection != null && selection.Others.Count > 0 && !selection.InHand)
             {
                 var board = FightBoard.Read();
                 b.BeginStop(TargetsStop);
@@ -413,6 +414,14 @@ namespace StarVoders.Module.Screens
                     // A card played onto the grid as a whole ("Click grid to play") needs no prompt:
                     // landing on the board says it; Enter on any cell plays it.
                     string prompt = set.Tiles.Count > 0 || set.Arrows.Count > 0 ? FightState.Prompt() : null;
+                    // The other choices it also takes, listed in their own stop: named with the prompt.
+                    if (prompt != null && set.Others.Count > 0)
+                    {
+                        var board = FightBoard.Read();
+                        var others = new List<string>();
+                        foreach (var o in set.Others) others.Add(TargetText(o, board));
+                        prompt = Strings.FightPromptOr(prompt, string.Join(", ", others));
+                    }
                     if (prompt != null) Speech.Say(prompt);
                     // Onto a cell: the one last on, else the mech (the stop's memory may be a hand card).
                     var at = FocusedTile();
