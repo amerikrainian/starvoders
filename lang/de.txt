@@ -126,6 +126,7 @@ fight.zone.spawn=Spawnreihen
 fight.danger={0}: {1}
 fight.targeted=Ziel von {0}
 fight.cat.invaders=Invasoren
+fight.cat.shocked=Geschockt
 fight.cat.mech=Mech
 fight.cat.summons=Beschwörungen
 fight.cat.items=Bomben und Objekte

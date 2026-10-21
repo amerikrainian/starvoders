@@ -126,6 +126,7 @@ fight.zone.spawn=출현 구역
 fight.danger={0}: {1}
 fight.targeted={0} 조준 중
 fight.cat.invaders=침략자
+fight.cat.shocked=감전
 fight.cat.mech=메카
 fight.cat.summons=소환수
 fight.cat.items=폭탄과 아이템

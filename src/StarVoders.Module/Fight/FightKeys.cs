@@ -259,7 +259,7 @@ namespace StarVoders.Module.Fight
 
         // ---- categories ----
 
-        private static readonly string[] Categories = { "targets", "invaders", "mech", "summons", "items", "pickups", "danger" };
+        private static readonly string[] Categories = { "targets", "invaders", "shocked", "mech", "summons", "items", "pickups", "danger" };
         private static int _category = -1;
         private static int _item = -1;
 
@@ -286,6 +286,7 @@ namespace StarVoders.Module.Fight
                     {
                         case "targets": member = EncounterScreen.IsTarget(x, y); break;
                         case "invaders": member = e?.TryCast<EnemyEntityModel>() != null; break;
+                        case "shocked": member = e != null && e.IsShocked; break;
                         case "mech": member = e?.TryCast<PlayerEntityModel>() != null; break;
                         case "summons": member = board.IsSummon(x, y); break;
                         case "items": member = e?.TryCast<ItemEntityModel>() != null && !board.IsSummon(x, y); break;

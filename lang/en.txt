@@ -128,6 +128,7 @@ fight.zone.spawn=spawn rows
 fight.danger={0}: {1}
 fight.targeted=targeted by {0}
 fight.cat.invaders=Invaders
+fight.cat.shocked=Shocked
 fight.cat.mech=Mech
 fight.cat.summons=Summons
 fight.cat.items=Bombs and items

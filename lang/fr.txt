@@ -126,6 +126,7 @@ fight.zone.spawn=rangées d'apparition
 fight.danger={0}: {1}
 fight.targeted=visée par {0}
 fight.cat.invaders=Envahisseurs
+fight.cat.shocked=Électrocutés
 fight.cat.mech=Mécha
 fight.cat.summons=Invocations
 fight.cat.items=Bombes et objets

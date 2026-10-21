@@ -126,6 +126,7 @@ fight.zone.spawn=刷新区
 fight.danger={0}: {1}
 fight.targeted=被 {0} 瞄准
 fight.cat.invaders=入侵者
+fight.cat.shocked=被电击
 fight.cat.mech=机甲
 fight.cat.summons=召唤物
 fight.cat.items=炸弹与物品

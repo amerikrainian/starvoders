@@ -126,6 +126,7 @@ fight.zone.spawn=出現の列
 fight.danger={0}: {1}
 fight.targeted={0} が狙う
 fight.cat.invaders=インベーダー
+fight.cat.shocked=ショック
 fight.cat.mech=メカ
 fight.cat.summons=召喚
 fight.cat.items=爆弾とアイテム

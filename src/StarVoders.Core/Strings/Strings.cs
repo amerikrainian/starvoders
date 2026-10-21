@@ -186,6 +186,7 @@ namespace StarVoders.Core.Strings
             D("fight.targeted", "targeted by {0}"),
             // The board's categories ([ ] and , .): their names, "Invaders, 2"; "nothing" for a key with nothing to say. Then the fight keys' names for F1.
             D("fight.cat.invaders", "Invaders"),
+            D("fight.cat.shocked", "Shocked"),
             D("fight.cat.mech", "Mech"),
             D("fight.cat.summons", "Summons"),
             D("fight.cat.items", "Bombs and items"),
