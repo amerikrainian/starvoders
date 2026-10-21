@@ -177,6 +177,7 @@ namespace StarVoders.Module.Fight
                         Health = entity.Health,
                         Shielded = entity.IsShielded,
                         Shield = FightBoard.ShieldName(entity),
+                        Immune = FightBoard.ImmuneName(entity),
                         Shocked = entity.IsShocked,
                         Charge = entity.Charge,
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,

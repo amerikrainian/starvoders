@@ -212,7 +212,9 @@ namespace StarVoders.Core.Strings
             D("fight.ev.shielded", "{0} shielded"),
             D("fight.ev.unshielded", "{0} loses its shield"),
             D("fight.ev.shocked", "{0} shocked"),
-            D("fight.ev.unshocked", "{0} no longer shocked"),
+            D("fight.ev.unshocked", "{0} loses shock"),
+            // Immunity lost (gained reads as "Mothership: Immune", the game's word).
+            D("fight.ev.unimmune", "{0} loses immunity"),
             D("fight.ev.drew", "Drew {0}"),
             // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
             D("fight.ev.targets", "{0} targets {1}"),
@@ -543,6 +545,7 @@ namespace StarVoders.Core.Strings
         public static string FightUnshielded(string name) => F("fight.ev.unshielded", name);
         public static string FightShocked(string name) => F("fight.ev.shocked", name);
         public static string FightUnshocked(string name) => F("fight.ev.unshocked", name);
+        public static string FightUnimmune(string name) => F("fight.ev.unimmune", name);
         public static string FightDrew(string cards) => F("fight.ev.drew", cards);
         public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
         public static string FightTargeted(string who) => F("fight.targeted", who);

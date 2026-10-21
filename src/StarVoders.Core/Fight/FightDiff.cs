@@ -6,7 +6,7 @@ namespace StarVoders.Core.Fight
     /// <summary>
     /// What changed between two settled moments of a fight, worded as outcomes (speechchem's way):
     /// "Enemy turn" first when it began, then per entity: arrived, moved (only the coordinate that
-    /// changed: "Migo 1 to row 4"), health, shield, shock, charge; the destroyed, grouped by kind; new Danger Zones per
+    /// changed: "Migo 1 to row 4"), health, shield, immunity, shock, charge; the destroyed, grouped by kind; new Danger Zones per
     /// attacker; then the cards that land on the grid as pickups and those lost from it without being drawn
     /// (a drawn one is the "Drew" line); then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
     /// cards drawn. Terse, one line per fact, in that
@@ -44,6 +44,9 @@ namespace StarVoders.Core.Fight
                 if (was.Shielded != e.Shielded || (e.Shielded && was.Shield != e.Shield))
                     lines.Add(!e.Shielded ? S.FightUnshielded(e.Name)
                         : e.Shield != null ? S.FightLabelled(e.Name, e.Shield) : S.FightShielded(e.Name));
+                // Immunity (the Mothership's comes and goes): "Mothership: Immune".
+                if ((was.Immune != null) != (e.Immune != null))
+                    lines.Add(e.Immune != null ? S.FightLabelled(e.Name, e.Immune) : S.FightUnimmune(e.Name));
                 if (was.Shocked != e.Shocked) lines.Add(e.Shocked ? S.FightShocked(e.Name) : S.FightUnshocked(e.Name));
                 if (was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
             }

@@ -65,6 +65,17 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Immunity_reads_by_the_game_word_when_gained_and_its_loss_by_ours()
+        {
+            var plain = Migo(1, 2, 6);
+            var immune = Migo(1, 2, 6);
+            immune.Immune = "Immune";
+            Assert.Equal(new[] { "Migo 1: Immune" }, FightDiff.Lines(Snap(plain), Snap(immune)));
+            Assert.Equal(new[] { "Migo 1 loses immunity" }, FightDiff.Lines(Snap(immune), Snap(plain)));
+            Assert.Empty(FightDiff.Lines(Snap(immune), Snap(immune)));
+        }
+
+        [Fact]
         public void A_fight_without_a_turn_limit_says_the_turn_alone()
         {
             var before = Snap(Migo(1, 2, 6));

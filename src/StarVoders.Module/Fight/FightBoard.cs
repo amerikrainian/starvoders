@@ -122,7 +122,7 @@ namespace StarVoders.Module.Fight
         }
 
         /// <summary>The entity's state after its name: its named traits (Bomber Mech's "Bomb"), health
-        /// above 1, shielded, shocked, charge.</summary>
+        /// above 1, shielded, immune, shocked, charge.</summary>
         public static string State(AEntityModel entity)
         {
             if (entity == null) return null;
@@ -130,6 +130,7 @@ namespace StarVoders.Module.Fight
             foreach (var trait in Traits(entity)) parts.Add(GameLoc.Get(trait + "_Keyword"));
             if (entity.TryCast<PlayerEntityModel>() == null && entity.Health > 1) parts.Add(Strings.FightHealth(entity.Health));
             if (entity.IsShielded) parts.Add(ShieldName(entity) ?? GameLoc.Get("Shielded_Keyword"));
+            parts.Add(ImmuneName(entity));
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));
             if (entity.Charge > 0) parts.Add(Strings.FightCharge(entity.Charge));
             parts.RemoveAll(string.IsNullOrEmpty);
@@ -164,7 +165,26 @@ namespace StarVoders.Module.Fight
                 string line = GameLoc.Get(trait + "_InfoLine");
                 if (line != null && !lines.Contains(line)) lines.Add(line);
             }
+            if (ImmuneName(entity) != null)
+            {
+                string line = GameLoc.Get("Invulnerable_InfoLine");
+                if (line != null && !lines.Contains(line)) lines.Add(line);
+            }
             return lines;
+        }
+
+        /// <summary>"Immune" while strikes cannot harm the entity (<see cref="AEntityModel.IsInvulnerable"/>:
+        /// the Mothership gains and loses it; the tile's hover icons draw it), else null. The game has
+        /// no keyword for it, only its floating "Immune!" and the "Immunity: ..." info line, so the
+        /// word is the floating text without its exclamation mark.</summary>
+        public static string ImmuneName(AEntityModel entity)
+        {
+            try
+            {
+                if (entity == null || !entity.IsInvulnerable) return null;
+                return GameLoc.Get("FloatTextImmune_Misc")?.Trim().TrimEnd('!', '！').TrimStart('¡').Trim();
+            }
+            catch (Exception e) { CoreLog.Warning("FightBoard: reading immunity failed: " + e.Message); return null; }
         }
 
         /// <summary>Whether the entity's shield is an Explosive Shield: shielded with the

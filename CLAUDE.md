@@ -378,7 +378,10 @@ separately. Host F6 uses the same OS read.
   effects, then "Invader Turn" and what the invaders did, then the new turn; the combo is caught before
   `StartTurnTask` resets it to 0), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
-  pickups by card id: "Pickup: Dash appears at 4 7", "Pickup: Dash destroyed" when gone and not drawn. Ticked before `ScreenManager` so an event
+  pickups by card id: "Pickup: Dash appears at 4 7", "Pickup: Dash destroyed" when gone and not drawn.
+  Immunity (`AEntityModel.IsInvulnerable`, the Mothership's comes and goes) has no keyword: read "Immune"
+  (`FloatTextImmune_Misc` without its "!") in the entity's state and its gain ("Mothership: Immune") and
+  loss, details `Invulnerable_InfoLine`; test by setting the flag on an invader through `/eval`. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
 - Choosing a target (`Fight.ReadTargets`: the selection's targets sorted into tiles, `PlayAreaView`,
   `DirectionSelectionArrow`s, others): a selection with grid targets is answered ON THE BOARD (its

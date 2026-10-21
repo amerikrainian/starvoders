@@ -18,6 +18,8 @@ namespace StarVoders.Core.Fight
         public bool Shielded, Shocked;
         /// <summary>The shield's name when it is not a plain one ("Explosive Shield"), else null.</summary>
         public string Shield;
+        /// <summary>The game's word for immunity ("Immune") while strikes cannot harm the entity, else null.</summary>
+        public string Immune;
         public int Charge;
         /// <summary>Health changes are not spoken for the mech (it has none to lose).</summary>
         public bool IsMech;
