@@ -1,5 +1,12 @@
 # Changelog
 
+## V0.1.5
+
+- Permanent modifiers for encounters should no longer randomly be inserted into seemingly arbitrary points in focus speech.
+- Cards that push an entity left or right, like Pusher, now offer the directions around the entity you picked, not around yourself or your haunted Summon.
+- If the entity is against the edge, pushing it into the wall is now possible too.
+- The Keeper's spells now list their empty slots after the spells, both in fights and in the deck viewer.
+
 ## V0.1.4
 
 - Replaying cards for which you cannot meet the conditions now offers the game's skip repeats button. You can also press escape as it will now have the same effect.
