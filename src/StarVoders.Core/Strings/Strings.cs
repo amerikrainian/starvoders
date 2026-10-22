@@ -181,6 +181,8 @@ namespace StarVoders.Core.Strings
             D("fight.charge", "charge {0}"),
             // The Summon a Keeper haunts (rides inside, sharing its tile): "Sol, haunted, 2 1".
             D("fight.haunted", "haunted"),
+            D("spell.slot.empty", "Empty slot"),
+            D("spell.spells", "Spells"),
             // An ability ready to use: {0} = the game's word for it ("Activate ready": a Summon's once-a-turn ability).
             D("fight.ready", "{0} ready"),
             // An invader channelling Doom (the game draws "WARNING! +1 Doom" over it): {0} = the Doom it adds, {1} = the game's word "Doom"; without an amount ({0} = the word); and its stopping.
@@ -573,6 +575,8 @@ namespace StarVoders.Core.Strings
         public static string FightHealth(int health) => F("fight.health", health);
         public static string FightCharge(int charge) => F("fight.charge", charge);
         public static string FightHaunted => Get("fight.haunted");
+        public static string SpellSlotEmpty => Get("spell.slot.empty");
+        public static string Spells => Get("spell.spells");
         public static string FightReady(string ability) => F("fight.ready", ability);
         public static string FightChannelling(int amount, string doom) => F("fight.channel", amount, doom);
         public static string FightChannellingDoom(string doom) => F("fight.channel.doom", doom);

@@ -76,18 +76,26 @@ namespace StarVoders.Module.Screens
 
             BuildBoard(b, selection);
 
-            // A Keeper's spells, in the Mana panel's slots (cast by clicking): their own stop, when
-            // there are any.
+            // A Keeper's spells, in the Mana panel's slots (cast by clicking): their own stop, the
+            // slots still empty after them (the panel draws them as empty frames: 3, 5 with Grimoire),
+            // so the positions count the slots.
             var spells = new List<SpellView>();
+            int slots = 0;
             if (view.ManaView != null && FightState.Shown(view.ManaView) && view.ManaView.SpellViews != null)
+            {
                 foreach (var spell in view.ManaView.SpellViews)
                     if (ViewNodes.IsShown(spell) && spell.ArtifactModel != null) spells.Add(spell);
-            if (spells.Count > 0)
+                try { slots = DataManager.PlayerData.spellSlots; }
+                catch (Exception e) { CoreLog.Warning("Encounter: reading the spell slots failed: " + e.Message); }
+            }
+            if (spells.Count > 0 || slots > 0)
             {
                 b.BeginStop("fight:spells");
                 b.PushContext(null);
                 foreach (var spell in spells)
                     b.AddItem(ControlId.Structural("fight:spell:" + spell.GetInstanceID()), Spell(spell));
+                for (int i = spells.Count; i < slots; i++)
+                    b.AddItem(ControlId.Structural("fight:spellslot:" + i), CardNodes.EmptySpellSlot());
                 b.PopContext();
             }
 

@@ -357,8 +357,9 @@ separately. Host F6 uses the same OS read.
   the deck viewer draws it), the autoplay and freeze previews (they need the game's hover preview,
   mouse mode only), the burn warning. A Gunner's cards all cost Heat (`BaseEnergyCost`): test Power by
   setting a hand card's `PowerCost`, `Values[Power/PowerCell]`, `UpdateView()`, then restore),
-  Spells (its own stop, only when any: a Keeper's `ManaView.SpellViews`, not in `ArtifactViewDict`:
-  buttons, Enter = the click (cast), "Cooldown: N, disabled" while
+  Spells (its own stop, for a Keeper: `ManaView.SpellViews`, not in `ArtifactViewDict`, then "Empty slot"
+  up to `PlayerData.spellSlots` (3, Grimoire +2; the panel draws empty frames, `HasEmptySpellSlotCondition`
+  and the Spell Reward's `RewardFilter` compare against it): buttons, Enter = the click (cast), "Cooldown: N, disabled" while
   `CooldownObject` shows (its text is stale while hidden), refused when `Used`/`Destroyed`; test:
   Iris starts with Conjure), Rack (End Turn; the Transformer's Draw, `PowerView.DrawButton`, shown
   when the run has the artifact (`PowerView.Initialize`), once a turn = `DrawButtonLock`; test:
@@ -423,8 +424,10 @@ separately. Host F6 uses the same OS read.
   variant (Jab, Power, Quick, Flicker, Left Foot, Spirit, Jab'racadabra) is ONE selection taking an
   adjacent entity's tile OR the `EncounterView.ExtraSelectionPanel` ("Draw 1 Card",
   `Selection.ExtraSelectionChoice`); the prompt names the extras ("Choose an entity, or Draw 1 Card")
-  and focus stays on the board (with no entity adjacent, the list alone, focused). Direction selections (Discharge, Kunai's throw, a Summon's push) are answered on the board: the cells
-  next to the origin read "target". A card can chain selections (Kunai: a hand card, then a direction;
+  and focus stays on the board (with no entity adjacent, the list alone, focused). Direction selections (Discharge, Kunai's throw, a Summon's push, Pusher) are answered on the board: the cells
+  next to the origin read "target"; the origin is `BaseCoord`, a `Coord` or an `AValue` to `Get()` (Pusher's
+  is its first pick, a `TargetValue`), else the mech. An arrow whose cell is off the board (the game offers
+  pushing into the wall: it strikes the entity) goes to the Targets list, named with the prompt. A card can chain selections (Kunai: a hand card, then a direction;
   Nether Lash: two entities): `EncounterScreen` tracks the game's `CurrentSelection` pointer
   (`Fight.SelectionId`), so each step is announced and focused as a new one.
   Repeats: a repeat's selection (`Selection.IsRepeat`; Flamethrower x2's second burn, not its first) shows
@@ -455,7 +458,8 @@ separately. Host F6 uses the same OS read.
   RemoveCard, PlayerData, PileView, Glossary, StarterDeck) and `PileToShow`): `DeckViewScreen`,
   title by the pile its first card is in (no title drawn), `DeckCardView`s from `_cardGrid` and
   `_cardPilotUniqueGrid` (each grid as strips, a row each as drawn, Up/Down keeping the column), artifacts (strips too; the game draws them above the cards; the starter deck's is the pilot's
-  starter artifact), Back last in the same stop (outside the cards' positions); Escape = `ExitScene`. The game creates the artifacts first and
+  starter artifact), a Keeper's spells (`SpellViews`, apart from the artifact grids; a row under "Spells",
+  then "Empty slot" up to the drawn frame, `KeeperObjects3`/`KeeperObjects5`), Back last in the same stop (outside the cards' positions); Escape = `ExitScene`. The game creates the artifacts first and
   the cards over the next frames, so the screen holds its arrival until the card count holds 0.15 s
   (an empty pile 0.5 s, 1.5 s at most), else focus lands on the artifact. In RemoveCard mode a
   card's click removes it: never Enter on a card there through the driver.

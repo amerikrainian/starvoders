@@ -20,7 +20,8 @@ namespace StarVoders.Module.Screens
     /// names it: in a fight, the pile its cards are in ("Draw Pile", the game's own word), else the
     /// deck. Its cards in the order shown (the draw pile comes shuffled, as the game shows it), each
     /// "name, cost, description" with the keyword explanations in the ui buffer and on Backspace;
-    /// then its artifacts, then Back. Enter is the game's click on a card (nothing in a pile; the
+    /// then its artifacts, a Keeper's spells (a row of their own, the empty slots after them), then
+    /// Back. Enter is the game's click on a card (nothing in a pile; the
     /// removal in the shop's mode). Escape is Back.
     ///
     /// The game creates the artifacts first and the cards over the next frames, so the screen holds
@@ -102,6 +103,7 @@ namespace StarVoders.Module.Screens
                     artifact => ControlId.Structural("deckview:artifact:" + artifact.GetInstanceID()),
                     artifact => CardNodes.Artifact(artifact.ArtifactModel, artifact));
             b.PopContext();
+            Spells(b, c);
             b.PopContext();
             // Back after the cards in the same stop, outside their context, so the list's positions
             // count the cards alone.
@@ -126,6 +128,28 @@ namespace StarVoders.Module.Screens
             try { c.ExitScene(); }
             catch (Exception e) { CoreLog.Warning("DeckView: leaving failed: " + e.Message); }
         }
+
+        // A Keeper's spells, drawn apart from the artifacts in a frame of 3 slots (5 with Grimoire):
+        // one row, the spells then the slots still empty.
+        private static void Spells(GraphBuilder b, DeckViewSceneController c)
+        {
+            int slots = Shown(c.KeeperObjects5) ? 5 : Shown(c.KeeperObjects3) ? 3 : 0;
+            var spells = new List<DeckArtifactView>();
+            if (c.SpellViews != null)
+                foreach (var spell in c.SpellViews)
+                    if (ViewNodes.IsShown(spell) && spell.ArtifactModel != null) spells.Add(spell);
+            if (spells.Count == 0 && slots == 0) return;
+            b.PushContext(Strings.Spells);
+            b.StartRow("deckview:rows");
+            foreach (var spell in spells)
+                b.AddItem(ControlId.Structural("deckview:spell:" + spell.GetInstanceID()), CardNodes.Artifact(spell.ArtifactModel, spell));
+            for (int i = spells.Count; i < slots; i++)
+                b.AddItem(ControlId.Structural("deckview:spellslot:" + i), CardNodes.EmptySpellSlot());
+            b.EndRow();
+            b.PopContext();
+        }
+
+        private static bool Shown(GameObject o) => o != null && o.activeInHierarchy;
 
         // The cards in the order the grids show them: the main grid, then the pilot's unique cards.
         private static List<DeckCardView> Cards(DeckViewSceneController c)

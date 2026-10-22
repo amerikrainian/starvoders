@@ -643,7 +643,7 @@ namespace StarVoders.Module.Fight
 
         /// <summary>What a running selection accepts, sorted by where it is answered: tiles, the play
         /// area ("click the grid to play"), direction arrows: all answered on the board; anything
-        /// else (cards to choose) only in a list.</summary>
+        /// else (cards to choose, an arrow pointing off the board) only in a list.</summary>
         public sealed class TargetSet
         {
             public readonly List<TileView> Tiles = new List<TileView>();
@@ -723,7 +723,25 @@ namespace StarVoders.Module.Fight
                 if (arrow != null) { set.Arrows.Add(arrow); continue; }
                 set.Others.Add(item);
             }
-            if (set.Arrows.Count > 0) set.Origin = ArrowOrigin();
+            if (set.Arrows.Count > 0)
+            {
+                set.Origin = ArrowOrigin();
+                // The game offers the wall's side too (Pusher on an entity at the edge pushes it into
+                // the wall): no cell lies that way, so that arrow is answered in the list.
+                if (set.Origin != null)
+                {
+                    var shape = Model.GridModel.GridShape;
+                    var (ox, oy) = set.Origin.Value;
+                    for (int i = set.Arrows.Count - 1; i >= 0; i--)
+                    {
+                        var (dx, dy) = Step(set.Arrows[i].Direction);
+                        int x = ox + dx, y = oy + dy;
+                        if (x >= 0 && y >= 0 && x < shape.x && y < shape.y) continue;
+                        set.Others.Insert(0, set.Arrows[i]);
+                        set.Arrows.RemoveAt(i);
+                    }
+                }
+            }
             if (!set.OnBoard && set.Others.Count > 0)
             {
                 var hand = Hand();
@@ -769,20 +787,31 @@ namespace StarVoders.Module.Fight
 
         public static bool Strike(int x, int y) => StrikeTiles().Contains((x, y));
 
-        // The selection's base tile when it has one, else the mech's.
+        // A compass direction as a step on the board (y up).
+        private static (int X, int Y) Step(Direction direction)
+        {
+            string compass = direction.ToString();
+            return ((compass.Contains("E") ? 1 : 0) - (compass.Contains("W") ? 1 : 0),
+                (compass.Contains("N") ? 1 : 0) - (compass.Contains("S") ? 1 : 0));
+        }
+
+        // The selection's base tile when it has one, else the mech's. The base is a Coord, or a value
+        // to resolve: Pusher's direction is from its first pick's tile (a TargetValue).
         private static (int X, int Y)? ArrowOrigin()
         {
             var c = Controller;
             try
             {
-                var baseCoord = c?.SelectionController?.CurrentSelection?.BaseCoord;
+                Il2CppSystem.Object baseCoord = c?.SelectionController?.CurrentSelection?.BaseCoord;
+                var value = baseCoord?.TryCast<AValue>();
+                if (value != null) baseCoord = value.Get();
                 if (baseCoord != null)
                 {
                     var coord = baseCoord.Unbox<Coord>();
                     return (coord.x, coord.y);
                 }
             }
-            catch { }
+            catch (Exception e) { CoreLog.Warning("Fight: reading the selection's base tile failed: " + e.Message); }
             try
             {
                 var p = Model.GridModel.GetPlayerCoord();

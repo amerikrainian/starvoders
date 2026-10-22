@@ -78,6 +78,17 @@ namespace StarVoders.Module.UI
             return first;
         }
 
+        /// <summary>A Keeper's spell slot with no spell in it (the game draws an empty frame).</summary>
+        public static NodeVtable EmptySpellSlot()
+        {
+            return new NodeVtable
+            {
+                ControlType = ControlTypes.Text,
+                Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => Strings.SpellSlotEmpty) },
+                SearchText = () => Strings.SpellSlotEmpty,
+            };
+        }
+
         public static NodeVtable Card(CardModel card, AViewItem view)
         {
             Func<string> name = () => FightState.CardName(card);
