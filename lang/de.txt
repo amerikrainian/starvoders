@@ -165,6 +165,7 @@ fight.ev.unshocked={0} verliert Schock
 fight.ev.unimmune={0} verliert Immunität
 fight.ev.artifact.gained={0} erhalten
 fight.ev.artifact.lost={0} verloren
+fight.ev.card.added={0} zu {1} hinzugefügt
 fight.ev.drew=Gezogen: {0}
 fight.ev.targets={0} zielt auf {1}
 fight.range={0} bis {1}

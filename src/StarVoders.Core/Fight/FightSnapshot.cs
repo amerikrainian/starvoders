@@ -49,6 +49,17 @@ namespace StarVoders.Core.Fight
     {
         public string Key;
         public string Name;
+        /// <summary>For a card in a pile: the pile's title where a card added to it is said ("Draw
+        /// Pile"), null for the piles kept only to know the card (purged, pickups).</summary>
+        public string Pile;
+    }
+
+    /// <summary>A spell slot's spell: its id, name, and whether it is recharging (its cooldown drawn).</summary>
+    public sealed class SpellSnap
+    {
+        public string Key;
+        public string Name;
+        public bool Recharging;
     }
 
     /// <summary>The fight at one settled moment, what <see cref="FightDiff"/> compares. Doom and
@@ -78,5 +89,8 @@ namespace StarVoders.Core.Fight
         /// <summary>The fight's artifacts and spells (the game's id as the key), gained or lost mid-fight
         /// (Booby Traps from a card, a spell used up).</summary>
         public List<CardSnap> Artifacts = new List<CardSnap>();
+        /// <summary>The cards in every pile but the hand, each with its <see cref="CardSnap.Pile"/>.</summary>
+        public List<CardSnap> Piles = new List<CardSnap>();
+        public List<SpellSnap> Spells = new List<SpellSnap>();
     }
 }

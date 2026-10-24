@@ -238,6 +238,8 @@ namespace StarVoders.Core.Strings
             // An artifact or spell gained or lost mid-fight: {0} = its name.
             D("fight.ev.artifact.gained", "Gained {0}"),
             D("fight.ev.artifact.lost", "Lost {0}"),
+            // A card created into a pile: {0} = the card, {1} = the pile's title ("Draw Pile").
+            D("fight.ev.card.added", "{0} added to {1}"),
             D("fight.ev.drew", "Drew {0}"),
             // An attacker's new Danger Zones: {0} the attacker (or the game's "Danger Zone"), {1} the tiles.
             D("fight.ev.targets", "{0} targets {1}"),
@@ -617,6 +619,7 @@ namespace StarVoders.Core.Strings
         public static string FightUnimmune(string name) => F("fight.ev.unimmune", name);
         public static string FightArtifactGained(string name) => F("fight.ev.artifact.gained", name);
         public static string FightArtifactLost(string name) => F("fight.ev.artifact.lost", name);
+        public static string FightCardAdded(string card, string pile) => F("fight.ev.card.added", card, pile);
         public static string FightDrew(string cards) => F("fight.ev.drew", cards);
         public static string FightTargets(string who, string tiles) => F("fight.ev.targets", who, tiles);
         public static string FightTargeted(string who) => F("fight.targeted", who);

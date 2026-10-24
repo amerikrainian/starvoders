@@ -165,6 +165,7 @@ fight.ev.unshocked={0} 감전 해제
 fight.ev.unimmune={0} 면역 해제
 fight.ev.artifact.gained={0} 획득
 fight.ev.artifact.lost={0} 잃음
+fight.ev.card.added={0}이(가) {1}에 추가됨
 fight.ev.drew=뽑음: {0}
 fight.ev.targets={0} {1} 조준
 fight.range={0}부터 {1}

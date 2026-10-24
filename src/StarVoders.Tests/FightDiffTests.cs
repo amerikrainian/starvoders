@@ -108,6 +108,36 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void A_card_created_into_a_pile_is_said_but_not_one_moving_between_piles()
+        {
+            var before = Snap();
+            before.Hand.Add(new CardSnap { Key = "Wander#1", Name = "Wander" });
+            before.Piles.Add(new CardSnap { Key = "Puppet#1", Name = "Puppet", Pile = "Draw Pile" });
+            before.Piles.Add(new CardSnap { Key = "Dash#1", Name = "Dash", Pile = null });
+            var after = Snap();
+            after.Piles.Add(new CardSnap { Key = "Wander#1", Name = "Wander", Pile = "Discard Pile" });
+            after.Piles.Add(new CardSnap { Key = "Puppet#1", Name = "Puppet", Pile = "Discard Pile" });
+            after.Piles.Add(new CardSnap { Key = "Dash#1", Name = "Dash", Pile = "Discard Pile" });
+            after.Piles.Add(new CardSnap { Key = "Poof#1", Name = "Poof!", Pile = "Draw Pile" });
+            after.Piles.Add(new CardSnap { Key = "Ghost#1", Name = "Ghost", Pile = null });
+            Assert.Equal(new[] { "Poof! added to Draw Pile" }, FightDiff.Lines(before, after));
+            // The piles still filling: nothing is new.
+            Assert.Empty(FightDiff.Lines(Snap(), after));
+        }
+
+        [Fact]
+        public void A_spell_whose_cooldown_runs_out_is_ready()
+        {
+            var before = Snap();
+            before.Spells.Add(new SpellSnap { Key = "1", Name = "Conjure", Recharging = true });
+            var after = Snap();
+            after.Spells.Add(new SpellSnap { Key = "1", Name = "Conjure" });
+            Assert.Equal(new[] { "Conjure ready" }, FightDiff.Lines(before, after));
+            Assert.Empty(FightDiff.Lines(after, before));
+            Assert.Empty(FightDiff.Lines(Snap(), after));
+        }
+
+        [Fact]
         public void Artifacts_gained_or_lost_mid_fight_are_said_but_not_on_the_first_read()
         {
             var empty = Snap();

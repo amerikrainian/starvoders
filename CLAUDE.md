@@ -393,6 +393,10 @@ separately. Host F6 uses the same OS read.
   `StartTurnTask` resets it to 0), diff, speak each event as its own queued entry,
   append to the uncapped combat buffer. Snapshot energy: Heat, Power, Battery, Mana (not the regen);
   pickups by card id: "Pickup: Dash appears at 4 7", "Pickup: Dash destroyed" when gone and not drawn.
+  Every pile by card id: a card in no pile and not in the hand before, now in the draw or discard pile, is
+  "Poof! added to Draw Pile" (the piles' `DrawPileTitle_Misc`/`DiscardPileTitle_Misc`; the purge pile has no
+  title, so purged and pickup cards are tracked only so leaving them is not news). A spell whose
+  `CooldownObject` stops showing is "Conjure ready" (`fight.ready`).
   Doom channelling: `GridModel.IsChannelingDoom(id)` (the game's "WARNING! +1 Doom"); the invader's
   `Charge` is then the Doom it adds, so it reads "channelling 1 Doom" instead of "charge 1" ("channelling
   Doom" at charge 0: Doom Ritual's pick), events on start/stop, details `TileDoom_InfoLine` (in the doom

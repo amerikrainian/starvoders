@@ -165,6 +165,7 @@ fight.ev.unshocked={0} pierde la electrocución
 fight.ev.unimmune={0} pierde la inmunidad
 fight.ev.artifact.gained=Obtienes {0}
 fight.ev.artifact.lost=Pierdes {0}
+fight.ev.card.added={0} añadida a {1}
 fight.ev.drew=Robas {0}
 fight.ev.targets={0} apunta a {1}
 fight.range={0} a {1}

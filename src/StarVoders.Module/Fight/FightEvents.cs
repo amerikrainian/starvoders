@@ -222,6 +222,34 @@ namespace StarVoders.Module.Fight
                         snap.Artifacts.Add(new CardSnap { Key = kv.Value.Pointer.ToString(), Name = GameLoc.ArtifactName(art.ArtifactName) ?? art.ArtifactName.ToString() });
                     }
 
+                // Every other pile by card id, titled where a card added to it is said (draw, discard).
+                foreach (var pile in new[] { Pile.Draw, Pile.Discard, Pile.Purged, Pile.Pickup })
+                {
+                    string title = pile == Pile.Draw ? GameLoc.Get("DrawPileTitle_Misc")
+                        : pile == Pile.Discard ? GameLoc.Get("DiscardPileTitle_Misc") : null;
+                    foreach (var id in model.CardPlayModel.GetPile(pile))
+                        snap.Piles.Add(new CardSnap
+                        {
+                            Key = id.CardName + "#" + id.Number,
+                            Name = GameLoc.Get(id.CardName + "_CardTitle") ?? id.CardName.ToString(),
+                            Pile = title,
+                        });
+                }
+                // A Keeper's spells, recharging while the slot draws its cooldown.
+                var mana = view.ManaView;
+                if (Fight.Shown(mana) && mana.SpellViews != null)
+                    foreach (var spell in mana.SpellViews)
+                    {
+                        var art = spell?.ArtifactModel;
+                        if (art == null || !spell.gameObject.activeInHierarchy) continue;
+                        snap.Spells.Add(new SpellSnap
+                        {
+                            Key = spell.Pointer.ToString(),
+                            Name = GameLoc.ArtifactName(art.ArtifactName) ?? art.ArtifactName.ToString(),
+                            Recharging = spell.CooldownObject != null && spell.CooldownObject.activeInHierarchy,
+                        });
+                    }
+
                 // The hand pile as the model has it: a card being played is still in it, so choosing
                 // its target and cancelling reads as nothing.
                 var play = view.CardPlayView;

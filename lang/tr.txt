@@ -165,6 +165,7 @@ fight.ev.unshocked={0} şokunu kaybeder
 fight.ev.unimmune={0} bağışıklığını kaybeder
 fight.ev.artifact.gained={0} kazanıldı
 fight.ev.artifact.lost={0} kaybedildi
+fight.ev.card.added={0}, {1} destesine eklendi
 fight.ev.drew=Çekildi: {0}
 fight.ev.targets={0}, {1} hedefliyor
 fight.range={0} ile {1} arası

@@ -165,6 +165,7 @@ fight.ev.unshocked={0} теряет оглушение
 fight.ev.unimmune={0} теряет неуязвимость
 fight.ev.artifact.gained=Получено: {0}
 fight.ev.artifact.lost=Потеряно: {0}
+fight.ev.card.added={0} добавлена: {1}
 fight.ev.drew=Взято: {0}
 fight.ev.targets={0} целится в {1}
 fight.range={0} — {1}

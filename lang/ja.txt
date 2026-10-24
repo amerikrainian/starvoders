@@ -165,6 +165,7 @@ fight.ev.unshocked={0} ショック解除
 fight.ev.unimmune={0} 無敵解除
 fight.ev.artifact.gained={0} を獲得
 fight.ev.artifact.lost={0} を失った
+fight.ev.card.added={0}が{1}に追加された
 fight.ev.drew=ドロー: {0}
 fight.ev.targets={0} が {1} を狙う
 fight.range={0} から {1}

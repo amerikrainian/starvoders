@@ -165,6 +165,7 @@ fight.ev.unshocked={0} 电击解除
 fight.ev.unimmune={0} 失去免疫
 fight.ev.artifact.gained=获得 {0}
 fight.ev.artifact.lost=失去 {0}
+fight.ev.card.added={0}已加入{1}
 fight.ev.drew=抽到 {0}
 fight.ev.targets={0} 瞄准 {1}
 fight.range={0} 到 {1}

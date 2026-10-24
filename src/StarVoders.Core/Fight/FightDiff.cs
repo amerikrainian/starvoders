@@ -9,8 +9,8 @@ namespace StarVoders.Core.Fight
     /// changed: "Migo 1 to row 4"), health, shield, immunity, shock, charge; the destroyed, grouped by kind; a boss off the
     /// board, its health and a phase it enters; new Danger Zones per
     /// attacker; then the cards that land on the grid as pickups and those lost from it without being drawn
-    /// (a drawn one is the "Drew" line); then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
-    /// cards drawn. Terse, one line per fact, in that
+    /// (a drawn one is the "Drew" line); the cards created into a pile; then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
+    /// cards drawn, then the spells whose cooldown ran out. Terse, one line per fact, in that
     /// order. Engine-free: the module takes the snapshots.
     /// </summary>
     public static class FightDiff
@@ -99,6 +99,18 @@ namespace StarVoders.Core.Fight
                     if (!after.Artifacts.Exists(b => b.Key == a.Key)) lines.Add(S.FightArtifactLost(a.Name));
             }
 
+            // Cards created into a pile ("Poof! added to Draw Pile"): in no pile and not in the hand
+            // before. Moves between piles (a reshuffle, a played card) are not said; a first snapshot with
+            // no cards (the piles still filling) adds nothing.
+            if (before.Hand.Count + before.Piles.Count > 0)
+            {
+                var had = new HashSet<string>();
+                foreach (var c in before.Hand) had.Add(c.Key);
+                foreach (var c in before.Piles) had.Add(c.Key);
+                foreach (var c in after.Piles)
+                    if (c.Pile != null && !had.Contains(c.Key)) lines.Add(S.FightCardAdded(c.Name, c.Pile));
+            }
+
             if (after.Combo > before.Combo && after.ComboText != null) lines.Add(after.ComboText);
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
             foreach (var (was, now) in new[] { (before.Heat, after.Heat), (before.Power, after.Power), (before.Battery, after.Battery), (before.Mana, after.Mana) })
@@ -111,6 +123,10 @@ namespace StarVoders.Core.Fight
             foreach (var c in after.Hand)
                 if (!held.Contains(c.Key)) drawn.Add(c.Name);
             if (drawn.Count > 0) lines.Add(S.FightDrew(string.Join(", ", drawn)));
+
+            // A spell whose cooldown ran out: "Conjure ready".
+            foreach (var s in after.Spells)
+                if (!s.Recharging && before.Spells.Exists(b => b.Key == s.Key && b.Recharging)) lines.Add(S.FightReady(s.Name));
             return lines;
         }
 
