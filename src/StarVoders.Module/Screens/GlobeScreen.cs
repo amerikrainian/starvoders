@@ -77,16 +77,18 @@ namespace StarVoders.Module.Screens
             if (panels != null)
                 for (int i = 0; i < panels.Count; i++)
                     if (ViewNodes.IsShown(panels[i])) shown.Add(i);
-            if (shown.Count > 0)
+            var quest = QuestButton(c);
+            if (shown.Count > 0 || quest != null)
             {
                 b.PushContext(null);
                 b.StartRow();
                 foreach (int i in shown)
                     b.AddItem(ControlId.Structural("globe:room" + i), Encounter(panels[i]));
+                if (quest != null) b.AddItem(ControlId.Structural("globe:quest"), Quest(c._instantiatedSecretQuestPanel, quest));
                 b.EndRow();
                 b.PopContext();
                 // Landing: the first encounter, or the selected one (the stop's selected member wins).
-                b.SetStart(ControlId.Structural("globe:room" + shown[0]));
+                if (shown.Count > 0) b.SetStart(ControlId.Structural("globe:room" + shown[0]));
             }
 
             // Proceed, then Reroll under it: each its own row.
@@ -96,6 +98,55 @@ namespace StarVoders.Module.Screens
                 b.AddItem(ControlId.Structural("globe:proceed"), ViewNodes.Button(proceed, enabled: () => proceed.ButtonEnabled));
             CampaignNodes.Reroll(b, c.RerollButton, "globe:reroll");
             b.PopContext();
+        }
+
+        // The secret quest (SecretQuestPanel: the Apocalypse final quest's offer, beside the act's last
+        // encounters): its Accept Strange Offer button while it is offered, else null.
+        private static AViewItem QuestButton(GlobeController c)
+        {
+            var quest = c._instantiatedSecretQuestPanel;
+            if (quest == null || !ViewNodes.IsShown(quest) || quest.isAccepted) return null;
+            var take = quest.transform.Find("TakeButton");
+            var button = take != null ? take.GetComponent<AViewItem>() : null;
+            return ViewNodes.IsShown(button) ? button : null;
+        }
+
+        // "Accept Strange Offer, button, Dark Channel, Permanent, The LINK": the button and what the panel
+        // offers, its curse (with the "+ PERMANENT" it draws) and its key; their descriptions in the ui
+        // buffer. Enter is the button's click (OnAcceptPressed: both join the run, the panel goes). The
+        // panel's own click only selects it, deselecting the encounters, so it is not offered.
+        private static NodeVtable Quest(SecretQuestPanel quest, AViewItem take)
+        {
+            var vt = ViewNodes.Button(take);
+            Func<string> offer = () =>
+            {
+                var parts = new List<string>();
+                string curse = Artifact(quest.CurseView);
+                TMP_Text permanentText = null;
+                var background = quest.transform.Find("Background");
+                if (background != null) permanentText = background.GetComponentInChildren<TMP_Text>(false);
+                string permanent = GameText.Calm(GameText.Of(permanentText)?.TrimStart('+', ' '));
+                if (curse != null) parts.Add(permanent != null ? curse + ", " + permanent : curse);
+                string key = Artifact(quest.KeyView);
+                if (key != null) parts.Add(key);
+                return parts.Count > 0 ? string.Join(", ", parts) : null;
+            };
+            var parts2 = new List<NodeAnnouncement>(vt.Announcements) { new NodeAnnouncement(offer, kind: AnnouncementKinds.Value) };
+            vt.Announcements = parts2;
+            vt.Details = () =>
+            {
+                var lines = new List<string>();
+                foreach (var view in new[] { quest.CurseView, quest.KeyView })
+                {
+                    var model = view != null ? view.ArtifactModel : null;
+                    if (model == null) continue;
+                    string n = GameLoc.ArtifactName(model.ArtifactName);
+                    string d = Fight.Fight.ArtifactDescription(model);
+                    if (n != null) lines.Add(d != null ? n + ": " + d : n);
+                }
+                return lines;
+            };
+            return vt;
         }
 
         private static NodeVtable Encounter(RoomChoicePanel panel)

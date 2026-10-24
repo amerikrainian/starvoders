@@ -310,7 +310,13 @@ separately. Host F6 uses the same OS read.
   by `EnemyEntityModel.EnemyID.EnemyName`, reward by its tooltip title; invader descriptions, each
   followed by its more-info links (`Fight.EntityInfoLines`: keywords and the `MoreInfoCardNames`/items/
   invaders it names, the Pixie's Shimmer; the fight's cell details and the Bestiary use it too), and
-  every tooltip in the ui buffer), Proceed, then Reroll under it (`ButtonEnabled`). **Clicking the encounter that is
+  every tooltip in the ui buffer; the secret quest after them, while offered: `_instantiatedSecretQuestPanel`,
+  the Apocalypse final quest's offer (shown on the act's last encounter choice of a run with the `Finale`
+  run mod when the quest level is the act number), read as its `TakeButton` "Accept Strange Offer, Dark
+  Channel, Permanent, The LINK" (curse with the drawn "+ PERMANENT", key), descriptions in the ui buffer,
+  Enter = the button (`OnAcceptPressed`: both join the run); the panel's own click only selects it, so it
+  is not offered; test: instantiate `SecretQuestPanel` under `ChoicePanelHoldersSet2[1]`, `Initialize(Random,
+  globe)`, set `_instantiatedSecretQuestPanel`), Proceed, then Reroll under it (`ButtonEnabled`). **Clicking the encounter that is
   already selected is `ProceedButton.OnClick` (the fight starts)**, as in the game, and the
   tutorial preselects its one encounter: never Enter on an encounter through the driver.
 - Game strings: `Interop/GameLoc` (`<EnemyName>_EntityTitle`/`_EntityDesc`,
