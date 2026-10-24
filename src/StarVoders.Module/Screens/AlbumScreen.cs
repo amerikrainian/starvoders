@@ -135,11 +135,17 @@ namespace StarVoders.Module.Screens
             return lines;
         }
 
-        // A stat's answer with its question, the text it sits under ("Current Win Streak: 3").
+        // A stat's answer with its question ("Current Win Streak: 3"): the text beside it named as the
+        // answer without " Answer" ("Current Win Streak Answer"), else the text it sits under.
         private static string Answer(TMP_Text answer)
         {
-            var parent = answer != null && answer.transform.parent != null ? answer.transform.parent.GetComponent<TMP_Text>() : null;
-            return Pair(parent, answer);
+            if (answer == null) return null;
+            var parent = answer.transform.parent;
+            const string suffix = " Answer";
+            string name = answer.name.EndsWith(suffix) ? answer.name.Substring(0, answer.name.Length - suffix.Length) : null;
+            var beside = name != null && parent != null ? parent.Find(name) : null;
+            var question = beside != null ? beside.GetComponent<TMP_Text>() : parent != null ? parent.GetComponent<TMP_Text>() : null;
+            return Pair(question, answer);
         }
 
         private static string Pair(TMP_Text question, TMP_Text answer)
@@ -163,7 +169,14 @@ namespace StarVoders.Module.Screens
                 var locks = c.MemoryButtonLocks;
                 return locks != null && index < locks.Count && locks[index] != null && locks[index].activeInHierarchy;
             };
-            Func<string> label = () => locked() ? GameLoc.Get("LockedTitle_Misc") : ViewNodes.Label(button);
+            // The number it draws (MemoryButtonNumbers): one character, which ViewNodes.Label skips as a key prompt.
+            Func<string> label = () =>
+            {
+                if (locked()) return GameLoc.Get("LockedTitle_Misc");
+                var numbers = c.MemoryButtonNumbers;
+                var number = numbers != null && index < numbers.Count && numbers[index] != null ? numbers[index].GetComponentInChildren<TMP_Text>() : null;
+                return GameText.Of(number) ?? (index + 1).ToString();
+            };
             return ViewNodes.Button(button, label, enabled: () => !locked());
         }
     }

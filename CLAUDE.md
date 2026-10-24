@@ -219,7 +219,9 @@ separately. Host F6 uses the same OS read.
   `RevealedObject` or "Lore hidden, 39/50 defeated" from `RequirementText`; `HiddenObject`'s text is
   alien script, never read), `AlbumScreen` (`PilotGlossaryController`, one pilot a page, name from
   `Pilots[_currentPilotIndex]` (drawn as an image), Left/Right = `OnDown/OnUpButtonPressed`; a
-  locked page reads only `LockedObject`, the page under it is placeholder Lorem ipsum; Memories
+  locked page reads only `LockedObject`; stats pair each `... Answer` text with the question beside it of the
+  same name less " Answer"; Memories by the digit each draws (`MemoryButtonNumbers`: one character, which
+  `ViewNodes.Label` skips as a key prompt), LOCKED while `MemoryButtonLocks` shows, the page under it is placeholder Lorem ipsum; Memories
   play cutscenes: never through the driver), `TrophiesScreen` (`AchievementGlossaryController`:
   completion, Global Stats rows as label + child figures, fave card and artifact, `_achBlocks` by
   their shown side; a counter's `LeftCounter` is a hidden template, read the active one),
