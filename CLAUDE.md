@@ -517,6 +517,10 @@ separately. Host F6 uses the same OS read.
   .BossRooms[...].RoomLevel1, globe.Random, false, new List<EnemyName>(), new List<RewardName>())`, set
   `DataManager.CurrentRoomModel`, `LoadSceneWithTransition(EncounterScene)`; from inside a fight it resumes the
   saved one, so abandon (a defeat) and start a run each time.
+- The run end's heading: a win reads the title `CampaignWinController` switched on (`VictoryTitle` "Victory?",
+  `FalseVictoryTitle` "Victory???" (the Overseer fight left), `TrueVictoryTitle`, `UltimateVictoryTitle` "ULTIMATE
+  Victory!"; objects named Text (TMP), False, True, Ultimate), a defeat its DefeatText. Checked on Victory???; never
+  set `isUltimateVictory` to test the ultimate one (it awards the ending's achievement).
 - A lost fight: `LoseEncounterTask` loads `CampaignLoseTransitionAdditive` (scene 30) straight to the run
   end; nothing in the code loads `EncounterLoseSceneAdditive` (16, `EncounterLoseController` Rewind/Lose) by
   a fixed number, so it is treated as unused. Test a loss with

@@ -35,6 +35,19 @@ namespace StarVoders.Module.Screens
             {
                 var c = Controller;
                 if (c == null) return null;
+                // A win: the title CampaignWinController switched on, "Victory!", "Victory???" (the
+                // Overseer fight left), "True Victory!", "ULTIMATE VICTORY!".
+                foreach (var win in c.gameObject.scene.GetRootGameObjects())
+                {
+                    var titles = win.GetComponentInChildren<CampaignWinController>(true);
+                    if (titles == null) continue;
+                    foreach (var title in new[] { titles.UltimateVictoryTitle, titles.TrueVictoryTitle, titles.FalseVictoryTitle, titles.VictoryTitle })
+                        if (title != null && title.activeInHierarchy)
+                        {
+                            string text = GameText.Of(title.GetComponentInChildren<TMP_Text>());
+                            if (text != null) return text;
+                        }
+                }
                 foreach (var root in c.gameObject.scene.GetRootGameObjects())
                     foreach (var name in new[] { "DefeatText", "VictoryText", "WinText" })
                     {
