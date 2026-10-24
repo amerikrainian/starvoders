@@ -65,10 +65,15 @@ namespace StarVoders.Module.Fight
             catch (Exception e) { CoreLog.Warning("Overseer: reading the ultimate quest failed: " + e.Message); }
             string name = GameLoc.Get(ultimate ? "ChaosGodUltimateEnding_Misc" : "ChaosGodGlossaryTitle_Misc")
                 ?? GameLoc.Get("ChaosGodGlossaryTitle_Misc");
-            if (name == null) return "Overseer";
-            // A name in capitals ("THE OVERSEER"): each word capitalised, not just the first as GameText.Calm does.
-            return GameText.Calm(name) == name ? name
-                : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
+            return Proper(name) ?? "Overseer";
+        }
+
+        /// <summary>A name the game writes in capitals ("THE OVERSEER") with each word capitalised, not
+        /// just the first as <see cref="GameText.Calm"/> does; left alone otherwise.</summary>
+        public static string Proper(string name)
+        {
+            if (name == null || GameText.Calm(name) == name) return name;
+            return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
         }
 
         // The health bar while it is drawn.

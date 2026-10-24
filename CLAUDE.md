@@ -252,7 +252,11 @@ separately. Host F6 uses the same OS read.
   so `ChaosGodScreen.Names` Harmony-prefixes `ChaosUnlock.InitializeEnemy`/`InitializeRoom` to record
   the name: `<Enemy>_EntityTitle`, rooms `BossTitle_<Room>_Misc` or Cloudy/Holes!/Void Zone
   `*Encounter_Misc`; panel not yet seen live, names tested by calling the initializers on the hidden
-  icons), `AchievementScreen` (layer 45, exclusive, mod-made: "Achievement unlocked, dialog", the
+  icons), `ChaosGlobeScreen` (`ChaosGlobeScene`, `ChaosGlobeController`, after the final Chaos God
+  conversation: its one `Button`, read by the drawn `RegularTitle`/`UltimateTitle` ("The Overseer"), Enter =
+  the click (`OnChaosGodPressed`, the final fight); its `MapPanel` sits under the switched-off
+  `CampaignPortrait`, so no timeline; no Back; down once `IsEndingScene`; test: `/eval`
+  `SceneLoader.LoadSceneWithTransition(SceneName.ChaosGlobeScene)`), `AchievementScreen` (layer 45, exclusive, mod-made: "Achievement unlocked, dialog", the
   game popup's title and description, OK = `OK_Misc`, Escape too, queued; fed by `PopupReader`: the
   popup blocks under `AchievementPopupManager.Instance._popupHolder` (DontDestroyOnLoad) are slid in
   and out and never destroyed, and lose their `AchievementBlock` component, so new = a new child
