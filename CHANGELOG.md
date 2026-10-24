@@ -1,5 +1,22 @@
 # Changelog
 
+## V0.1.6
+
+- Some tiles fell back to their internal names because the game had no player-facing names for them. This has been fixed.
+- Some fixes for endgame boss fights. All I'm gonna say for that.
+- We now display when an artifact is marked as used.
+- We now tell you when a spell's cooldown has elapsed.
+- We also tell you when cards get added to your pile(s).
+- We now pick up the secret quest panel. Good luck finding where though or when the hell that thing shows up.
+- When accepting the secret quest, you can now read the artifacts it adds to your deck. Apparently those were special, go figure.
+- In the compendium album, it's now possible to read pilot stats and memories (they had poor labels before).
+- Update and label some unique boss counters.
+- When cuing up multiple achievements we now keep the dialogue up so as to avoid spamming you with landing on an item under the popup after dismissing one.
+- In the compendium, search field should no longer try and grab your focus every once in a while when just tabbing through.
+- Fixed reading compendium values when they aren't fully settled: no more "??% found"
+- We now distinguish between entities leaving the board, being destroyed, dissipating, what have you.
+- Fixed tile changes sometimes being dropped.
+
 ## V0.1.5
 
 - Permanent modifiers for encounters should no longer randomly be inserted into seemingly arbitrary points in focus speech.
