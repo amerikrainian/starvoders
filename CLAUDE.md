@@ -337,7 +337,11 @@ separately. Host F6 uses the same OS read.
   `EncounterView.ViewsItems` filtered by `IsSatisfied`, under `ScreenView.SelectionPrompt`; focus
   jumps there; Escape = `SelectionController.Cancel` + preview/display board/hover resets; a card
   that needs no target still asks for the `PlayAreaView`, read "Play"), Board (rows top first,
-  shared row key, lands on the mech; cell = target mark, contents, coords, zone on crossing ("mech, 3 2", "Hole, 4 2")),
+  shared row key, lands on the mech; cell = target mark, contents, coords, zone on crossing ("mech, 3 2", "Hole, 4 2");
+  tile statuses by the game's `<Status>Title_Misc`/`TileStatus_Misc`, which exist only for Cloud, Hole, Cracked:
+  `FightBoard.StatusName` gives TrueHole (the Overseer fight's column: `IsMoveableCoord` refuses it, a push
+  carries the entity across) the mod's "Rift", Nebula (strikes do nothing there) and Vortex (a cut boss) mod
+  words, DarkCracked Cracked's name and no description),
   Hand (in the Board's stop, a strip under the bottom row, `strictColumns`: card n under column n,
   Down from a column with no card or Up from a card past the last column stays; keyed apart while a
   target is chosen on the board, so no arrow reaches a card; a choice begun from the hand moves focus

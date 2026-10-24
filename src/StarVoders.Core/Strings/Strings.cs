@@ -191,6 +191,13 @@ namespace StarVoders.Core.Strings
             D("fight.ev.unchannel", "{0} stops channelling"),
             D("fight.zone.doom", "doom rows"),
             D("fight.zone.spawn", "spawn rows"),
+            // Tile statuses the game draws but never names (its tile panel names only Cloud, Hole and Cracked): the
+            // Overseer fight's column nothing can stand in, a Void Zone's protected tiles, a cut boss's vortex; and what the first two do.
+            D("fight.status.rift", "Rift"),
+            D("fight.status.rift.desc", "Nothing can stand here. An entity pushed into it lands on the far side."),
+            D("fight.status.nebula", "Nebula"),
+            D("fight.status.nebula.desc", "Strikes have no effect on this tile."),
+            D("fight.status.vortex", "Vortex"),
             D("fight.danger", "{0}: {1}"),
             // A Danger Zone tile: {0} who will strike it ("targeted by Shooter 1, Migo 3").
             D("fight.targeted", "targeted by {0}"),
@@ -582,6 +589,10 @@ namespace StarVoders.Core.Strings
         public static string FightChannellingDoom(string doom) => F("fight.channel.doom", doom);
         public static string FightUnchannelled(string name) => F("fight.ev.unchannel", name);
         public static string FightZone(string zone) => Get("fight.zone." + zone);
+        /// <summary>A tile status the game leaves unnamed ("rift", "nebula", "vortex"); its description with
+        /// <c>.desc</c> appended, null where the mod has none.</summary>
+        public static string FightStatus(string status) => Get("fight.status." + status);
+        public static string FightStatusDescription(string status) => Has("fight.status." + status + ".desc") ? Get("fight.status." + status + ".desc") : null;
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
         public static string FightCategory(string category) => Get("fight.cat." + category);
         public static string FightCategoryLine(string category, int count) => F("fight.cat.line", category, count);

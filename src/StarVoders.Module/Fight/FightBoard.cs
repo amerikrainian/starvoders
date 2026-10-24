@@ -334,8 +334,36 @@ namespace StarVoders.Module.Fight
             catch { return null; }
         }
 
-        public static string StatusName(TileStatus status) => GameLoc.Get(status + "Title_Misc") ?? status.ToString();
-        public static string StatusDescription(TileStatus status) => GameLoc.Get(status + "TileStatus_Misc");
+        /// <summary>The status's name: the game's for Cloud, Hole and Cracked (its tile panel names no
+        /// others), Cracked's for DarkCracked (the same cracks drawn dark), the mod's for the rest: the
+        /// Overseer fight's TrueHole column is the Rift its hands speak of.</summary>
+        public static string StatusName(TileStatus status)
+        {
+            switch (status)
+            {
+                case TileStatus.TrueHole: return Strings.FightStatus("rift");
+                case TileStatus.Nebula: return Strings.FightStatus("nebula");
+                case TileStatus.Vortex: return Strings.FightStatus("vortex");
+                case TileStatus.DarkCracked: return GameLoc.Get("CrackedTitle_Misc") ?? status.ToString();
+                default: return GameLoc.Get(status + "Title_Misc") ?? status.ToString();
+            }
+        }
+
+        /// <summary>What the status does: the game's line where it has one, the mod's for the Rift
+        /// (<see cref="GridModel.IsMoveableCoord"/> refuses it; a push into it carries the entity a tile
+        /// further) and Nebula (a strike there does nothing: <see cref="StrikeTileEffectTask"/> stops before
+        /// even a Cloud's check). None for DarkCracked and Vortex, whose rules the game's code does not show plainly.</summary>
+        public static string StatusDescription(TileStatus status)
+        {
+            switch (status)
+            {
+                case TileStatus.TrueHole: return Strings.FightStatusDescription("rift");
+                case TileStatus.Nebula: return Strings.FightStatusDescription("nebula");
+                case TileStatus.Vortex:
+                case TileStatus.DarkCracked: return null;
+                default: return GameLoc.Get(status + "TileStatus_Misc");
+            }
+        }
 
         /// <summary>"Pickup: Fire!" for a card lying on the tile, else null.</summary>
         public string Pickup(int x, int y)
