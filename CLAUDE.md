@@ -244,7 +244,11 @@ separately. Host F6 uses the same OS read.
   narration), id by conversation:entry; Enter finishes the typewriter then clicks `continueButton` (a
   `DialogueButtonView`; its listener `OnFastForward` only finishes a typing line and ignores clicks while
   the panel animates); responses = the open menu panel's `ViewItemUIResponseButton.dialogueButtonView`s,
-  focus jumps to them, the line said first if focus never reached it; only the Chaos God's one-line
+  focus jumps to them, the line said first if focus never reached it; Escape in the scenes that are all
+  conversation, the Rift (`RiftSceneController`, after a won run) and a pilot's backstory
+  (`PilotBackstorySceneController`, also the Album's memories), is their `OnSkipCutscene` (the confirm prompt's
+  SKIP CUTSCENE?), elsewhere its fallback; backstory tested from the Album, the Rift not (it leads on into the
+  Chaos God scene); only the Chaos God's one-line
   conversation seen live), `ChaosGodScreen` (`ChaosGodScene` after the conversation: the `UnlockCanvas`
   dialog, "Timeline Divergence", its `ChaosUnlocks` left to right by x (the list is Mid, Left, Right),
   hover text + name, Proceed = `ProceedButton`, leaves the scene: never through the driver; the game

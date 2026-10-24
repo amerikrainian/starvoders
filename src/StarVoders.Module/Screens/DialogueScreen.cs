@@ -6,6 +6,7 @@ using StarVoders.Core;
 using StarVoders.Core.Graph;
 using StarVoders.Core.Strings;
 using StarVoders.Core.UI;
+using StarVoders.Module.Interop;
 using StarVoders.Module.UI;
 using Screen = StarVoders.Core.Screens.Screen;
 
@@ -55,6 +56,28 @@ namespace StarVoders.Module.Screens
         }
 
         public override bool IsActive() => UI != null;
+
+        // Escape skips a scene that is all conversation, as the game's cancel key does: the Rift after a
+        // won run and a pilot's backstory (OnSkipCutscene asks through the confirm prompt first).
+        // Elsewhere (the Chaos God's, which has no skip) Escape keeps its fallback.
+        private static Action Skip()
+        {
+            var rift = GameScenes.Controller<RiftSceneController>();
+            if (rift != null) return rift.OnSkipCutscene;
+            var backstory = GameScenes.Controller<PilotBackstorySceneController>();
+            if (backstory != null) return backstory.OnSkipCutscene;
+            return null;
+        }
+
+        public override IEnumerable<ElementAction> GetActions()
+        {
+            if (Skip() == null) yield break;
+            yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ =>
+            {
+                try { Skip()?.Invoke(); }
+                catch (Exception e) { CoreLog.Warning("Dialogue: skipping the scene failed: " + e.Message); }
+            });
+        }
 
         public override void Build(GraphBuilder b)
         {
