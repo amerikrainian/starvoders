@@ -397,7 +397,8 @@ separately. Host F6 uses the same OS read.
   `Charge` is then the Doom it adds, so it reads "channelling 1 Doom" instead of "charge 1" ("channelling
   Doom" at charge 0: Doom Ritual's pick), events on start/stop, details `TileDoom_InfoLine` (in the doom
   rows) or `AttackDoom_InfoLine`. Artifacts gained or lost mid-fight are events (`ArtifactViewDict` by view
-  pointer). Overheating says the game's "Overheat!" when `OverheatTask` starts (the task-log prefix); the
+  pointer); an artifact the game greys out (`ArtifactView.UsedObject`: a once-a-turn effect spent) reads
+  the game's "Used" (`UsedArtifact_Misc`) first on its node, no event (it would fire every turn). Overheating says the game's "Overheat!" when `OverheatTask` starts (the task-log prefix); the
   Heat sink is the Heat maximum ("Heat 0/5" after Fire Starter). Booby Traps (Kaia's artifact) name every
   pickup "Booby Trap" (the word before the colon of `BoobyTrap_InfoLine`) and add that line to its details.
   Immunity (`AEntityModel.IsInvulnerable`, the Mothership's comes and goes) has no keyword: read "Immune"

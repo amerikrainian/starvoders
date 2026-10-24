@@ -751,8 +751,23 @@ namespace StarVoders.Module.Screens
         /// health or phase.</summary>
         public static string ObjectiveLine() => Objective() ?? Overseer.Line();
 
-        private static NodeVtable Artifact(ArtifactView view) =>
-            CardNodes.Artifact(view.ArtifactModel, view, cooldown: false, focus: () => FightState.Hover(view));
+        // "Used, Sign Magick, Artifact, Starter, The first time...": the game's "Used" before the name while
+        // it greys the artifact out (its UsedObject: a once-a-turn or once-a-fight effect spent). The label
+        // always reads first, so the word is part of it, as a target card's "target, ".
+        private static NodeVtable Artifact(ArtifactView view)
+        {
+            var model = view.ArtifactModel;
+            var vt = CardNodes.Artifact(model, view, cooldown: false, focus: () => FightState.Hover(view));
+            Func<string> name = () => model != null ? GameLoc.ArtifactName(model.ArtifactName) : null;
+            var parts = new List<NodeAnnouncement>(vt.Announcements);
+            parts[0] = GameNodes.LabelPart(() =>
+            {
+                string used = view.UsedObject != null && view.UsedObject.activeInHierarchy ? GameLoc.Get("UsedArtifact_Misc") : null;
+                return used != null ? used + ", " + name() : name();
+            });
+            vt.Announcements = parts;
+            return vt;
+        }
 
         // "Conjure, Spell, button, Cooldown: 2, disabled, Give or break a Shield on any entity.": the
         // turns left while the slot draws its counter; Enter casts it (the game's click, which refuses
