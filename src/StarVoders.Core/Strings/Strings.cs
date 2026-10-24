@@ -200,6 +200,9 @@ namespace StarVoders.Core.Strings
             D("fight.status.vortex", "Vortex"),
             // A Kraken tentacle segment by its tentacle: {0} = the game's name ("Kraken Tentacle"); its number follows.
             // The Kraken Heart drawn above the board, coming down a row each turn: {0} = rows between it and the top row.
+            // A Fallen Angel's or Chrono Bird's countdown, read in place of its charge: {0} = turns left.
+            D("fight.flies.one", "flies away next turn"),
+            D("fight.flies", "flies away in {0} turns"),
             D("fight.above.one", "1 row above the board"),
             D("fight.above", "{0} rows above the board"),
             D("fight.tentacle.left", "Left {0}"),
@@ -615,6 +618,7 @@ namespace StarVoders.Core.Strings
         public static string FightStatus(string status) => Get("fight.status." + status);
         public static string FightBossPhase(string name, int phase) => F("fight.boss.phase", name, phase);
         public static string FightTentacle(string side, string name) => F("fight.tentacle." + side, name);
+        public static string FightFliesAway(int turns) => turns <= 1 ? Get("fight.flies.one") : F("fight.flies", turns);
         public static string FightAbove(int rows) => rows == 1 ? Get("fight.above.one") : F("fight.above", rows);
         public static string FightStatusDescription(string status) => Has("fight.status." + status + ".desc") ? Get("fight.status." + status + ".desc") : null;
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);

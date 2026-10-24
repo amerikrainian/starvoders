@@ -205,12 +205,30 @@ namespace StarVoders.Module.Fight
         // Grandmaster's hourglass.
         private static readonly HashSet<EnemyName> CountedElsewhere = new HashSet<EnemyName> { EnemyName.Grandmaster };
 
-        /// <summary>The entity's charge as worth saying: 0 where a boss panel reads it by name.</summary>
+        /// <summary>The entity's charge as worth saying: 0 where a boss panel reads it by name, or a
+        /// countdown reads it (<see cref="Countdown"/>).</summary>
         public static int ShownCharge(AEntityModel entity)
         {
             var enemy = entity?.TryCast<EnemyEntityModel>();
-            if (enemy != null && CountedElsewhere.Contains(enemy.EnemyID.EnemyName)) return 0;
+            if (enemy != null && (CountedElsewhere.Contains(enemy.EnemyID.EnemyName) || FliesAway.Contains(enemy.EnemyID.EnemyName))) return 0;
             return entity?.Charge ?? 0;
+        }
+
+        // Invaders that fly away two turns after spawning ("([#] left)"): their charge counts the turns,
+        // and they go as it would reach 2 (DissipateEntityTask with _flyAway).
+        private static readonly HashSet<EnemyName> FliesAway = new HashSet<EnemyName>
+        {
+            EnemyName.FallenAngel, EnemyName.FallenAngelPlus, EnemyName.ChronoBird,
+        };
+        private const int FlyAwayAt = 2;
+
+        /// <summary>"flies away next turn" for a Fallen Angel or Chrono Bird, read in place of its charge;
+        /// null for anything else.</summary>
+        public static string Countdown(AEntityModel entity)
+        {
+            var enemy = entity?.TryCast<EnemyEntityModel>();
+            if (enemy == null || !FliesAway.Contains(enemy.EnemyID.EnemyName)) return null;
+            return Strings.FightFliesAway(Math.Max(1, FlyAwayAt - entity.Charge));
         }
 
         /// <summary>The entity's health as worth saying: 0 for the Hands of Time, whose health is a hit
@@ -235,6 +253,7 @@ namespace StarVoders.Module.Fight
             parts.Add(ImmuneName(entity));
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));
             string channel = ChannelText(entity);
+            parts.Add(Countdown(entity));
             if (channel != null) parts.Add(channel);
             else if (ShownCharge(entity) > 0) parts.Add(Strings.FightCharge(entity.Charge));
             parts.RemoveAll(string.IsNullOrEmpty);

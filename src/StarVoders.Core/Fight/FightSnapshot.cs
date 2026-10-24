@@ -24,6 +24,8 @@ namespace StarVoders.Core.Fight
         /// <summary>"channelling 1 Doom" while the invader channels Doom (its charge is then the Doom it
         /// adds, said here instead), else null.</summary>
         public string Channel;
+        /// <summary>A countdown read in place of the charge ("flies away next turn"), else null.</summary>
+        public string Note;
         /// <summary>Health changes are not spoken for the mech (it has none to lose).</summary>
         public bool IsMech;
     }

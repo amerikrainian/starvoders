@@ -54,6 +54,7 @@ namespace StarVoders.Core.Fight
                 if (was.Shocked != e.Shocked) lines.Add(e.Shocked ? S.FightShocked(e.Name) : S.FightUnshocked(e.Name));
                 // Channelling Doom (its amount is the charge): "Martian 6: channelling 1 Doom"; a plain
                 // charge only while neither channels.
+                if (e.Note != null && was.Note != e.Note) lines.Add(S.FightLabelled(e.Name, e.Note));
                 if (was.Channel != e.Channel)
                     lines.Add(e.Channel != null ? S.FightLabelled(e.Name, e.Channel) : S.FightUnchannelled(e.Name));
                 else if (e.Channel == null && was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));

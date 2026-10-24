@@ -438,7 +438,9 @@ separately. Host F6 uses the same OS read.
   (a Void Rift), one on the tile of a `WormEatTask` "eaten" (Nessie's Apples): both caught by the task-log prefix,
   the id unboxed from the task's `Args`, kept for the fight (`FightSnapshot.Taken`). Tile statuses are in the
   snapshot: a change reads by range per status, "4 8 now Hole", "1 4 no longer Cloud" (a Cloud used up blocking a
-  strike); test with `AddTileStatusTileEffectTask(boxed Coord, TileStatus.Cloud)` then a strike there.
+  strike); test with `AddTileStatusTileEffectTask(boxed Coord, TileStatus.Cloud)` then a strike there. A Fallen
+  Angel's or Chrono Bird's charge reads as its countdown, "flies away next turn" (`FightBoard.Countdown`: gone as the
+  charge would reach 2), its change an event (`EntitySnap.Note`).
   `GameText.Clean` drops space just inside brackets (`GetModifiedDescriptions` pads them: "( 3 left )").
 - The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts
   (`CurrentPuppet`), `GetPlayerCoord` is that Summon's tile, and `ModelItemDict` has no player. So the

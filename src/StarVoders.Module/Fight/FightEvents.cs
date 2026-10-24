@@ -233,6 +233,7 @@ namespace StarVoders.Module.Fight
                         Shocked = entity.IsShocked,
                         Charge = FightBoard.ShownCharge(entity),
                         Channel = FightBoard.ChannelText(entity),
+                        Note = FightBoard.Countdown(entity),
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,
                     });
                 }

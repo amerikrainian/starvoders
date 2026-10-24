@@ -183,6 +183,17 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void A_countdown_reads_when_it_changes()
+        {
+            var angel = Migo(1, 1, 8);
+            angel.Note = "flies away in 2 turns";
+            var later = Migo(1, 1, 8);
+            later.Note = "flies away next turn";
+            Assert.Equal(new[] { "Migo 1: flies away next turn" }, FightDiff.Lines(Snap(angel), Snap(later)));
+            Assert.Empty(FightDiff.Lines(Snap(later), Snap(later)));
+        }
+
+        [Fact]
         public void A_spell_whose_cooldown_runs_out_is_ready()
         {
             var before = Snap();
