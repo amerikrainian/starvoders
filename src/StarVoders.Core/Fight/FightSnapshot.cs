@@ -82,6 +82,10 @@ namespace StarVoders.Core.Fight
         public List<CardSnap> Counters = new List<CardSnap>();
         /// <summary>The entities alive but off the board (<see cref="EntitySnap.Key"/>s): a Queen Bee in its Hive.</summary>
         public HashSet<string> OffGrid = new HashSet<string>();
+        /// <summary>Entities the game took off the board this fight other than by destroying them, by
+        /// <see cref="EntitySnap.Key"/>: <see cref="FightDiff.FlewAway"/> (a Fallen Angel),
+        /// <see cref="FightDiff.Dissipated"/> (a Void Rift), <see cref="FightDiff.Eaten"/> (by Nessie).</summary>
+        public Dictionary<string, string> Taken = new Dictionary<string, string>();
         /// <summary>The combo (invaders destroyed this turn, the Stars multiplier) and how it reads
         /// ("Combo! 4, Nice!"): said when the count rises, never when it drops back to 0.</summary>
         public int Combo;

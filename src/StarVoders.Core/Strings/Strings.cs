@@ -236,6 +236,11 @@ namespace StarVoders.Core.Strings
             D("fight.ev.destroyed", "{0} destroyed"),
             // Alive but off the board (a Queen Bee hiding in its Hive): {0} = who, grouped as the destroyed are.
             D("fight.ev.offgrid", "{0} left the board"),
+            // Taken off the board by the game (no words of its own): a Fallen Angel or Chrono Bird flying away; a Void Rift
+            // dissipating (its description's word); eaten by Nessie, its Apples.
+            D("fight.ev.flew", "{0} flew away"),
+            D("fight.ev.dissipated", "{0} dissipated"),
+            D("fight.ev.eaten", "{0} eaten"),
             // Several of a kind without numbers, as destroyed together: "2x Web". {0} = how many, {1} = the kind.
             D("fight.ev.count", "{0}x {1}"),
             D("fight.ev.shielded", "{0} shielded"),
@@ -623,6 +628,9 @@ namespace StarVoders.Core.Strings
         public static string FightMovesColumn(string name, int column) => F("fight.ev.moves.column", name, column);
         public static string FightDestroyed(string name) => F("fight.ev.destroyed", name);
         public static string FightLeftBoard(string name) => F("fight.ev.offgrid", name);
+        public static string FightFlewAway(string name) => F("fight.ev.flew", name);
+        public static string FightEaten(string name) => F("fight.ev.eaten", name);
+        public static string FightDissipated(string name) => F("fight.ev.dissipated", name);
         public static string FightCount(int count, string kind) => F("fight.ev.count", count, kind);
         public static string FightShielded(string name) => F("fight.ev.shielded", name);
         public static string FightUnshielded(string name) => F("fight.ev.unshielded", name);

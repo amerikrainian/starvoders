@@ -433,7 +433,10 @@ separately. Host F6 uses the same OS read.
   core and pieces, Nessie's head and body), read unnumbered; Kraken tentacle segments by tentacle, from the base to
   the tip ("Left Kraken Tentacle 4"), from `KrakenCoreModel.Left/Middle/RightTentacleEntities` (boxed `EnemyID`s
   behind the `EntityID` interface: `il2cpp_object_unbox`, never the proxy's `ToString`). An entity gone from the board but in
-  `GridModel.OffGridEntities` (a Queen Bee in its Hive) "left the board", grouped as the destroyed are.
+  `GridModel.OffGridEntities` (a Queen Bee in its Hive) "left the board", grouped as the destroyed are; one
+  removed by `DissipateEntityTask` "flew away" (its `_flyAway`: a Fallen Angel, a Chrono Bird) or "dissipated"
+  (a Void Rift), one on the tile of a `WormEatTask` "eaten" (Nessie's Apples): both caught by the task-log prefix,
+  the id unboxed from the task's `Args`, kept for the fight (`FightSnapshot.Taken`).
   `GameText.Clean` drops space just inside brackets (`GetModifiedDescriptions` pads them: "( 3 left )").
 - The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts
   (`CurrentPuppet`), `GetPlayerCoord` is that Summon's tile, and `ModelItemDict` has no player. So the

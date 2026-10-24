@@ -15,6 +15,9 @@ namespace StarVoders.Core.Fight
     /// </summary>
     public static class FightDiff
     {
+        /// <summary>How an entity left the board other than destroyed (<see cref="FightSnapshot.Taken"/>).</summary>
+        public const string FlewAway = "flew", Dissipated = "dissipated", Eaten = "eaten";
+
         public static List<string> Lines(FightSnapshot before, FightSnapshot after)
         {
             var lines = new List<string>();
@@ -56,12 +59,24 @@ namespace StarVoders.Core.Fight
                 else if (e.Channel == null && was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
             }
             // Gone from the board: destroyed, or alive and off it (a Queen Bee hiding in its Hive).
+            // Taken otherwise: flown away (a Fallen Angel), dissipated (a Void Rift), eaten (by Nessie).
             var gone = new List<EntitySnap>();
             var left = new List<EntitySnap>();
+            var flew = new List<EntitySnap>();
+            var dissipated = new List<EntitySnap>();
+            var eaten = new List<EntitySnap>();
             foreach (var e in before.Entities)
-                if (!seen.Contains(e.Key)) (after.OffGrid.Contains(e.Key) ? left : gone).Add(e);
+            {
+                if (seen.Contains(e.Key)) continue;
+                if (after.OffGrid.Contains(e.Key)) { left.Add(e); continue; }
+                after.Taken.TryGetValue(e.Key, out var how);
+                (how == FlewAway ? flew : how == Dissipated ? dissipated : how == Eaten ? eaten : gone).Add(e);
+            }
             lines.AddRange(Grouped(gone, S.FightDestroyed));
             lines.AddRange(Grouped(left, S.FightLeftBoard));
+            lines.AddRange(Grouped(flew, S.FightFlewAway));
+            lines.AddRange(Grouped(dissipated, S.FightDissipated));
+            lines.AddRange(Grouped(eaten, S.FightEaten));
 
             // A boss off the board: its health as drawn ("The Overseer 5/6"), then a phase it enters.
             if (after.Boss != null && after.Boss != before.Boss) lines.Add(after.Boss);

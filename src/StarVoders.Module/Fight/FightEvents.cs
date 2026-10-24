@@ -131,6 +131,12 @@ namespace StarVoders.Module.Fight
                     if (overheat != null) { Speech.Say(overheat); Log.Add(overheat); }
                     return;
                 }
+                // An entity flying away or dissipating (DissipateEntityTask, its _flyAway telling which), or
+                // Nessie eating a tile's entity: remembered so its leaving reads so, not as destroyed.
+                var dissipate = task.TryCast<DissipateEntityTask>();
+                if (dissipate != null) { Taken(dissipate, ArgKey.EntityID, dissipate._flyAway ? FightDiff.FlewAway : FightDiff.Dissipated); return; }
+                var eat = task.TryCast<WormEatTask>();
+                if (eat != null) { Taken(eat, ArgKey.Coord, FightDiff.Eaten); return; }
                 // The Overseer's phases: the next settled snapshot says the one begun.
                 int bossPhase = Overseer.PhaseOf(task);
                 if (bossPhase > 0) { Overseer.PhaseStarted(bossPhase); return; }
@@ -143,6 +149,35 @@ namespace StarVoders.Module.Fight
                 Publish(now);
             }
             catch (Exception e) { CoreLog.Warning("FightEvents: a phase snapshot failed: " + e.Message); }
+        }
+
+        // The entities taken off the board in the current fight, by Key, each how (FightDiff.FlewAway...).
+        private static readonly Dictionary<string, string> _taken = new Dictionary<string, string>();
+        private static IntPtr _takenFight;
+
+        private static void Taken(ATask task, ArgKey key, string how)
+        {
+            var fight = Fight.Controller?.Pointer ?? IntPtr.Zero;
+            if (fight != _takenFight) { _taken.Clear(); _takenFight = fight; }
+            var args = task.Args;
+            if (args == null || !args.ContainsKey(key)) return;
+            var boxed = args[key];
+            if (boxed == null) return;
+            IntPtr entity = boxed.Pointer;
+            if (key == ArgKey.Coord)
+            {
+                // A boxed Coord: the entity on that tile, if any.
+                if (Il2CppInterop.Runtime.IL2CPP.il2cpp_object_get_class(entity) != Il2CppInterop.Runtime.Il2CppClassPointerStore<Coord>.NativeClassPtr) return;
+                var coord = System.Runtime.InteropServices.Marshal.PtrToStructure<Coord>(Il2CppInterop.Runtime.IL2CPP.il2cpp_object_unbox(entity));
+                var grid = Fight.Model?.GridModel;
+                var id = grid != null ? grid.TryGetEntityAtCoord(coord) : null;
+                if (id == null) return;
+                entity = id.Pointer;
+            }
+            // An EnemyID boxed behind the EntityID interface (an item's is not read).
+            if (Il2CppInterop.Runtime.IL2CPP.il2cpp_object_get_class(entity) != Il2CppInterop.Runtime.Il2CppClassPointerStore<EnemyID>.NativeClassPtr) return;
+            var enemy = System.Runtime.InteropServices.Marshal.PtrToStructure<EnemyID>(Il2CppInterop.Runtime.IL2CPP.il2cpp_object_unbox(entity));
+            _taken["enemy:" + enemy.EnemyName + "#" + enemy.Number] = how;
         }
 
         private static bool WaitingOnTip()
@@ -209,6 +244,8 @@ namespace StarVoders.Module.Fight
                         var entity = model.ModelItemDict.ContainsKey(key) ? model.ModelItemDict[key]?.TryCast<AEntityModel>() : null;
                         if (entity != null) snap.OffGrid.Add(Key(entity));
                     }
+                if (Fight.Controller?.Pointer == _takenFight)
+                    foreach (var kv in _taken) snap.Taken[kv.Key] = kv.Value;
                 snap.Columns = board.Columns;
                 snap.Rows = board.Rows;
                 for (int y = 0; y < board.Rows; y++)

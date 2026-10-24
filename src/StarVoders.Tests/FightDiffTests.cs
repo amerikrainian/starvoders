@@ -38,6 +38,19 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Those_taken_off_the_board_flew_away_dissipated_or_were_eaten()
+        {
+            var angel = new EntitySnap { Key = "enemy:FallenAngel#1", Name = "Fallen Angel", Kind = "Fallen Angel", X = 1, Y = 5 };
+            var rift = new EntitySnap { Key = "enemy:VoidRift#2", Name = "Void Rift", Kind = "Void Rift", X = 3, Y = 5 };
+            var apple = new EntitySnap { Key = "enemy:Apple#4", Name = "Apple 4", Kind = "Apple", Number = 4, X = 2, Y = 5 };
+            var after = Snap();
+            after.Taken["enemy:FallenAngel#1"] = FightDiff.FlewAway;
+            after.Taken["enemy:VoidRift#2"] = FightDiff.Dissipated;
+            after.Taken["enemy:Apple#4"] = FightDiff.Eaten;
+            Assert.Equal(new[] { "Fallen Angel flew away", "Void Rift dissipated", "Apple 4 eaten" }, FightDiff.Lines(Snap(angel, rift, apple), after));
+        }
+
+        [Fact]
         public void One_destroyed_of_a_kind_reads_as_its_name()
         {
             Assert.Equal(new[] { "Shooter 7 destroyed" }, FightDiff.Lines(Snap(Shooter(7, 1, 6), Shooter(2, 2, 6)), Snap(Shooter(2, 2, 6))));
