@@ -55,10 +55,13 @@ namespace StarVoders.Core.Fight
                     lines.Add(e.Channel != null ? S.FightLabelled(e.Name, e.Channel) : S.FightUnchannelled(e.Name));
                 else if (e.Channel == null && was.Charge != e.Charge) lines.Add(S.FightLabelled(e.Name, S.FightCharge(e.Charge)));
             }
+            // Gone from the board: destroyed, or alive and off it (a Queen Bee hiding in its Hive).
             var gone = new List<EntitySnap>();
+            var left = new List<EntitySnap>();
             foreach (var e in before.Entities)
-                if (!seen.Contains(e.Key)) gone.Add(e);
-            lines.AddRange(Destroyed(gone));
+                if (!seen.Contains(e.Key)) (after.OffGrid.Contains(e.Key) ? left : gone).Add(e);
+            lines.AddRange(Grouped(gone, S.FightDestroyed));
+            lines.AddRange(Grouped(left, S.FightLeftBoard));
 
             // A boss off the board: its health as drawn ("The Overseer 5/6"), then a phase it enters.
             if (after.Boss != null && after.Boss != before.Boss) lines.Add(after.Boss);
@@ -139,7 +142,7 @@ namespace StarVoders.Core.Fight
         // The destroyed, one line per kind in the order the kinds first fall: the numbered by their
         // numbers, ascending ("Shooter 1, 7, 8 destroyed"), the unnumbered counted ("2x Web
         // destroyed"); one alone reads as before ("Shooter 7 destroyed", "Web destroyed").
-        private static List<string> Destroyed(List<EntitySnap> gone)
+        private static List<string> Grouped(List<EntitySnap> gone, System.Func<string, string> line)
         {
             var kinds = new List<string>();
             var numbers = new Dictionary<string, List<int>>();
@@ -168,7 +171,7 @@ namespace StarVoders.Core.Fight
                 }
                 if (plain[kind] == 1) parts.Add(kind);
                 else if (plain[kind] > 1) parts.Add(S.FightCount(plain[kind], kind));
-                lines.Add(S.FightDestroyed(string.Join(", ", parts)));
+                lines.Add(line(string.Join(", ", parts)));
             }
             return lines;
         }

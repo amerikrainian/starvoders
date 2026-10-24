@@ -157,6 +157,7 @@ fight.ev.moves={0} → {1}
 fight.ev.moves.row={0} → {1}行
 fight.ev.moves.column={0} → {1}列
 fight.ev.destroyed={0} 撃破
+fight.ev.offgrid={0}が盤面から離れた
 fight.ev.count={1} ×{0}
 fight.ev.shielded={0} シールド
 fight.ev.unshielded={0} シールド消失

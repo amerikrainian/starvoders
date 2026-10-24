@@ -28,6 +28,16 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void One_alive_off_the_board_left_it_rather_than_being_destroyed()
+        {
+            var after = Snap(Shooter(2, 2, 6));
+            after.OffGrid.Add("Shooter#1");
+            after.OffGrid.Add("Shooter#7");
+            Assert.Equal(new[] { "Shooter 8 destroyed", "Shooter 1, 7 left the board" },
+                FightDiff.Lines(Snap(Shooter(1, 1, 6), Shooter(2, 2, 6), Shooter(7, 3, 6), Shooter(8, 4, 6)), after));
+        }
+
+        [Fact]
         public void One_destroyed_of_a_kind_reads_as_its_name()
         {
             Assert.Equal(new[] { "Shooter 7 destroyed" }, FightDiff.Lines(Snap(Shooter(7, 1, 6), Shooter(2, 2, 6)), Snap(Shooter(2, 2, 6))));

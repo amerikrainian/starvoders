@@ -232,8 +232,11 @@ namespace StarVoders.Module.Screens
             return scope != null ? Strings.CompendiumScope(scope, kind) : kind;
         }
 
+        // Null while the game rebuilds the items (a class tab, a search): its ResetCountPanel writes
+        // "???" and "??% found" until UpdateCountPanel has the figures, which the live part then says.
         private static string CountText(GlossaryController c)
         {
+            if (c.isShowingCoroutine) return null;
             var panel = c.IsVictoryViewMode ? c.CompletionPanelObject : c.DiscoveredPanelObject;
             if (panel == null || !panel.activeInHierarchy) panel = c.CompletionSquareBackground;
             if (panel == null) return null;

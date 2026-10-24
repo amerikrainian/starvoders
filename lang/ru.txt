@@ -157,6 +157,7 @@ fight.ev.moves={0} на {1}
 fight.ev.moves.row={0} на ряд {1}
 fight.ev.moves.column={0} на столбец {1}
 fight.ev.destroyed={0} уничтожен
+fight.ev.offgrid={0}: покинул поле
 fight.ev.count={0}x {1}
 fight.ev.shielded={0} под щитом
 fight.ev.unshielded={0} теряет щит

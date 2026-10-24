@@ -80,6 +80,8 @@ namespace StarVoders.Core.Fight
         public string Boss, BossPhase;
         /// <summary>Panels bosses draw beside the board, each as read ("The Hourglass 5"), keyed by kind.</summary>
         public List<CardSnap> Counters = new List<CardSnap>();
+        /// <summary>The entities alive but off the board (<see cref="EntitySnap.Key"/>s): a Queen Bee in its Hive.</summary>
+        public HashSet<string> OffGrid = new HashSet<string>();
         /// <summary>The combo (invaders destroyed this turn, the Stars multiplier) and how it reads
         /// ("Combo! 4, Nice!"): said when the count rises, never when it drops back to 0.</summary>
         public int Combo;

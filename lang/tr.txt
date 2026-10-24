@@ -157,6 +157,7 @@ fight.ev.moves={0} → {1}
 fight.ev.moves.row={0} → {1}. sıra
 fight.ev.moves.column={0} → {1}. sütun
 fight.ev.destroyed={0} yok edildi
+fight.ev.offgrid={0} tahtadan ayrıldı
 fight.ev.count={0}x {1}
 fight.ev.shielded={0} kalkanlı
 fight.ev.unshielded={0} kalkanını kaybetti

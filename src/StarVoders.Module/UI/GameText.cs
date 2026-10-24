@@ -13,6 +13,10 @@ namespace StarVoders.Module.UI
     internal static class GameText
     {
         private static readonly Regex AnimatorTag = new Regex(@"\{/?[a-z]+[^}]*\}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        // Space just inside brackets: the game's LocalizationUtils.GetModifiedDescriptions pads them
+        // ("( Strike open hands to hurt the Overseer )" from "(Strike ...)").
+        private static readonly Regex PaddedOpen = new Regex(@"([(\[])\s+", RegexOptions.Compiled);
+        private static readonly Regex PaddedClose = new Regex(@"\s+([)\]])", RegexOptions.Compiled);
         private static readonly Regex Sprite = new Regex(@"<sprite[^>]*?name=""?([^"">]+)""?[^>]*>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         // A keyword is an icon and its word ("<sprite name=Bullet> <b>Bullet</b>s", "<sprite
@@ -59,7 +63,8 @@ namespace StarVoders.Module.UI
             text = TextUtil.StripRichText(text);
             text = IconThenWord.Replace(text, "");
             text = Icon.Replace(text, m => " " + IconWord(m.Groups[1].Value) + " ");
-            return TextUtil.StripRichText(text);
+            text = TextUtil.StripRichText(text);
+            return PaddedClose.Replace(PaddedOpen.Replace(text, "$1"), "$1");
         }
 
         /// <summary>A title the game writes in capitals ("STARS") as a word ("Stars"): spoken capitals

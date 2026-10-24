@@ -98,8 +98,10 @@ namespace StarVoders.Module.UI
                     _deadline = Time.frameCount + FocusWaitFrames;
                     _last = new EditState(_field.text, (_field.text ?? "").Length, (_field.text ?? "").Length);
                     _startText = _field.text ?? "";
+                    HoldQuiet();
                     return;
                 }
+                HoldQuiet();
                 // Escape is the screen's, as on any control: the edit ends without a word and Back runs
                 // (the field may already have taken the key and let go of its focus this frame).
                 if (_seenFocus && OsKeys.Pressed(KeyCode.Escape))
@@ -223,8 +225,10 @@ namespace StarVoders.Module.UI
             return string.IsNullOrWhiteSpace(t) ? null : t.TrimEnd('.', '…', ' ');
         }
 
-        // Ends the field's own edit (its end-of-edit listeners run), the quiet listener held off when
-        // the text is as the edit found it.
+        // Ends the field's own edit (its end-of-edit listeners run) and clears the game's selection
+        // of it (focus mode keeps it empty), the quiet listener held off for both when the text is as
+        // the edit found it: deselecting ends the edit too (TMP_InputField.OnDeselect), so a field that
+        // no longer reported itself focused ran the listener there.
         private static void Deactivate(TMP_InputField field)
         {
             int quiet = -1;
@@ -239,13 +243,46 @@ namespace StarVoders.Module.UI
                             events.SetPersistentListenerState(i, UnityEngine.Events.UnityEventCallState.Off);
                             break;
                         }
-                field.DeactivateInputField();
+                if (field.isFocused) field.DeactivateInputField();
+                var es = EventSystem.current;
+                if (es != null && es.currentSelectedGameObject == field.gameObject) es.SetSelectedGameObject(null);
             }
             finally
             {
                 // Unity 2020 has no getter for the state: a scene's listener is RuntimeOnly.
                 if (quiet >= 0) events.SetPersistentListenerState(quiet, UnityEngine.Events.UnityEventCallState.RuntimeOnly);
             }
+        }
+
+        // The quiet listener is held off for the whole edit while the text is as it began, not only as
+        // the mod ends it: the field ends its own edit when it loses the game's selection (a hover
+        // elsewhere, TMP_InputField.OnDeselect), before the mod sees focus go. Restored the moment the
+        // text changes, and when the edit ends.
+        private static int _held = -1;
+
+        private static void HoldQuiet()
+        {
+            if (_quiet == null || _field == null) return;
+            bool same = (_field.text ?? "") == _startText;
+            if (same == (_held >= 0)) return;
+            var events = _field.onEndEdit;
+            if (!same) { ReleaseQuiet(); return; }
+            for (int i = 0; i < events.GetPersistentEventCount(); i++)
+                if (events.GetPersistentMethodName(i) == _quiet)
+                {
+                    events.SetPersistentListenerState(i, UnityEngine.Events.UnityEventCallState.Off);
+                    _held = i;
+                    return;
+                }
+        }
+
+        private static void ReleaseQuiet(TMP_InputField field = null)
+        {
+            field = field ?? _field;
+            if (_held < 0) return;
+            try { field?.onEndEdit.SetPersistentListenerState(_held, UnityEngine.Events.UnityEventCallState.RuntimeOnly); }
+            catch (Exception e) { CoreLog.Warning("TextEdit: giving back the quiet listener failed: " + e.Message); }
+            _held = -1;
         }
 
         private static EditState Read(TMP_InputField field)
@@ -265,13 +302,17 @@ namespace StarVoders.Module.UI
                 if (field != null && _activated)
                 {
                     field.restoreOriginalTextOnEscape = _restoreOnEscape;
-                    if (field.isFocused) Deactivate(field);
+                    Deactivate(field);
                 }
-                // Focus mode keeps the game's own selection empty.
-                var es = EventSystem.current;
-                if (es != null && field != null && es.currentSelectedGameObject == field.gameObject) es.SetSelectedGameObject(null);
+                else
+                {
+                    // Focus mode keeps the game's own selection empty.
+                    var es = EventSystem.current;
+                    if (es != null && field != null && es.currentSelectedGameObject == field.gameObject) es.SetSelectedGameObject(null);
+                }
             }
             catch (Exception e) { CoreLog.Warning("TextEdit: giving the field back failed: " + e.Message); }
+            ReleaseQuiet(field);
             if (announce) Navigation.AnnounceCurrent();
             if (field != null && _activated)
             {

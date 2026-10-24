@@ -157,6 +157,7 @@ fight.ev.moves={0} para {1}
 fight.ev.moves.row={0} para a fileira {1}
 fight.ev.moves.column={0} para a coluna {1}
 fight.ev.destroyed={0} destruído
+fight.ev.offgrid={0} saiu do tabuleiro
 fight.ev.count={0}x {1}
 fight.ev.shielded={0} com escudo
 fight.ev.unshielded={0} perde o escudo

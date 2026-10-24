@@ -201,6 +201,14 @@ namespace StarVoders.Module.Fight
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,
                     });
                 }
+                var offGrid = model.GridModel.OffGridEntities;
+                if (offGrid != null)
+                    foreach (var id in offGrid)
+                    {
+                        var key = id.Cast<ID>();
+                        var entity = model.ModelItemDict.ContainsKey(key) ? model.ModelItemDict[key]?.TryCast<AEntityModel>() : null;
+                        if (entity != null) snap.OffGrid.Add(Key(entity));
+                    }
                 snap.Columns = board.Columns;
                 snap.Rows = board.Rows;
                 for (int y = 0; y < board.Rows; y++)

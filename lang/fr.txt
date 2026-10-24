@@ -157,6 +157,7 @@ fight.ev.moves={0} en {1}
 fight.ev.moves.row={0} en rangée {1}
 fight.ev.moves.column={0} en colonne {1}
 fight.ev.destroyed={0} détruit
+fight.ev.offgrid={0} a quitté le plateau
 fight.ev.count={0}x {1}
 fight.ev.shielded={0} protégé
 fight.ev.unshielded={0} perd son bouclier

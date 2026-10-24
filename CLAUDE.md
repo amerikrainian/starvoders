@@ -211,7 +211,8 @@ separately. Host F6 uses the same OS read.
   `IsUndiscoveredMode` items read only the game's LOCKED/UNDISCOVERED; never bind a
   `DeckCardView` click there (it is the shop's removal path); the search: see Text fields; Escape closes
   the filters, else `ExitScene`; the count is labelled by class and the Type filter: it counts what
-  is shown), the other Compendium pages (each its own additive scene, layer 35, exclusive; their
+  is shown; its figures are left out while `isShowingCoroutine` (the game's `ResetCountPanel` "???", "??% found"),
+  the live part says them when they come), the other Compendium pages (each its own additive scene, layer 35, exclusive; their
   bottom row and Back in `UI/GlossaryNodes`; Escape = `ExitScene`): `BestiaryScreen`
   (`InvaderGlossaryController`: act tabs (`_currentTab` indexes `InvaderGroups`, the shown group's
   Canvas enabled), Advanced Invaders `ToggleButton`, boss `SimpleChooser`; each `InvaderGlossaryPanel`'s
@@ -266,7 +267,10 @@ separately. Host F6 uses the same OS read.
   game popup's title and description, OK = `OK_Misc`, Escape too, queued; fed by `PopupReader`: the
   popup blocks under `AchievementPopupManager.Instance._popupHolder` (DontDestroyOnLoad) are slid in
   and out and never destroyed, and lose their `AchievementBlock` component, so new = a new child
-  pointer, those present at module load taken as seen; never `AddToPopupQueue` to test, it earns the
+  pointer, those present at module load taken as seen; after a dismissal it stays up, empty, while the game
+  owes more (`_popupQueue`, or ones it dequeued not yet shown: it dequeues, then spawns the block, whose texts
+  come later), 8 s at most, so the screen beneath is not announced between queued popups; `AddToPopupQueue`
+  earns too (the popup coroutine calls `PlatformManager.EarnAchievement`): re-queue only earned ones; never `AddToPopupQueue` to test, it earns the
   Steam achievement: clone a block under the holder), `UnlockCardScreen` (the run end's Unlock:
   `CampaignEndController._currUnlockCanvas`, layer 15, exclusive, a dialog named by the card's title;
   kinds = the active `Single`/`Set`/`Misc`/`PackUnlockCanvas`; the pilot by `UnlockCardScreen.Pilots`, a
@@ -424,7 +428,9 @@ separately. Host F6 uses the same OS read.
   Immunity (`AEntityModel.IsInvulnerable`, the Mothership's comes and goes) has no keyword: read "Immune"
   (`FloatTextImmune_Misc` without its "!") in the entity's state and its gain ("Mothership: Immune") and
   loss, details `Invulnerable_InfoLine`; test by setting the flag on an invader through `/eval`. Ticked before `ScreenManager` so an event
-  precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order.
+  precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order. An entity gone from the board but in
+  `GridModel.OffGridEntities` (a Queen Bee in its Hive) "left the board", grouped as the destroyed are.
+  `GameText.Clean` drops space just inside brackets (`GetModifiedDescriptions` pads them: "( 3 left )").
 - The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts
   (`CurrentPuppet`), `GetPlayerCoord` is that Summon's tile, and `ModelItemDict` has no player. So the
   board's `PlayerTile` comes from `GetPlayerCoord` (while `IsEntityOnGrid(PlayerID)`), the cell is the
@@ -558,8 +564,9 @@ placeholder, dots dropped; value not live: the echo says each step). Fields: the
 (`GlossaryController.InputField`; the game shows its bar only in mouse mode, `HandleSearchBarVisibility`
 at start and on a device change, so the mod shows `_searchBar` for the edit; `onEndEdit` runs
 `OnSearch`, so the search applies when the edit ends; `OnSearch` REBUILDS every item (new objects,
-new ids), so: an edit the mod ends with the text unchanged switches that one listener off for the
-end (`quietWhenUnchanged`; `SetPersistentListenerState`, restored to RuntimeOnly: 2020 has no
+new ids), so: an edit with the text unchanged keeps that one listener off for the whole edit
+(`quietWhenUnchanged`, `TextEdit.HoldQuiet`: the field ends its own edit when it loses the game's selection, a
+hover elsewhere, before the mod sees focus go; back on the moment the text changes, and at the end; `SetPersistentListenerState`, restored to RuntimeOnly: 2020 has no
 getter), else Tab past the field would land on an item the rebuild destroys and focus would fall
 back to the search, which edits again; a changed search left by Tab takes the Tab's move
 (`TextEdit.Ended` with `EditExit`, `TextEdit.MoveTaken`), waits for `isShowingCoroutine` up then

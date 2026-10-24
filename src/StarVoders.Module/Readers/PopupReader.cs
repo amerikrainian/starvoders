@@ -175,6 +175,21 @@ namespace StarVoders.Module.Readers
         // A new block under the holder goes to the achievement dialog once its texts are in: the
         // title, then the other shown texts (the description). The blocks stay after sliding out (and lose their
         // AchievementBlock component), so a block is new by pointer, not by being shown.
+        /// <summary>Whether a popup block the dialog has not taken yet is under the holder: the game
+        /// spawned it and its texts are not in (they arrive a frame or more later).</summary>
+        public static bool AchievementPending()
+        {
+            var manager = AchievementPopupManager.Instance;
+            var holder = manager != null ? manager._popupHolder : null;
+            if (holder == null || !s_achievementsPrimed) return false;
+            for (int i = 0; i < holder.childCount; i++)
+            {
+                var block = holder.GetChild(i);
+                if (block != null && !s_achievements.Contains(block.Pointer)) return true;
+            }
+            return false;
+        }
+
         private static void Achievements()
         {
             var manager = AchievementPopupManager.Instance;
