@@ -135,6 +135,7 @@ fight.status.rift.desc=ここには何も立てない。押し込まれたエン
 fight.status.nebula=星雲
 fight.status.nebula.desc=このマスへの攻撃は効果がない。
 fight.status.vortex=渦
+fight.boss.phase={0}、フェーズ{1}
 fight.danger={0}: {1}
 fight.targeted={0} が狙う
 fight.cat.invaders=インベーダー

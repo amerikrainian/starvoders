@@ -6,7 +6,8 @@ namespace StarVoders.Core.Fight
     /// <summary>
     /// What changed between two settled moments of a fight, worded as outcomes (speechchem's way):
     /// "Enemy turn" first when it began, then per entity: arrived, moved (only the coordinate that
-    /// changed: "Migo 1 to row 4"), health, shield, immunity, shock, charge; the destroyed, grouped by kind; new Danger Zones per
+    /// changed: "Migo 1 to row 4"), health, shield, immunity, shock, charge; the destroyed, grouped by kind; a boss off the
+    /// board, its health and a phase it enters; new Danger Zones per
     /// attacker; then the cards that land on the grid as pickups and those lost from it without being drawn
     /// (a drawn one is the "Drew" line); then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
     /// cards drawn. Terse, one line per fact, in that
@@ -58,6 +59,10 @@ namespace StarVoders.Core.Fight
             foreach (var e in before.Entities)
                 if (!seen.Contains(e.Key)) gone.Add(e);
             lines.AddRange(Destroyed(gone));
+
+            // A boss off the board: its health as drawn ("The Overseer 5/6"), then a phase it enters.
+            if (after.Boss != null && after.Boss != before.Boss) lines.Add(after.Boss);
+            if (after.BossPhase != null && after.BossPhase != before.BossPhase) lines.Add(after.BossPhase);
 
             // New Danger Zones, per attacker in the order they first appear, their tiles merged into
             // shapes (TileRanges): "Shooter 1 targets 2 1 to 2 5". Zones that clear are not said:

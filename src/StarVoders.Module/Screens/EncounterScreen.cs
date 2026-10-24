@@ -47,7 +47,7 @@ namespace StarVoders.Module.Screens
             return c != null && !c.EncounterEnded;
         }
 
-        public override string ScreenName => Objective();
+        public override string ScreenName => Objective() ?? (Overseer.Model() != null ? Overseer.Name() : null);
 
         // The objective and the landing wait while the fight still moves or a tip is on its way: the
         // tutorial's tips come one after another, each covering the fight, and the fight showing
@@ -136,6 +136,7 @@ namespace StarVoders.Module.Screens
             b.BeginStop("fight:status");
             b.PushContext(null, positions: false);
             b.AddItem(ControlId.Structural("fight:turn"), Stat(TurnText, null));
+            if (Overseer.Model() != null) b.AddItem(ControlId.Structural("fight:overseer"), Stat(Overseer.Line, null));
             var doom = view.DoomView;
             if (ViewNodes.IsShown(doom))
                 b.AddItem(ControlId.Structural("fight:doom"), Stat(() => FightState.Figure("Doom"), () => GameLoc.Get("DoomPanelDesc_Misc")));
@@ -158,7 +159,7 @@ namespace StarVoders.Module.Screens
                 }, () => GameLoc.Get("ManaPanelDesc_Misc")));
             if (Stars() != null)
                 b.AddItem(ControlId.Structural("fight:stars"), Stat(Stars, () => GameLoc.Get("StarPanelDesc_Misc")));
-            b.AddItem(ControlId.Structural("fight:objective"), Stat(Objective, null));
+            if (Objective() != null) b.AddItem(ControlId.Structural("fight:objective"), Stat(Objective, null));
             var artifacts = view.ArtifactViewDict;
             if (artifacts != null && artifacts.Count > 0)
             {
@@ -737,12 +738,18 @@ namespace StarVoders.Module.Screens
         /// <summary>The objective the right-hand screen states ("Objective: Defeat Mothership!"). It
         /// is hidden while anything is hovered, which our focus always is, but kept: a hover or a
         /// selection writes <see cref="ScreenView.SelectionPrompt"/>, and only the default path
-        /// (<see cref="ScreenView.UpdateText"/>) writes <see cref="ScreenView.Text"/>.</summary>
+        /// (<see cref="ScreenView.UpdateText"/>) writes <see cref="ScreenView.Text"/>. None in the
+        /// Overseer's fight: the game has no objective for it and leaves the Kraken's there.</summary>
         public static string Objective()
         {
+            if (Overseer.Model() != null) return null;
             var screen = FightState.View?.ScreenView;
             return screen != null ? GameText.Of(screen.Text) : null;
         }
+
+        /// <summary>The objective key's line: the objective, else (the Overseer's fight) the Overseer's
+        /// health or phase.</summary>
+        public static string ObjectiveLine() => Objective() ?? Overseer.Line();
 
         private static NodeVtable Artifact(ArtifactView view) =>
             CardNodes.Artifact(view.ArtifactModel, view, cooldown: false, focus: () => FightState.Hover(view));

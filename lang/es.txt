@@ -135,6 +135,7 @@ fight.status.rift.desc=Aquí no puede haber nada. Una entidad empujada hacia ell
 fight.status.nebula=Nebulosa
 fight.status.nebula.desc=Los golpes no tienen efecto en esta casilla.
 fight.status.vortex=Vórtice
+fight.boss.phase={0}, fase {1}
 fight.danger={0}: {1}
 fight.targeted=apuntada por {0}
 fight.cat.invaders=Invasores

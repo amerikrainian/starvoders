@@ -10,7 +10,7 @@ namespace StarVoders.Module.Fight
     /// The lines of the buffers that read the fight whatever has focus: the hand, each card as
     /// arrowing onto it says it (not its more info); the player, Doom, the energy, bombs and Summons,
     /// the mech and Stars, or between fights the run's Doom and Stars; the invaders, each with its
-    /// state and tile, top row first. Read live on every buffer keypress; empty where they do not apply.
+    /// state and tile, top row first, after the Overseer when the fight has one. Read live on every buffer keypress; empty where they do not apply.
     /// </summary>
     internal static class FightBuffers
     {
@@ -45,6 +45,8 @@ namespace StarVoders.Module.Fight
             if (Fight.Controller == null) yield break;
             var board = FightBoard.Read();
             if (board == null) yield break;
+            string overseer = Overseer.Line();
+            if (overseer != null) yield return overseer;
             for (int y = board.Rows - 1; y >= 0; y--)
                 for (int x = 0; x < board.Columns; x++)
                 {

@@ -24,7 +24,10 @@ namespace StarVoders.Module.Fight
         private readonly Dictionary<(int, int), AEntityModel> _at = new Dictionary<(int, int), AEntityModel>();
         // Every invader of the fight by kind, dead ones included, as the game's numbers in order: an
         // invader is called by its place in its kind ("Shooter 2"), stable since the dead stay.
-        private readonly Dictionary<EnemyName, List<int>> _kinds = new Dictionary<EnemyName, List<int>>();
+        // Invaders numbered within the name they are read by: kinds that share a title (the Overseer
+        // fight's three Chaotic Detritus) count as one, by kind then the game's number.
+        private readonly Dictionary<string, List<(int Kind, int Number)>> _kinds = new Dictionary<string, List<(int Kind, int Number)>>();
+        private readonly Dictionary<EnemyName, string> _kindNames = new Dictionary<EnemyName, string>();
         private readonly HashSet<(int, int)> _spawn = new HashSet<(int, int)>();
         private readonly HashSet<(int, int)> _summons = new HashSet<(int, int)>();
         public readonly List<AEntityModel> Entities = new List<AEntityModel>();
@@ -56,8 +59,9 @@ namespace StarVoders.Module.Fight
                     if (enemy != null)
                     {
                         var kind = enemy.EnemyID.EnemyName;
-                        if (!board._kinds.TryGetValue(kind, out var numbers)) board._kinds[kind] = numbers = new List<int>();
-                        numbers.Add(enemy.EnemyID.Number);
+                        string name = board.KindName(kind);
+                        if (!board._kinds.TryGetValue(name, out var numbers)) board._kinds[name] = numbers = new List<(int Kind, int Number)>();
+                        numbers.Add(((int)kind, enemy.EnemyID.Number));
                     }
                     var id = entity.ID.Cast<EntityID>();
                     if (!grid.IsEntityOnGrid(id)) continue;
@@ -141,9 +145,32 @@ namespace StarVoders.Module.Fight
             var enemy = entity.TryCast<EnemyEntityModel>();
             if (enemy == null) return (Name(entity), 0);
             var id = enemy.EnemyID;
-            string name = GameLoc.EnemyName(id.EnemyName) ?? id.EnemyName.ToString();
-            return _kinds.TryGetValue(id.EnemyName, out var numbers) && numbers.Count > 1
-                ? (name, numbers.IndexOf(id.Number) + 1) : (name, 0);
+            string name = KindName(id.EnemyName);
+            return _kinds.TryGetValue(name, out var numbers) && numbers.Count > 1
+                ? (name, numbers.IndexOf(((int)id.EnemyName, id.Number)) + 1) : (name, 0);
+        }
+
+        // An invader kind's name, looked up once per board.
+        private string KindName(EnemyName kind)
+        {
+            if (!_kindNames.TryGetValue(kind, out var name)) _kindNames[kind] = name = GameLoc.EnemyName(kind) ?? kind.ToString();
+            return name;
+        }
+
+        // The Hands of Time (the Overseer fight's, the ultimate one's): never destroyed, their health
+        // counts the hits they take from 99.
+        private static readonly HashSet<EnemyName> HitCounters = new HashSet<EnemyName>
+        {
+            EnemyName.ChaosLeftHand, EnemyName.ChaosRightHand, EnemyName.UltimateLeftHand, EnemyName.UltimateRightHand,
+        };
+
+        /// <summary>The entity's health as worth saying: 0 for the Hands of Time, whose health is a hit
+        /// counter.</summary>
+        public static int ShownHealth(AEntityModel entity)
+        {
+            var enemy = entity?.TryCast<EnemyEntityModel>();
+            if (enemy != null && HitCounters.Contains(enemy.EnemyID.EnemyName)) return 0;
+            return entity?.Health ?? 0;
         }
 
         /// <summary>The entity's state after its name: its named traits (Bomber Mech's "Bomb"), health
@@ -154,7 +181,7 @@ namespace StarVoders.Module.Fight
             var parts = new List<string>();
             foreach (var trait in Traits(entity)) parts.Add(GameLoc.Get(trait + "_Keyword"));
             if (ActivateReady(entity)) parts.Add(Strings.FightReady(GameLoc.Get("Activate_Keyword") ?? "Activate"));
-            if (entity.TryCast<PlayerEntityModel>() == null && entity.Health > 1) parts.Add(Strings.FightHealth(entity.Health));
+            if (entity.TryCast<PlayerEntityModel>() == null && ShownHealth(entity) > 1) parts.Add(Strings.FightHealth(entity.Health));
             if (entity.IsShielded) parts.Add(ShieldName(entity) ?? GameLoc.Get("Shielded_Keyword"));
             parts.Add(ImmuneName(entity));
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));

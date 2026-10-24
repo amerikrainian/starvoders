@@ -135,6 +135,7 @@ fight.status.rift.desc=Rien ne peut s'y tenir. Une entité poussée dedans atter
 fight.status.nebula=Nébuleuse
 fight.status.nebula.desc=Les frappes n'ont aucun effet sur cette case.
 fight.status.vortex=Vortex
+fight.boss.phase={0}, phase {1}
 fight.danger={0}: {1}
 fight.targeted=visée par {0}
 fight.cat.invaders=Envahisseurs

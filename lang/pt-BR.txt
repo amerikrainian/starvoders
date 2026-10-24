@@ -135,6 +135,7 @@ fight.status.rift.desc=Nada pode ficar aqui. Uma entidade empurrada para ela cai
 fight.status.nebula=Nebulosa
 fight.status.nebula.desc=Ataques não têm efeito neste quadrado.
 fight.status.vortex=Vórtice
+fight.boss.phase={0}, fase {1}
 fight.danger={0}: {1}
 fight.targeted=na mira de {0}
 fight.cat.invaders=Invasores

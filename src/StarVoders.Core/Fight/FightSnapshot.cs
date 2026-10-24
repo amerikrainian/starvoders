@@ -64,6 +64,9 @@ namespace StarVoders.Core.Fight
         public int Columns, Rows;
         public bool PlayerTurn;
         public string Doom, Heat, Power, Battery, Mana;
+        /// <summary>A boss kept off the board (the Overseer): its drawn health as read ("The Overseer
+        /// 5/6"), null while none is drawn; its phase as read ("The Overseer, phase 2"), null when unknown.</summary>
+        public string Boss, BossPhase;
         /// <summary>The combo (invaders destroyed this turn, the Stars multiplier) and how it reads
         /// ("Combo! 4, Nice!"): said when the count rises, never when it drops back to 0.</summary>
         public int Combo;

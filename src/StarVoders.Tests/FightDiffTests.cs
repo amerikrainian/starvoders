@@ -50,6 +50,24 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void A_boss_off_the_board_reads_its_health_after_the_destroyed_then_a_phase_it_enters()
+        {
+            var before = Snap(Migo(1, 2, 6));
+            before.Boss = "The Overseer 2/6";
+            before.BossPhase = "The Overseer, phase 1";
+            var after = Snap();
+            after.Boss = "The Overseer 1/6";
+            after.BossPhase = "The Overseer, phase 1";
+            Assert.Equal(new[] { "Migo 1 destroyed", "The Overseer 1/6" }, FightDiff.Lines(before, after));
+
+            // The bar hidden as phase 2 begins: the phase alone, nothing for the bar going.
+            var next = Snap();
+            next.BossPhase = "The Overseer, phase 2";
+            Assert.Equal(new[] { "The Overseer, phase 2" }, FightDiff.Lines(after, next));
+            Assert.Empty(FightDiff.Lines(next, next));
+        }
+
+        [Fact]
         public void A_named_shield_reads_by_its_name_and_its_loss_as_any_shield()
         {
             var plain = Migo(1, 2, 6);

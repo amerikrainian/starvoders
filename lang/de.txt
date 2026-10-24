@@ -135,6 +135,7 @@ fight.status.rift.desc=Hier kann nichts stehen. Ein hineingestoßenes Objekt lan
 fight.status.nebula=Nebel
 fight.status.nebula.desc=Treffer haben auf diesem Feld keine Wirkung.
 fight.status.vortex=Wirbel
+fight.boss.phase={0}, Phase {1}
 fight.danger={0}: {1}
 fight.targeted=Ziel von {0}
 fight.cat.invaders=Invasoren

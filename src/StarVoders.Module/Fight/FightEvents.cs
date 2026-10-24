@@ -131,6 +131,9 @@ namespace StarVoders.Module.Fight
                     if (overheat != null) { Speech.Say(overheat); Log.Add(overheat); }
                     return;
                 }
+                // The Overseer's phases: the next settled snapshot says the one begun.
+                int bossPhase = Overseer.PhaseOf(task);
+                if (bossPhase > 0) { Overseer.PhaseStarted(bossPhase); return; }
                 bool enemyPhase = task.TryCast<EnemyPhaseTask>() != null;
                 bool action = task.TryCast<ProcessEnemyPhaseActionTask>() != null || task.TryCast<ProcessEnemyStartTurnActionTask>() != null;
                 if (!enemyPhase && !action && task.TryCast<StartTurnTask>() == null) return;
@@ -172,6 +175,8 @@ namespace StarVoders.Module.Fight
                 if (Fight.Shown(view.HeatView)) snap.Heat = Fight.Figure("Heat");
                 if (Fight.Shown(view.PowerView)) { snap.Power = Fight.Figure("Power"); snap.Battery = Fight.Battery(); }
                 if (Fight.Shown(view.ManaView)) snap.Mana = Fight.Figure("Mana");
+                snap.Boss = Overseer.HealthLine();
+                snap.BossPhase = Overseer.PhaseLine();
                 foreach (var entity in board.Entities)
                 {
                     var c = model.GridModel.GetEntityCoord(entity.ID.Cast<EntityID>(), false);
@@ -184,7 +189,7 @@ namespace StarVoders.Module.Fight
                         Number = kind.Number,
                         X = c.x + 1,
                         Y = c.y + 1,
-                        Health = entity.Health,
+                        Health = FightBoard.ShownHealth(entity),
                         Shielded = entity.IsShielded,
                         Shield = FightBoard.ShieldName(entity),
                         Immune = FightBoard.ImmuneName(entity),

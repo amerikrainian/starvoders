@@ -135,6 +135,7 @@ fight.status.rift.desc=任何東西都無法停留在這裡。被推入的實體
 fight.status.nebula=星雲
 fight.status.nebula.desc=打擊對這個格子無效。
 fight.status.vortex=漩渦
+fight.boss.phase={0}，第{1}階段
 fight.danger={0}: {1}
 fight.targeted=被 {0} 瞄準
 fight.cat.invaders=入侵者

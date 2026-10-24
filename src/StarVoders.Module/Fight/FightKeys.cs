@@ -81,7 +81,7 @@ namespace StarVoders.Module.Fight
             Read("fight.doom", "Doom", KeyCode.D, ctrl: true, line: RunKeys.DoomLine, category: InputCategory.Run);
             Read("run.stars", "Stars", KeyCode.S, ctrl: true, line: RunKeys.StarsLine, category: InputCategory.Run);
             Read("fight.heat", "Energy", KeyCode.H, ctrl: true, line: () => { var lines = Fight.Resources(); return lines.Count > 0 ? string.Join(", ", lines) : null; });
-            Read("fight.objective", "Objective", KeyCode.O, ctrl: true, line: EncounterScreen.Objective);
+            Read("fight.objective", "Objective", KeyCode.O, ctrl: true, line: EncounterScreen.ObjectiveLine);
             Read("fight.mech", "Mech", KeyCode.M, ctrl: true, line: MechLine);
             Read("fight.bombs", "Bombs and Summons", KeyCode.B, ctrl: true, line: () =>
             {

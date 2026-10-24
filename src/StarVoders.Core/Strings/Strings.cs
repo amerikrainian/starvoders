@@ -198,6 +198,8 @@ namespace StarVoders.Core.Strings
             D("fight.status.nebula", "Nebula"),
             D("fight.status.nebula.desc", "Strikes have no effect on this tile."),
             D("fight.status.vortex", "Vortex"),
+            // The final boss's phase, said as it begins and read on its status item: {0} = its name ("The Overseer"), {1} = the phase (1 to 3).
+            D("fight.boss.phase", "{0}, phase {1}"),
             D("fight.danger", "{0}: {1}"),
             // A Danger Zone tile: {0} who will strike it ("targeted by Shooter 1, Migo 3").
             D("fight.targeted", "targeted by {0}"),
@@ -592,6 +594,7 @@ namespace StarVoders.Core.Strings
         /// <summary>A tile status the game leaves unnamed ("rift", "nebula", "vortex"); its description with
         /// <c>.desc</c> appended, null where the mod has none.</summary>
         public static string FightStatus(string status) => Get("fight.status." + status);
+        public static string FightBossPhase(string name, int phase) => F("fight.boss.phase", name, phase);
         public static string FightStatusDescription(string status) => Has("fight.status." + status + ".desc") ? Get("fight.status." + status + ".desc") : null;
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
         public static string FightCategory(string category) => Get("fight.cat." + category);

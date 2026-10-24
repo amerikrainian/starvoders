@@ -135,6 +135,7 @@ fight.status.rift.desc=Burada hiçbir şey duramaz. İçine itilen varlık karş
 fight.status.nebula=Bulutsu
 fight.status.nebula.desc=Vuruşların bu karede etkisi yok.
 fight.status.vortex=Girdap
+fight.boss.phase={0}, {1}. aşama
 fight.danger={0}: {1}
 fight.targeted={0} tarafından hedefleniyor
 fight.cat.invaders=İstilacılar

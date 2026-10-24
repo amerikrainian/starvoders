@@ -135,6 +135,7 @@ fight.status.rift.desc=여기에는 아무것도 설 수 없습니다. 밀려 �
 fight.status.nebula=성운
 fight.status.nebula.desc=이 타일에는 타격이 효과가 없습니다.
 fight.status.vortex=소용돌이
+fight.boss.phase={0}, {1}페이즈
 fight.danger={0}: {1}
 fight.targeted={0} 조준 중
 fight.cat.invaders=침략자

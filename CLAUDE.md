@@ -451,6 +451,21 @@ separately. Host F6 uses the same OS read.
   re-previews its strike (no mouse gate on that path), so Titan Rocket's area follows the cursor;
   settling on no marks forgets the last set. The card's cost and tasks wait for the pick, so a first,
   fully cancellable selection backs out with nothing spent.
+- The Overseer (`Fight/Overseer`, the final fight, `ChaosBossModel`): never on the grid. Phase 1: the
+  Hands of Time (shielded = closed; strike the shield off, then the open hand: the Overseer loses 1, the hand
+  re-shields and turns Immune; their health is a hit counter from 99, so `FightBoard.ShownHealth` hides it,
+  numbering is by spoken name so the three Chaotic Detritus kinds count as one) and a Rift column; health =
+  the drawn `ChaosAct1HealthBarView` (`Phase1HP` / `MaxPhase1HP`), hidden after phase 1. Phase 2: Chaos
+  Swarms fill the board; phase 3: Chaos Hearts and Detritus (`Phase3HP`, 4, is drawn nowhere, so not read).
+  Status item and the enemies buffer's first line ("The Overseer 5/6", else "The Overseer, phase 2");
+  snapshot `Boss`/`BossPhase` events; the phase from `ChaosBossTransitionToPhaseNTask` (the task-log
+  prefix), but 1 whenever the bar shows (Rewind). Name: `ChaosGodGlossaryTitle_Misc` (ultimate:
+  `ChaosGodUltimateEnding_Misc`). The game has no Overseer objective and leaves "Defeat Kraken!" on its
+  screen: not read (`EncounterScreen.Objective` is null there); the screen is named by the Overseer and
+  Ctrl+O reads its status item. Test: from an encounter choice, `SceneLoader.LoadSceneWithTransition(ChaosGlobeScene)`, then
+  `ChaosGlobeController.OnChaosGodPressed()` (from inside a fight it resumes that fight instead); strike with
+  `StrikeTileEffectTask` (box the `Coord` with `il2cpp_value_box`), set `Phase1HP` to skip ahead, Rewind to
+  return. **Never leave this fight through the driver: abandoning it counts as a won run (achievements).**
 - A lost fight: `LoseEncounterTask` loads `CampaignLoseTransitionAdditive` (scene 30) straight to the run
   end; nothing in the code loads `EncounterLoseSceneAdditive` (16, `EncounterLoseController` Rewind/Lose) by
   a fixed number, so it is treated as unused. Test a loss with
