@@ -430,7 +430,9 @@ separately. Host F6 uses the same OS read.
   loss, details `Invulnerable_InfoLine`; test by setting the flag on an invader through `/eval`. Ticked before `ScreenManager` so an event
   precedes the landing it causes. Invaders numbered within their spoken name by kind, then `EnemyID.Number` (the Overseer fight's three Chaotic
   Detritus kinds count as one), except one boss's parts drawn as a single creature (`FightBoard.OneCreature`: Mega-Blob's
-  core and pieces, Nessie's head and body), read unnumbered. An entity gone from the board but in
+  core and pieces, Nessie's head and body), read unnumbered; Kraken tentacle segments by tentacle, from the base to
+  the tip ("Left Kraken Tentacle 4"), from `KrakenCoreModel.Left/Middle/RightTentacleEntities` (boxed `EnemyID`s
+  behind the `EntityID` interface: `il2cpp_object_unbox`, never the proxy's `ToString`). An entity gone from the board but in
   `GridModel.OffGridEntities` (a Queen Bee in its Hive) "left the board", grouped as the destroyed are.
   `GameText.Clean` drops space just inside brackets (`GetModifiedDescriptions` pads them: "( 3 left )").
 - The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts

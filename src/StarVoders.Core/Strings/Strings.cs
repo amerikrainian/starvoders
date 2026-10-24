@@ -198,6 +198,10 @@ namespace StarVoders.Core.Strings
             D("fight.status.nebula", "Nebula"),
             D("fight.status.nebula.desc", "Strikes have no effect on this tile."),
             D("fight.status.vortex", "Vortex"),
+            // A Kraken tentacle segment by its tentacle: {0} = the game's name ("Kraken Tentacle"); its number follows.
+            D("fight.tentacle.left", "Left {0}"),
+            D("fight.tentacle.middle", "Middle {0}"),
+            D("fight.tentacle.right", "Right {0}"),
             // The final boss's phase, said as it begins and read on its status item: {0} = its name ("The Overseer"), {1} = the phase (1 to 3).
             D("fight.boss.phase", "{0}, phase {1}"),
             D("fight.danger", "{0}: {1}"),
@@ -599,6 +603,7 @@ namespace StarVoders.Core.Strings
         /// <c>.desc</c> appended, null where the mod has none.</summary>
         public static string FightStatus(string status) => Get("fight.status." + status);
         public static string FightBossPhase(string name, int phase) => F("fight.boss.phase", name, phase);
+        public static string FightTentacle(string side, string name) => F("fight.tentacle." + side, name);
         public static string FightStatusDescription(string status) => Has("fight.status." + status + ".desc") ? Get("fight.status." + status + ".desc") : null;
         public static string FightLabelled(string label, string value) => F("fight.danger", label, value);
         public static string FightCategory(string category) => Get("fight.cat." + category);

@@ -28,6 +28,9 @@ namespace StarVoders.Module.Fight
         // fight's three Chaotic Detritus) count as one, by kind then the game's number.
         private readonly Dictionary<string, List<(int Kind, int Number)>> _kinds = new Dictionary<string, List<(int Kind, int Number)>>();
         private readonly Dictionary<EnemyName, string> _kindNames = new Dictionary<EnemyName, string>();
+        // The Kraken's tentacle segments by their EnemyID.Number, each its tentacle ("left", "middle",
+        // "right") and its place along it, from the Kraken Heart's three lists.
+        private readonly Dictionary<int, (string Side, int Number)> _tentacles = new Dictionary<int, (string Side, int Number)>();
         private readonly HashSet<(int, int)> _spawn = new HashSet<(int, int)>();
         private readonly HashSet<(int, int)> _summons = new HashSet<(int, int)>();
         public readonly List<AEntityModel> Entities = new List<AEntityModel>();
@@ -56,6 +59,8 @@ namespace StarVoders.Module.Fight
                     var entity = kv.Value?.TryCast<AEntityModel>();
                     if (entity == null) continue;
                     var enemy = entity.TryCast<EnemyEntityModel>();
+                    var kraken = entity.TryCast<KrakenCoreModel>();
+                    if (kraken != null) board.Tentacles(kraken);
                     if (enemy != null)
                     {
                         var kind = enemy.EnemyID.EnemyName;
@@ -147,6 +152,8 @@ namespace StarVoders.Module.Fight
             var id = enemy.EnemyID;
             string name = KindName(id.EnemyName);
             if (OneCreature.Contains(id.EnemyName)) return (name, 0);
+            if (id.EnemyName == EnemyName.KrakenTentacleNode && _tentacles.TryGetValue(id.Number, out var place))
+                return (Strings.FightTentacle(place.Side, name), place.Number);
             return _kinds.TryGetValue(name, out var numbers) && numbers.Count > 1
                 ? (name, numbers.IndexOf(((int)id.EnemyName, id.Number)) + 1) : (name, 0);
         }
@@ -158,6 +165,27 @@ namespace StarVoders.Module.Fight
         {
             EnemyName.MegaBlob, EnemyName.MegaBlobPiece, EnemyName.WormCore, EnemyName.WormBody,
         };
+
+        // "Left Kraken Tentacle 2": the game keeps each tentacle's segments in its own list on the Heart.
+        private void Tentacles(KrakenCoreModel kraken)
+        {
+            try
+            {
+                foreach (var (side, list) in new[] { ("left", kraken.LeftTentacleEntities), ("middle", kraken.MiddleTentacleEntities), ("right", kraken.RightTentacleEntities) })
+                {
+                    if (list == null) continue;
+                    int n = 0;
+                    foreach (var id in list)
+                    {
+                        // Each is a boxed EnemyID behind the EntityID interface: unboxed for its number.
+                        if (id == null) continue;
+                        var raw = Il2CppInterop.Runtime.IL2CPP.il2cpp_object_unbox(id.Pointer);
+                        _tentacles[System.Runtime.InteropServices.Marshal.PtrToStructure<EnemyID>(raw).Number] = (side, ++n);
+                    }
+                }
+            }
+            catch (Exception e) { CoreLog.Warning("FightBoard: reading the Kraken's tentacles failed: " + e.Message); }
+        }
 
         // An invader kind's name, looked up once per board.
         private string KindName(EnemyName kind)
