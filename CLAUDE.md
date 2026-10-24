@@ -491,7 +491,8 @@ separately. Host F6 uses the same OS read.
 - Card viewer (`DeckViewSceneAdditive`, `DeckViewSceneController`, statics `Type` (`DeckSceneType`:
   RemoveCard, PlayerData, PileView, Glossary, StarterDeck) and `PileToShow`): `DeckViewScreen`,
   title by the pile its first card is in (no title drawn), `DeckCardView`s from `_cardGrid` and
-  `_cardPilotUniqueGrid` (each grid as strips, a row each as drawn, Up/Down keeping the column), artifacts (strips too; the game draws them above the cards; the starter deck's is the pilot's
+  `_cardPilotUniqueGrid` (each grid as strips, a row each as drawn, Up/Down keeping the column), artifacts (strips too; the game draws them above the cards; the final quest's relic first, drawn apart in
+  `ChaosQuestObject`/`ChaosQuestArtifactView`; the starter deck's is the pilot's
   starter artifact), a Keeper's spells (`SpellViews`, apart from the artifact grids; a row under "Spells",
   then "Empty slot" up to the drawn frame, `KeeperObjects3`/`KeeperObjects5`), Back last in the same stop (outside the cards' positions); Escape = `ExitScene`. The game creates the artifacts first and
   the cards over the next frames, so the screen holds its arrival until the card count holds 0.15 s

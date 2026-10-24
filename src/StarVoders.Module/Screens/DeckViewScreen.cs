@@ -79,6 +79,11 @@ namespace StarVoders.Module.Screens
             b.BeginStop("deckview:cards");
             b.PushContext(Title(cards));
             var artifactsByGrid = new List<List<DeckArtifactView>>();
+            // The final quest's relic (Incomplete Relic, Cosmic Relic), drawn on its own above the
+            // artifact grid (ChaosQuestObject), read first among the artifacts.
+            if (c.ChaosQuestObject != null && c.ChaosQuestObject.activeInHierarchy && ViewNodes.IsShown(c.ChaosQuestArtifactView)
+                && c.ChaosQuestArtifactView.ArtifactModel != null)
+                artifactsByGrid.Add(new List<DeckArtifactView> { c.ChaosQuestArtifactView });
             foreach (var grid in new[] { c._artifactGrid, c._artifactPilotUniqueGrid })
             {
                 if (grid == null || !grid.gameObject.activeInHierarchy) continue;
