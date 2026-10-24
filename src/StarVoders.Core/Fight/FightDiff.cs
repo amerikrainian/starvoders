@@ -9,7 +9,7 @@ namespace StarVoders.Core.Fight
     /// changed: "Migo 1 to row 4"), health, shield, immunity, shock, charge; the destroyed, grouped by kind; a boss off the
     /// board, its health and a phase it enters; new Danger Zones per
     /// attacker; then the cards that land on the grid as pickups and those lost from it without being drawn
-    /// (a drawn one is the "Drew" line); the cards created into a pile; then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
+    /// (a drawn one is the "Drew" line); the cards created into a pile; tiles whose status changed; then Doom and the energy (Heat, Power, Battery, Mana) as their panels read; then the new turn ("Turn 2/8") and the
     /// cards drawn, then the spells whose cooldown ran out. Terse, one line per fact, in that
     /// order. Engine-free: the module takes the snapshots.
     /// </summary>
@@ -135,6 +135,8 @@ namespace StarVoders.Core.Fight
                     if (c.Pile != null && !had.Contains(c.Key)) lines.Add(S.FightCardAdded(c.Name, c.Pile));
             }
 
+            lines.AddRange(TileChanges(before, after));
+
             if (after.Combo > before.Combo && after.ComboText != null) lines.Add(after.ComboText);
             if (after.Doom != null && after.Doom != before.Doom) lines.Add(after.Doom);
             foreach (var (was, now) in new[] { (before.Heat, after.Heat), (before.Power, after.Power), (before.Battery, after.Battery), (before.Mana, after.Mana) })
@@ -157,6 +159,35 @@ namespace StarVoders.Core.Fight
         // The destroyed, one line per kind in the order the kinds first fall: the numbered by their
         // numbers, ascending ("Shooter 1, 7, 8 destroyed"), the unnumbered counted ("2x Web
         // destroyed"); one alone reads as before ("Shooter 7 destroyed", "Web destroyed").
+        // Tiles whose status changed, merged into ranges per status: "4 8 now Hole", "3 5 no longer
+        // Cloud" (a Cloud used up blocking a strike). A first read with an empty board says nothing.
+        private static List<string> TileChanges(FightSnapshot before, FightSnapshot after)
+        {
+            var lines = new List<string>();
+            if (before.Entities.Count == 0 && before.Tiles.Count == 0) return lines;
+            var was = new Dictionary<(int, int), string>();
+            foreach (var t in before.Tiles) was[(t.X, t.Y)] = t.Status;
+            var now = new Dictionary<(int, int), string>();
+            foreach (var t in after.Tiles) now[(t.X, t.Y)] = t.Status;
+            var gained = new List<KeyValuePair<string, List<(int X, int Y)>>>();
+            var lost = new List<KeyValuePair<string, List<(int X, int Y)>>>();
+            void Add(List<KeyValuePair<string, List<(int X, int Y)>>> into, string status, (int, int) tile)
+            {
+                var tiles = into.Find(kv => kv.Key == status).Value;
+                if (tiles == null) { tiles = new List<(int X, int Y)>(); into.Add(new KeyValuePair<string, List<(int X, int Y)>>(status, tiles)); }
+                tiles.Add(tile);
+            }
+            foreach (var t in after.Tiles)
+                if (!was.TryGetValue((t.X, t.Y), out var old) || old != t.Status) Add(gained, t.Status, (t.X, t.Y));
+            foreach (var t in before.Tiles)
+                if (!now.ContainsKey((t.X, t.Y))) Add(lost, t.Status, (t.X, t.Y));
+            foreach (var kv in gained)
+                lines.Add(S.FightTileNow(string.Join("; ", TileRanges.Parts(kv.Value, after.Columns, after.Rows)), kv.Key));
+            foreach (var kv in lost)
+                lines.Add(S.FightTileNoLonger(string.Join("; ", TileRanges.Parts(kv.Value, after.Columns, after.Rows)), kv.Key));
+            return lines;
+        }
+
         private static List<string> Grouped(List<EntitySnap> gone, System.Func<string, string> line)
         {
             var kinds = new List<string>();

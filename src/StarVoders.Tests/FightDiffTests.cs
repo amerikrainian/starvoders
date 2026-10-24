@@ -167,6 +167,22 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Tile_statuses_that_change_are_said_by_range()
+        {
+            var before = Snap(Migo(1, 1, 6));
+            before.Columns = 5; before.Rows = 8;
+            before.Tiles.Add(new TileSnap { X = 2, Y = 1, Status = "Cracked" });
+            before.Tiles.Add(new TileSnap { X = 3, Y = 5, Status = "Cloud" });
+            var after = Snap(Migo(1, 1, 6));
+            after.Columns = 5; after.Rows = 8;
+            after.Tiles.Add(new TileSnap { X = 2, Y = 1, Status = "Hole" });
+            after.Tiles.Add(new TileSnap { X = 4, Y = 1, Status = "Hole" });
+            after.Tiles.Add(new TileSnap { X = 4, Y = 2, Status = "Hole" });
+            Assert.Equal(new[] { "2 1; 4 1 to 4 2 now Hole", "3 5 no longer Cloud" }, FightDiff.Lines(before, after));
+            Assert.Empty(FightDiff.Lines(after, after));
+        }
+
+        [Fact]
         public void A_spell_whose_cooldown_runs_out_is_ready()
         {
             var before = Snap();

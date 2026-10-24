@@ -240,6 +240,9 @@ namespace StarVoders.Core.Strings
             // dissipating (its description's word); eaten by Nessie, its Apples.
             D("fight.ev.flew", "{0} flew away"),
             D("fight.ev.dissipated", "{0} dissipated"),
+            // A tile's status changing: {0} = the tiles ("4 8", "2 1 to 2 3"), {1} = the status ("Hole", "Cloud").
+            D("fight.ev.tile.now", "{0} now {1}"),
+            D("fight.ev.tile.gone", "{0} no longer {1}"),
             D("fight.ev.eaten", "{0} eaten"),
             // Several of a kind without numbers, as destroyed together: "2x Web". {0} = how many, {1} = the kind.
             D("fight.ev.count", "{0}x {1}"),
@@ -631,6 +634,8 @@ namespace StarVoders.Core.Strings
         public static string FightFlewAway(string name) => F("fight.ev.flew", name);
         public static string FightEaten(string name) => F("fight.ev.eaten", name);
         public static string FightDissipated(string name) => F("fight.ev.dissipated", name);
+        public static string FightTileNow(string tiles, string status) => F("fight.ev.tile.now", tiles, status);
+        public static string FightTileNoLonger(string tiles, string status) => F("fight.ev.tile.gone", tiles, status);
         public static string FightCount(int count, string kind) => F("fight.ev.count", count, kind);
         public static string FightShielded(string name) => F("fight.ev.shielded", name);
         public static string FightUnshielded(string name) => F("fight.ev.unshielded", name);

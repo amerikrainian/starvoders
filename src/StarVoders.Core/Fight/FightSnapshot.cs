@@ -37,6 +37,13 @@ namespace StarVoders.Core.Fight
 
     /// <summary>A card lying on the grid: the card's id (as <see cref="CardSnap.Key"/>), its spoken
     /// name ("Pickup: Dash") and its tile, 1-based.</summary>
+    /// <summary>A tile with a status (a Hole, a Cloud), by its name as read.</summary>
+    public sealed class TileSnap
+    {
+        public int X, Y;
+        public string Status;
+    }
+
     public sealed class PickupSnap
     {
         public string Key;
@@ -86,6 +93,7 @@ namespace StarVoders.Core.Fight
         /// <see cref="EntitySnap.Key"/>: <see cref="FightDiff.FlewAway"/> (a Fallen Angel),
         /// <see cref="FightDiff.Dissipated"/> (a Void Rift), <see cref="FightDiff.Eaten"/> (by Nessie).</summary>
         public Dictionary<string, string> Taken = new Dictionary<string, string>();
+        public List<TileSnap> Tiles = new List<TileSnap>();
         /// <summary>The combo (invaders destroyed this turn, the Stars multiplier) and how it reads
         /// ("Combo! 4, Nice!"): said when the count rises, never when it drops back to 0.</summary>
         public int Combo;

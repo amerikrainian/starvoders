@@ -436,7 +436,9 @@ separately. Host F6 uses the same OS read.
   `GridModel.OffGridEntities` (a Queen Bee in its Hive) "left the board", grouped as the destroyed are; one
   removed by `DissipateEntityTask` "flew away" (its `_flyAway`: a Fallen Angel, a Chrono Bird) or "dissipated"
   (a Void Rift), one on the tile of a `WormEatTask` "eaten" (Nessie's Apples): both caught by the task-log prefix,
-  the id unboxed from the task's `Args`, kept for the fight (`FightSnapshot.Taken`).
+  the id unboxed from the task's `Args`, kept for the fight (`FightSnapshot.Taken`). Tile statuses are in the
+  snapshot: a change reads by range per status, "4 8 now Hole", "1 4 no longer Cloud" (a Cloud used up blocking a
+  strike); test with `AddTileStatusTileEffectTask(boxed Coord, TileStatus.Cloud)` then a strike there.
   `GameText.Clean` drops space just inside brackets (`GetModifiedDescriptions` pads them: "( 3 left )").
 - The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts
   (`CurrentPuppet`), `GetPlayerCoord` is that Summon's tile, and `ModelItemDict` has no player. So the

@@ -246,6 +246,12 @@ namespace StarVoders.Module.Fight
                     }
                 if (Fight.Controller?.Pointer == _takenFight)
                     foreach (var kv in _taken) snap.Taken[kv.Key] = kv.Value;
+                for (int y = 0; y < board.Rows; y++)
+                    for (int x = 0; x < board.Columns; x++)
+                    {
+                        var status = board.Status(x, y);
+                        if (status.HasValue) snap.Tiles.Add(new TileSnap { X = x + 1, Y = y + 1, Status = FightBoard.StatusName(status.Value) });
+                    }
                 snap.Columns = board.Columns;
                 snap.Rows = board.Rows;
                 for (int y = 0; y < board.Rows; y++)
