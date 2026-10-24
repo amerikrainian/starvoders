@@ -177,6 +177,8 @@ namespace StarVoders.Module.Fight
                 if (Fight.Shown(view.ManaView)) snap.Mana = Fight.Figure("Mana");
                 snap.Boss = Overseer.HealthLine();
                 snap.BossPhase = Overseer.PhaseLine();
+                foreach (var counter in BossCounters.Read())
+                    snap.Counters.Add(new CardSnap { Key = counter.Key, Name = counter.Line });
                 foreach (var entity in board.Entities)
                 {
                     var c = model.GridModel.GetEntityCoord(entity.ID.Cast<EntityID>(), false);
@@ -189,12 +191,12 @@ namespace StarVoders.Module.Fight
                         Number = kind.Number,
                         X = c.x + 1,
                         Y = c.y + 1,
-                        Health = FightBoard.ShownHealth(entity),
+                        Health = BossCounters.ReadsHealth(entity) ? 0 : FightBoard.ShownHealth(entity),
                         Shielded = entity.IsShielded,
                         Shield = FightBoard.ShieldName(entity),
                         Immune = FightBoard.ImmuneName(entity),
                         Shocked = entity.IsShocked,
-                        Charge = entity.Charge,
+                        Charge = FightBoard.ShownCharge(entity),
                         Channel = FightBoard.ChannelText(entity),
                         IsMech = entity.TryCast<PlayerEntityModel>() != null,
                     });

@@ -47,6 +47,7 @@ namespace StarVoders.Module.Fight
             if (board == null) yield break;
             string overseer = Overseer.Line();
             if (overseer != null) yield return overseer;
+            foreach (var counter in BossCounters.Read()) yield return counter.Line;
             for (int y = board.Rows - 1; y >= 0; y--)
                 for (int x = 0; x < board.Columns; x++)
                 {

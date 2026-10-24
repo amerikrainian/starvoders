@@ -137,6 +137,12 @@ namespace StarVoders.Module.Screens
             b.PushContext(null, positions: false);
             b.AddItem(ControlId.Structural("fight:turn"), Stat(TurnText, null));
             if (Overseer.Model() != null) b.AddItem(ControlId.Structural("fight:overseer"), Stat(Overseer.Line, null));
+            foreach (var counter in BossCounters.Read())
+            {
+                string key = counter.Key;
+                Func<BossCounters.Counter> live = () => BossCounters.Read().Find(c => c.Key == key);
+                b.AddItem(ControlId.Structural("fight:counter:" + key), Stat(() => live()?.Line, () => live()?.Description));
+            }
             var doom = view.DoomView;
             if (ViewNodes.IsShown(doom))
                 b.AddItem(ControlId.Structural("fight:doom"), Stat(() => FightState.Figure("Doom"), () => GameLoc.Get("DoomPanelDesc_Misc")));

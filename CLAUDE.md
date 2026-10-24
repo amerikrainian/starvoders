@@ -487,6 +487,18 @@ separately. Host F6 uses the same OS read.
   `ChaosGlobeController.OnChaosGodPressed()` (from inside a fight it resumes that fight instead); strike with
   `StrikeTileEffectTask` (box the `Coord` with `il2cpp_value_box`), set `Phase1HP` to skip ahead, Rewind to
   return. **Never leave this fight through the driver: abandoning it counts as a won run (achievements).**
+- Boss panels (`Fight/BossCounters`), made by the boss's view at runtime beside the board: the Grandmaster's
+  hourglass (`HourglassInstance.NumberText` = its charge, so the board drops the Grandmaster's "charge N":
+  `FightBoard.ShownCharge`), the Hive's timer (`QueenBeeCoreView.CounterInstance._currHoneyTimer`: pips that
+  fill as time runs out, enabled and scaled up = filled, read "The Hive 1/4"; its number text is hidden), the
+  Hemophage's health bar (`ClonerView.HealthbarInstance`, "Hemophage 12/25"; its health events are the
+  panel's, `BossCounters.ReadsHealth`). Titles/descriptions `GrandmasterHourglass*`, `QueenBeeCounter*` (its
+  "[#]" = `GetAllEnemiesWithName(QueenBee)`), `ClonerHealthbar*` `_Misc`. Status items after the turn, the
+  enemies buffer's first lines, snapshot `Counters` events. Test: from an encounter choice,
+  `RoomFactory.CreateRoomModel(<BossRoomChoiceGeneratorDataSO in CurrentCampaign.Act1RoomGeneratorList>
+  .BossRooms[...].RoomLevel1, globe.Random, false, new List<EnemyName>(), new List<RewardName>())`, set
+  `DataManager.CurrentRoomModel`, `LoadSceneWithTransition(EncounterScene)`; from inside a fight it resumes the
+  saved one, so abandon (a defeat) and start a run each time.
 - A lost fight: `LoseEncounterTask` loads `CampaignLoseTransitionAdditive` (scene 30) straight to the run
   end; nothing in the code loads `EncounterLoseSceneAdditive` (16, `EncounterLoseController` Rewind/Lose) by
   a fixed number, so it is treated as unused. Test a loss with

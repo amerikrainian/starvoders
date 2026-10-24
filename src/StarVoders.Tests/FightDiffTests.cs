@@ -126,6 +126,24 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void A_boss_panel_reads_when_its_figure_changes_or_it_appears()
+        {
+            var before = Snap(Migo(1, 2, 6));
+            before.Counters.Add(new CardSnap { Key = "hourglass", Name = "The Hourglass 5" });
+            var after = Snap(Migo(1, 2, 6));
+            after.Counters.Add(new CardSnap { Key = "hourglass", Name = "The Hourglass 4" });
+            Assert.Equal(new[] { "The Hourglass 4" }, FightDiff.Lines(before, after));
+            Assert.Empty(FightDiff.Lines(after, after));
+
+            var none = Snap(Migo(1, 2, 6));
+            Assert.Equal(new[] { "The Hourglass 4" }, FightDiff.Lines(none, after));
+            // A first read with nothing on the board yet says nothing.
+            var first = Snap();
+            first.Counters.Add(new CardSnap { Key = "hourglass", Name = "The Hourglass 5" });
+            Assert.Empty(FightDiff.Lines(Snap(), first));
+        }
+
+        [Fact]
         public void A_spell_whose_cooldown_runs_out_is_ready()
         {
             var before = Snap();

@@ -63,6 +63,12 @@ namespace StarVoders.Core.Fight
             // A boss off the board: its health as drawn ("The Overseer 5/6"), then a phase it enters.
             if (after.Boss != null && after.Boss != before.Boss) lines.Add(after.Boss);
             if (after.BossPhase != null && after.BossPhase != before.BossPhase) lines.Add(after.BossPhase);
+            // A boss's panel whose figure changed ("The Hourglass 4"); one that appears mid-fight reads too.
+            foreach (var c in after.Counters)
+            {
+                var was = before.Counters.Find(b => b.Key == c.Key);
+                if (was == null ? before.Counters.Count > 0 || before.Entities.Count > 0 : was.Name != c.Name) lines.Add(c.Name);
+            }
 
             // New Danger Zones, per attacker in the order they first appear, their tiles merged into
             // shapes (TileRanges): "Shooter 1 targets 2 1 to 2 5". Zones that clear are not said:

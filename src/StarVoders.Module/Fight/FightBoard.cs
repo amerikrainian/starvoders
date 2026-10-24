@@ -164,6 +164,18 @@ namespace StarVoders.Module.Fight
             EnemyName.ChaosLeftHand, EnemyName.ChaosRightHand, EnemyName.UltimateLeftHand, EnemyName.UltimateRightHand,
         };
 
+        // Bosses whose charge the game draws as a named panel beside the board (BossCounters): the
+        // Grandmaster's hourglass.
+        private static readonly HashSet<EnemyName> CountedElsewhere = new HashSet<EnemyName> { EnemyName.Grandmaster };
+
+        /// <summary>The entity's charge as worth saying: 0 where a boss panel reads it by name.</summary>
+        public static int ShownCharge(AEntityModel entity)
+        {
+            var enemy = entity?.TryCast<EnemyEntityModel>();
+            if (enemy != null && CountedElsewhere.Contains(enemy.EnemyID.EnemyName)) return 0;
+            return entity?.Charge ?? 0;
+        }
+
         /// <summary>The entity's health as worth saying: 0 for the Hands of Time, whose health is a hit
         /// counter.</summary>
         public static int ShownHealth(AEntityModel entity)
@@ -187,7 +199,7 @@ namespace StarVoders.Module.Fight
             if (entity.IsShocked) parts.Add(GameLoc.Get("Shocked_Keyword"));
             string channel = ChannelText(entity);
             if (channel != null) parts.Add(channel);
-            else if (entity.Charge > 0) parts.Add(Strings.FightCharge(entity.Charge));
+            else if (ShownCharge(entity) > 0) parts.Add(Strings.FightCharge(entity.Charge));
             parts.RemoveAll(string.IsNullOrEmpty);
             return parts.Count > 0 ? string.Join(", ", parts) : null;
         }
