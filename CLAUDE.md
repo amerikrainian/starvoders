@@ -502,7 +502,8 @@ separately. Host F6 uses the same OS read.
   `FightBoard.ShownCharge`), the Hive's timer (`QueenBeeCoreView.CounterInstance._currHoneyTimer`: pips that
   fill as time runs out, enabled and scaled up = filled, read "The Hive 1/4"; its number text is hidden), the
   Hemophage's health bar (`ClonerView.HealthbarInstance`, "Hemophage 12/25"; its health events are the
-  panel's, `BossCounters.ReadsHealth`). Titles/descriptions `GrandmasterHourglass*`, `QueenBeeCounter*` (its
+  panel's, `BossCounters.ReadsHealth`), the Kraken Heart while drawn above the board (`KrakenCoreModel.TheoreticalPosition`,
+  a row lower each turn, until it comes onto the board: "Kraken Heart, 3 rows above the board"). Titles/descriptions `GrandmasterHourglass*`, `QueenBeeCounter*` (its
   "[#]" = `GetAllEnemiesWithName(QueenBee)`), `ClonerHealthbar*` `_Misc`. Status items after the turn, the
   enemies buffer's first lines, snapshot `Counters` events. Test: from an encounter choice,
   `RoomFactory.CreateRoomModel(<BossRoomChoiceGeneratorDataSO in CurrentCampaign.Act1RoomGeneratorList>

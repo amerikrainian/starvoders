@@ -22,7 +22,9 @@ namespace StarVoders.Module.Fight
         public sealed class Counter
         {
             public string Key, Title, Value, Description;
-            public string Line => Value != null ? Title + " " + Value : Title;
+            /// <summary>The value is words ("3 rows above the board"), set apart by a comma, not a figure.</summary>
+            public bool Phrase;
+            public string Line => Value == null ? Title : Title + (Phrase ? ", " : " ") + Value;
         }
 
         /// <summary>Whether the entity's health changes are the panel's to say ("Hemophage 11/25", with
@@ -43,6 +45,13 @@ namespace StarVoders.Module.Fight
             {
                 foreach (var kv in model.ModelItemDict)
                 {
+                    var kraken = kv.Value?.TryCast<KrakenCoreModel>();
+                    if (kraken != null)
+                    {
+                        var heart = KrakenHeart(kraken, model);
+                        if (heart != null) counters.Add(heart);
+                        continue;
+                    }
                     var enemy = kv.Value?.TryCast<EnemyEntityModel>();
                     if (enemy == null) continue;
                     var name = enemy.EnemyID.EnemyName;
@@ -57,6 +66,23 @@ namespace StarVoders.Module.Fight
             }
             catch (Exception e) { CoreLog.Warning("BossCounters: reading the boss panels failed: " + e.Message); }
             return counters;
+        }
+
+        // The Kraken Heart while it is drawn above the board (its body coming down a row each turn, at
+        // KrakenCoreModel.TheoreticalPosition): how far above the top row it is.
+        private static Counter KrakenHeart(KrakenCoreModel heart, EncounterModel model)
+        {
+            if (model.GridModel.IsEntityOnGrid(heart.ID.Cast<EntityID>())) return null;
+            int above = heart.TheoreticalPosition.y - (model.GridModel.GridShape.y - 1);
+            if (above <= 0) return null;
+            return new Counter
+            {
+                Key = "kraken",
+                Title = GameLoc.EnemyName(EnemyName.KrakenCore) ?? "Kraken Heart",
+                Value = Core.Strings.Strings.FightAbove(above),
+                Phrase = true,
+                Description = GameLoc.Get("KrakenCore_EntityDesc"),
+            };
         }
 
         private static Counter Hourglass(GrandmasterView view)
