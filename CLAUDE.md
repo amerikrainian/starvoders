@@ -428,7 +428,9 @@ separately. Host F6 uses the same OS read.
   Immunity (`AEntityModel.IsInvulnerable`, the Mothership's comes and goes) has no keyword: read "Immune"
   (`FloatTextImmune_Misc` without its "!") in the entity's state and its gain ("Mothership: Immune") and
   loss, details `Invulnerable_InfoLine`; test by setting the flag on an invader through `/eval`. Ticked before `ScreenManager` so an event
-  precedes the landing it causes. Invaders numbered within their kind by `EnemyID.Number` order. An entity gone from the board but in
+  precedes the landing it causes. Invaders numbered within their spoken name by kind, then `EnemyID.Number` (the Overseer fight's three Chaotic
+  Detritus kinds count as one), except one boss's parts drawn as a single creature (`FightBoard.OneCreature`: Mega-Blob's
+  core and pieces, Nessie's head and body), read unnumbered. An entity gone from the board but in
   `GridModel.OffGridEntities` (a Queen Bee in its Hive) "left the board", grouped as the destroyed are.
   `GameText.Clean` drops space just inside brackets (`GetModifiedDescriptions` pads them: "( 3 left )").
 - The Keeper (Mystic) has no entity of its own: `GridModel.PlayerID` stands for the Summon it haunts

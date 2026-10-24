@@ -146,9 +146,18 @@ namespace StarVoders.Module.Fight
             if (enemy == null) return (Name(entity), 0);
             var id = enemy.EnemyID;
             string name = KindName(id.EnemyName);
+            if (OneCreature.Contains(id.EnemyName)) return (name, 0);
             return _kinds.TryGetValue(name, out var numbers) && numbers.Count > 1
                 ? (name, numbers.IndexOf(((int)id.EnemyName, id.Number)) + 1) : (name, 0);
         }
+
+        // The parts of one boss the game draws as a single creature over several tiles, under one title:
+        // the Mega-Blob's core and pieces, Nessie's head and body. Read unnumbered ("Mega-Blob" on each of
+        // its nine tiles), not as nine of it.
+        private static readonly HashSet<EnemyName> OneCreature = new HashSet<EnemyName>
+        {
+            EnemyName.MegaBlob, EnemyName.MegaBlobPiece, EnemyName.WormCore, EnemyName.WormBody,
+        };
 
         // An invader kind's name, looked up once per board.
         private string KindName(EnemyName kind)
