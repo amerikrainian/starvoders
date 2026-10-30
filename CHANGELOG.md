@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.1.7
+
+- On AOE cards, we announce target entities first as opposed to coordinates.
+
 ## V0.1.6
 
 - Some tiles fell back to their internal names because the game had no player-facing names for them. This has been fixed.

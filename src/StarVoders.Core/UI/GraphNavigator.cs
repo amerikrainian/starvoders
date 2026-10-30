@@ -152,6 +152,24 @@ namespace StarVoders.Core.UI
             return true;
         }
 
+        public override bool LandOn(ControlId id)
+        {
+            if (id == null || _graph == null || !_graph.Rerender()) return false;
+            var from = _graph.CurrentNode;
+            if (!_graph.Focus(id)) return false;
+            var node = _graph.CurrentNode;
+            if (node == null) return false;
+            if (!ReferenceEquals(from, node)) PlayHover(node);
+            FireFocus(node);
+            // From the node last spoken, as the differ composes a landing: a rebuild may already have
+            // moved focus here unspoken (the card played vanishing from the hand).
+            Speak(ComposeMove(_lastSpokenNode, node, entry: _lastSpokenNode == null));
+            _lastSpokenKey = node.Id;
+            _lastSpokenNode = node;
+            _reannounce = false;
+            return true;
+        }
+
         public override bool HasStop(object stopKey)
         {
             if (stopKey == null || _graph == null || !_graph.Rerender()) return false;

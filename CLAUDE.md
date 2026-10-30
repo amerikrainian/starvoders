@@ -453,7 +453,11 @@ separately. Host F6 uses the same OS read.
   Implode, Astral Call.
 - Choosing a target (`Fight.ReadTargets`: the selection's targets sorted into tiles, `PlayAreaView`,
   `DirectionSelectionArrow`s, others): a selection with grid targets is answered ON THE BOARD (its
-  prompt said, focus to the board or kept there with the game's hover synced; Enter on a cell =
+  prompt said, then the cell focus lands on or stays on, both queued, by `Navigator.LandOn`, which
+  also runs the cell's focus hook so the game's hover, and the strike it previews a frame later, are
+  that cell's; the strike line, settled 3 frames on, follows both. The card played vanishing from the
+  hand re-seats focus unspoken until the next idle render (up to 6 frames), so a plain differ landing
+  raced the strike line and left the game hovering the mech; Enter on a cell =
   the tile, else the play area from any cell, else the arrow toward the cell from the selection's
   `BaseCoord` or the mech, else "not a target"; "target" marks valid tiles and the cells next to
   the origin in a valid direction; a "targets" category). A selection whose targets are all
@@ -484,7 +488,7 @@ separately. Host F6 uses the same OS read.
   delayed artillery. A card's preview runs on hover only in mouse mode (`OnViewItemHoverEnter`
   gates on `DeviceManager.IsMouse`/`IsInKeyboardAndMouseMode`), but `SelectionTask` previews as
   its selection opens in any mode (Flamethrower: the cone is its pre-selection task, the burn its
-  post). Cells say "strike"; during a selection "Strikes <ranges>; hits <names>" is said whenever
+  post). Cells say "strike"; during a selection "Hits <names>; strikes <ranges>" is said whenever
   the marks settle (3 frames unchanged) on a set other than the last said: hovering a target
   re-previews its strike (no mouse gate on that path), so Titan Rocket's area follows the cursor;
   settling on no marks forgets the last set. The card's cost and tasks wait for the pick, so a first,

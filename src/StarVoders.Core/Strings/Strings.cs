@@ -271,7 +271,7 @@ namespace StarVoders.Core.Strings
             // The tiles the game marks as about to be struck (a card's preview, a delayed strike): a marked cell; said once as a card's choice opens, {0} the tiles, {1} who stands on them.
             D("fight.strike", "strike"),
             D("fight.strikes", "Strikes {0}"),
-            D("fight.strikes.hits", "Strikes {0}; hits {1}"),
+            D("fight.strikes.hits", "Hits {1}; strikes {0}"),
             // The Compendium's count panel, named for what it counts: {0} the class (or "All classes"), {1} what is counted ("Gunner cards and artifacts").
             D("compendium.scope", "{0} {1}"),
             D("compendium.allclasses", "All classes"),

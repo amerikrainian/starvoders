@@ -456,15 +456,12 @@ namespace StarVoders.Module.Screens
                         prompt = Strings.FightPromptOr(prompt, string.Join(", ", others));
                     }
                     if (prompt != null) Speech.Say(prompt);
-                    // Onto a cell: the one last on, else the mech (the stop's memory may be a hand card).
-                    var at = FocusedTile();
-                    if (at == null)
-                    {
-                        var to = _lastTile ?? FightKeys.MechTile() ?? FirstTarget(set);
-                        if (to.HasValue) Navigation.Active?.MoveTo(TileId(to.Value.X, to.Value.Y));
-                        else Navigation.Active?.FocusStop(BoardStop);
-                    }
-                    else { var tile = Tile(at.Value.X, at.Value.Y); if (tile != null) FightState.Hover(tile); }
+                    // Onto a cell: the one on, else the one last on, else the mech (the stop's memory may
+                    // be a hand card), said after the prompt, and the game's cursor brought to it so the
+                    // strike it previews (said once settled, after both) is this cell's.
+                    var to = FocusedTile() ?? _lastTile ?? FightKeys.MechTile() ?? FirstTarget(set);
+                    if (to == null || Navigation.Active == null || !Navigation.Active.LandOn(TileId(to.Value.X, to.Value.Y)))
+                        Navigation.Active?.FocusStop(BoardStop);
                 }
                 else if (set.InHand)
                 {
@@ -472,7 +469,7 @@ namespace StarVoders.Module.Screens
                     string prompt = FightState.Prompt();
                     if (prompt != null) Speech.Say(prompt);
                     var first = FightState.Hand().Find(set.HasCard);
-                    if (first != null) Navigation.Active?.MoveTo(CardId(first));
+                    if (first != null) Navigation.Active?.LandOn(CardId(first));
                 }
                 else Navigation.Active?.FocusStop(TargetsStop);
                 _strikeSeen = _strikeSaid = null;
@@ -542,8 +539,8 @@ namespace StarVoders.Module.Screens
             return string.Join(";", tiles);
         }
 
-        /// <summary>"Strikes 4, 2; 3, 3 to 5, 3; hits Migo 1, mech": the tiles the game marks as about to
-        /// be struck, merged into shapes, and who stands on them; null when nothing is marked.</summary>
+        /// <summary>"Hits Migo 1, mech; strikes 4 2; 3 3 to 5 3": who stands on the tiles the game marks as
+        /// about to be struck, then those tiles merged into shapes; null when nothing is marked.</summary>
         private static string StrikeLine()
         {
             var marked = FightState.StrikeTiles();

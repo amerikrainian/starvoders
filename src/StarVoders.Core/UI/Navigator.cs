@@ -76,6 +76,13 @@ namespace StarVoders.Core.UI
         /// (its caller says something else) and taken as spoken.</summary>
         public virtual bool MoveTo(Graph.ControlId id, bool speak = true) => false;
 
+        /// <summary>Land on a node of the current render right now, the focused one included, and say it
+        /// queued, as a landing is: a screen that has just said something the landing must follow (a
+        /// target choice's prompt, then the cell it lands on). Its focus hook runs either way, so the
+        /// game's cursor is brought to it even when focus was already there. False when the node is not
+        /// in the render.</summary>
+        public virtual bool LandOn(Graph.ControlId id) => false;
+
         /// <summary>Whether the current render has a focusable node in that Tab-stop: a screen offers
         /// a jump key (Alt+B for the board) only where its stop is on show.</summary>
         public virtual bool HasStop(object stopKey) => false;
