@@ -13,7 +13,7 @@ namespace StarVoders.Module.UI
     /// card as it is announced), the invaders and the combat log (every event, uncapped, oldest
     /// first, opening on the newest); the player's figures in a fight or a run (<see cref="Fight.FightBuffers"/>).
     /// Every buffer reads live on each keypress; a focus change rewinds every buffer (the combat log
-    /// to its newest event), as the control's does, and leaves review on whichever buffer is being read.
+    /// to its newest event), as the control's does, and returns review to the control's buffer.
     /// </summary>
     internal static class Buffers
     {
@@ -36,7 +36,7 @@ namespace StarVoders.Module.UI
         }
 
         /// <summary>Per frame: a focus change (by key or by the game moving things) rewinds every
-        /// buffer, the combat log to its newest event.</summary>
+        /// buffer, the combat log to its newest event, and returns review to the control's.</summary>
         public static void Tick()
         {
             if (Manager == null) return;
@@ -48,7 +48,9 @@ namespace StarVoders.Module.UI
                 if (buffer.FollowLatest) buffer.MoveToEnd();
                 else buffer.Reset();
             }
-            // Review stays on the buffer being read: only the control buffer's content follows focus.
+            // Review returns to the control's own buffer: line review right after a move otherwise
+            // read another buffer's first line, unnamed, as if it were the new control's.
+            Manager.SetCurrent(BufferKeys.Ui);
         }
     }
 }
