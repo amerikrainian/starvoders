@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.1.8
+
+- Focus now resets to control when you move to a new UI control.
+
 ## V0.1.7
 
 - On AOE cards, we announce target entities first as opposed to coordinates.
