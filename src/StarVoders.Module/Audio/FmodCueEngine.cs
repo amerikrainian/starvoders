@@ -23,9 +23,11 @@ namespace StarVoders.Module.Audio
     internal sealed class FmodCueEngine : IAudioEngine, IDisposable
     {
         private const string SfxBus = "bus:/Master/SFX";
-        // Every batch starts this far ahead of the clock read, so its first cue is not already late
-        // when the mixer next runs (a mix block is about 10 ms).
-        private const double Lead = 0.03;
+        // How far ahead of the clock read a batch starts. None: a start already past when the mixer next
+        // runs plays at once, so the first cue is at most a mix block (about 21 ms) late against the rest,
+        // and nothing is added to the game's own output latency (its 4 blocks of 1024 samples, about 85 ms
+        // at 48 kHz, fixed when it opened FMOD), which already has sounds trailing speech a little.
+        private const double Lead = 0;
 
         private readonly string _assetRoot;
         private readonly Dictionary<AudioCue, Sound> _sounds = new Dictionary<AudioCue, Sound>();
