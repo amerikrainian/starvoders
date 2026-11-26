@@ -273,6 +273,9 @@ namespace StarVoders.Module.Screens
         private static string CellText(int x, int y)
         {
             var parts = new List<string>();
+            // The mech's cell answers a Swift move's Skip Move: said first, as the game's own words.
+            var skip = SkipMoveAt(x, y);
+            if (skip != null) parts.Add(ViewNodes.Label(skip) ?? Strings.FightTarget);
             if (IsTarget(x, y)) parts.Add(Strings.FightTarget);
             if (FightState.Strike(x, y)) parts.Add(Strings.FightStrike);
             string contents = CellContents(FightBoard.Read(), x, y);
@@ -293,6 +296,19 @@ namespace StarVoders.Module.Screens
             return player.HasValue ? player.Value.X == x && player.Value.Y == y : x == 0 && y == 0;
         }
 
+        /// <summary>The game's Skip Move choice when this cell is the player's own and the running
+        /// selection offers it there (a Swift card's optional move: the mech's tile is no target, so
+        /// Enter on it stays put), else null.</summary>
+        private static AEncounterViewItem SkipMoveAt(int x, int y)
+        {
+            if (!FightState.Selecting) return null;
+            var set = FightState.ReadTargets();
+            if (set == null || !set.OnBoard || set.HasTile(x, y)) return null;
+            var player = FightBoard.Read()?.PlayerTile;
+            if (player == null || player.Value != (x, y)) return null;
+            return FightState.SkipMoveChoice(set);
+        }
+
         /// <summary>Whether the running selection takes this cell: a valid tile, or the cell next to
         /// the arrows' origin in a valid direction. A play-area selection marks nothing (any cell
         /// plays the card).</summary>
@@ -307,7 +323,8 @@ namespace StarVoders.Module.Screens
         }
 
         // Enter on a cell: outside a selection, the game's click on the tile; in one, the answer the
-        // cell gives: the tile itself, the play area (from any cell), or the arrow toward the cell.
+        // cell gives: the tile itself, Skip Move on the mech's own cell (a Swift move), the play area
+        // (from any cell), or the arrow toward the cell.
         private static void ActivateCell(int x, int y)
         {
             // A choice among the hand's cards runs: no cell answers it.
@@ -320,6 +337,8 @@ namespace StarVoders.Module.Screens
                 return;
             }
             if (set.HasTile(x, y)) { FightState.Click(tile); return; }
+            var skip = SkipMoveAt(x, y);
+            if (skip != null) { FightState.Click(skip); return; }
             if (set.PlayArea != null) { FightState.Click(set.PlayArea); return; }
             var arrow = set.ArrowToward(x, y);
             if (arrow != null) { FightState.Click(arrow); return; }

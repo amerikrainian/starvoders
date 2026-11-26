@@ -478,7 +478,12 @@ separately. Host F6 uses the same OS read.
   variant (Jab, Power, Quick, Flicker, Left Foot, Spirit, Jab'racadabra) is ONE selection taking an
   adjacent entity's tile OR the `EncounterView.ExtraSelectionPanel` ("Draw 1 Card",
   `Selection.ExtraSelectionChoice`); the prompt names the extras ("Choose an entity, or Draw 1 Card")
-  and focus stays on the board (with no entity adjacent, the list alone, focused). Direction selections (Discharge, Kunai's throw, a Summon's push, Pusher) are answered on the board: the cells
+  and focus stays on the board (with no entity adjacent, the list alone, focused). A Swift card's optional
+  move ("You may move up to 2 tiles first"; the game's prompt is "Click grid to play") is ONE selection of
+  the tiles in reach OR the extra panel "Skip Move" (`Selection.ExtraSelectionChoice == SkipMove`); the
+  mech's own tile is no target, so the mech's cell reads "Skip Move" first and Enter there clicks the panel
+  (`Fight.SkipMoveChoice`); other extras (Draw 1 Card) never answer from the mech. Test: `CreateCardTask`
+  with `ComponentName.Swift` into the hand. Direction selections (Discharge, Kunai's throw, a Summon's push, Pusher) are answered on the board: the cells
   next to the origin read "target"; the origin is `BaseCoord`, a `Coord` or an `AValue` to `Get()` (Pusher's
   is its first pick, a `TargetValue`), else the mech. An arrow whose cell is off the board (the game offers
   pushing into the wall: it strikes the entity) goes to the Targets list, named with the prompt. A card can chain selections (Kunai: a hand card, then a direction;

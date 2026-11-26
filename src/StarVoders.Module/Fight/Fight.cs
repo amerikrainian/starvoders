@@ -828,6 +828,25 @@ namespace StarVoders.Module.Fight
             return prompt != null && prompt.gameObject.activeInHierarchy ? GameText.Of(prompt) : null;
         }
 
+        /// <summary>The game's Skip Move choice among the targets (<see cref="EncounterView.ExtraSelectionPanel"/>)
+        /// while the running selection offers it (<see cref="ExtraSelectionChoiceName.SkipMove"/>: a Swift
+        /// card's optional move, where the mech's own tile is no target), else null. Other extra choices
+        /// (Jab's Draw 1 Card) are not it.</summary>
+        public static AEncounterViewItem SkipMoveChoice(TargetSet set)
+        {
+            try
+            {
+                var selection = Controller?.SelectionController?.CurrentSelection;
+                var panel = View?.ExtraSelectionPanel;
+                if (set == null || selection == null || panel == null) return null;
+                if (selection.ExtraSelectionChoice != ExtraSelectionChoiceName.SkipMove) return null;
+                foreach (var o in set.Others)
+                    if (o.Pointer == panel.Pointer) return o;
+            }
+            catch (Exception e) { CoreLog.Warning("Fight: reading Skip Move failed: " + e.Message); }
+            return null;
+        }
+
         /// <summary>The game's Skip Repeats button (<c>CancelRepeatsPanel</c>) while it shows: a card
         /// repeating its selection (Flamethrower x2 burns a card per repeat) offers it, and a repeat
         /// with nothing left to choose can only end through it.</summary>
