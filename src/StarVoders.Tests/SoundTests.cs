@@ -25,11 +25,15 @@ namespace StarVoders.Tests
             public void SetString(string key, string value) => Values[key] = value;
         }
 
-        // "OEEO", bottom first.
-        private static List<bool> Col(string pattern) => pattern.Select(c => c == 'O').ToList();
+        // Bottom first: E empty, O occupied, T target, D danger, Y occupied and target, X occupied and in danger.
+        private static List<TileMark> Col(string pattern) => pattern.Select(c =>
+            c == 'O' ? TileMark.Occupied : c == 'T' ? TileMark.Target : c == 'D' ? TileMark.Danger
+            : c == 'Y' ? TileMark.Occupied | TileMark.Target : c == 'X' ? TileMark.Occupied | TileMark.Danger
+            : TileMark.None).ToList();
 
+        // Each note as its sound's letter: E O T D.
         private static string Cues(IEnumerable<OccupancyNote> notes) =>
-            string.Concat(notes.Select(n => n.Cue == AudioCue.Occupied ? 'O' : 'E'));
+            string.Concat(notes.Select(n => "EOTD"[(int)n.Cue]));
 
         [Fact]
         public void A_column_plays_bottom_to_top_a_row_delay_apart_centred_at_one_pitch()
@@ -54,7 +58,7 @@ namespace StarVoders.Tests
         [Fact]
         public void The_grid_sweeps_columns_left_to_right_panned_across_the_width()
         {
-            var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
+            var cols = new List<IReadOnlyList<TileMark>> { Col("OE"), Col("EE"), Col("EO") };
             var notes = OccupancyPlan.Grid(cols, 0, 80, 0, 100);
             Assert.Equal("OEEEEO", Cues(notes));
             // One stream: each column's first note a row step after the last note before it.
@@ -69,7 +73,7 @@ namespace StarVoders.Tests
         [Fact]
         public void Columns_by_pitch_are_centred_each_higher_than_the_one_to_its_left()
         {
-            var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
+            var cols = new List<IReadOnlyList<TileMark>> { Col("OE"), Col("EE"), Col("EO") };
             var notes = OccupancyPlan.Grid(cols, 0, 80, 1, 100, columnSemitones: 2);
             Assert.All(notes, n => Assert.Equal(0f, n.Pan));
             // Column 3's top row: 2 columns of 2 semitones plus 1 row of 1.
@@ -80,7 +84,7 @@ namespace StarVoders.Tests
         [Fact]
         public void Columns_run_on_at_the_row_step_however_many_rows_they_play()
         {
-            var cols = new List<IReadOnlyList<bool>> { Col("OEEOEOE"), Col("EEEEOOO"), Col("OEOOOEO") };
+            var cols = new List<IReadOnlyList<TileMark>> { Col("OEEOEOE"), Col("EEEEOOO"), Col("OEOOOEO") };
             foreach (int from in new[] { 0, 4 })
             {
                 var notes = OccupancyPlan.Grid(cols, from, 80, 0, 100);
@@ -106,7 +110,7 @@ namespace StarVoders.Tests
         [Fact]
         public void An_empty_column_stopped_at_its_last_occupied_tile_takes_no_time_in_the_grid()
         {
-            var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
+            var cols = new List<IReadOnlyList<TileMark>> { Col("OE"), Col("EE"), Col("EO") };
             var notes = OccupancyPlan.Grid(cols, 0, 80, 0, 100, stopAtLastOccupied: true);
             Assert.Equal("OEO", Cues(notes));
             Assert.Equal(new[] { 0, 0.08, 0.16 }, notes.Select(n => Math.Round(n.Delay, 6)));
@@ -114,9 +118,62 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void A_marked_tile_plays_its_marks_together_in_place_of_the_puff()
+        {
+            var notes = OccupancyPlan.Column(Col("XDDTY"), 0, 80, 0);
+            Assert.Equal("ODDDTOT", Cues(notes));
+            // An occupied tile in danger: the blip and the siren in one slot.
+            Assert.Equal(new[] { 0, 0, 0.08, 0.16, 0.24, 0.32, 0.32 }, notes.Select(n => Math.Round(n.Delay, 6)));
+        }
+
+        [Fact]
+        public void Stopping_at_the_last_occupied_tile_counts_target_and_danger_tiles()
+        {
+            Assert.Equal("OEDT", Cues(OccupancyPlan.Column(Col("OEDTEE"), 0, 80, 0, stopAtLastOccupied: true)));
+        }
+
+        [Fact]
+        public void A_step_plays_its_tile_as_the_sweep_slot_would_at_its_rows_pitch()
+        {
+            var notes = OccupancyPlan.Tile(TileMark.Occupied | TileMark.Danger, 3, 2, baseSemitones: 4);
+            Assert.Equal("OD", Cues(notes));
+            Assert.All(notes, n => Assert.Equal(0, n.Delay));
+            Assert.All(notes, n => Assert.Equal(0f, n.Pan));
+            Assert.All(notes, n => Assert.Equal(Math.Pow(2, 10 / 12.0), n.Pitch, 4));
+            Assert.Equal("E", Cues(OccupancyPlan.Tile(TileMark.None, 0, 0)));
+        }
+
+        [Fact]
+        public void A_step_plays_only_when_the_tile_differs_from_the_last()
+        {
+            // Up a Shooter's column: the first danger tile sirens, the alike ones above are silent.
+            string Key(TileMark m, string d) => OccupancyPlan.StepKey("tile", m, d);
+            string last = Key(TileMark.None, "");
+            var steps = new List<string>();
+            foreach (var (mark, danger) in new[] { (TileMark.Danger, "Shooter 2"), (TileMark.Danger, "Shooter 2"),
+                (TileMark.Occupied | TileMark.Danger, "Shooter 2"), (TileMark.Danger, "Shooter 2"),
+                (TileMark.Danger, "Shooter 2|Shooter 3"), (TileMark.None, ""), (TileMark.None, "") })
+            {
+                string key = Key(mark, danger);
+                steps.Add(Cues(OccupancyPlan.Step(mark, key, last, 0, 0)));
+                last = key;
+            }
+            // Entering, alike, an invader in the line, empty again, another attacker too, safe, alike.
+            Assert.Equal(new[] { "D", "", "OD", "D", "D", "E", "" }, steps);
+        }
+
+        [Fact]
+        public void A_first_step_always_plays_and_kinds_never_match()
+        {
+            string key = OccupancyPlan.StepKey("tile", TileMark.None, null);
+            Assert.Equal("E", Cues(OccupancyPlan.Step(TileMark.None, key, null, 0, 0)));
+            Assert.NotEqual(OccupancyPlan.StepKey("card", TileMark.None, null), key);
+        }
+
+        [Fact]
         public void A_one_column_grid_is_centred()
         {
-            var notes = OccupancyPlan.Grid(new List<IReadOnlyList<bool>> { Col("OE") }, 0, 80, 0, 100);
+            var notes = OccupancyPlan.Grid(new List<IReadOnlyList<TileMark>> { Col("OE") }, 0, 80, 0, 100);
             Assert.All(notes, n => Assert.Equal(0f, n.Pan));
         }
 

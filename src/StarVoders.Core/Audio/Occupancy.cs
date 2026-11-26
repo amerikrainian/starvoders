@@ -43,6 +43,17 @@ namespace StarVoders.Core.Audio
         private int Clamp(int v) => v < Min ? Min : v > Max ? Max : v;
     }
 
+    /// <summary>What a tile holds for the sweep: anything standing there, the running selection taking
+    /// it, an invader about to strike it. None is an empty, unmarked tile (the puff).</summary>
+    [Flags]
+    public enum TileMark
+    {
+        None = 0,
+        Occupied = 1,
+        Target = 2,
+        Danger = 4,
+    }
+
     /// <summary>
     /// How grid occupancy plays (the sounds screen's Grid occupancy section), read through the store on
     /// every access so a change applies to the next sweep.
@@ -102,6 +113,18 @@ namespace StarVoders.Core.Audio
             set => _store.SetBool("occupancy_stop_at_last", value);
         }
 
+        /// <summary>A move on the board plays the tile's sound as a sweep would (the puff, the blip, the
+        /// bell, the siren) when the tile differs from the one before (what it holds, whether it is a
+        /// target, who strikes it): moving across alike tiles is silent. Those sounds stand in for the
+        /// words "target" and "targeted by" on a cell ("target" on a hand card in a choice among them,
+        /// which plays the bell, or the puff on leaving the targets). Off, moves are silent and the words are
+        /// said. On by default. Sweeps play every sound either way.</summary>
+        public bool StepSounds
+        {
+            get => _store.GetBool("occupancy_step_sounds", true);
+            set => _store.SetBool("occupancy_step_sounds", value);
+        }
+
         /// <summary>A card pickup lying on a tile counts as occupied.</summary>
         public bool Pickups
         {
@@ -135,7 +158,9 @@ namespace StarVoders.Core.Audio
 
     /// <summary>
     /// Grid occupancy as notes, engine-free. A column is swept bottom to top (or from a given row up),
-    /// one note per tile, each <c>rowDelayMs</c> after the one below; the full grid sweeps the columns
+    /// one slot per tile, each <c>rowDelayMs</c> after the one below: the puff for an empty tile, else a
+    /// note for each of its marks at once (occupied, target, danger: an occupied tile in danger plays the
+    /// blip and the siren together); the full grid sweeps the columns
     /// left to right as one stream: each column's first note one row step after the last note of the
     /// one before, panned from left to right across
     /// the stereo width, or, with <c>columnSemitones</c> above 0, all centred and each column that many
@@ -144,29 +169,62 @@ namespace StarVoders.Core.Audio
     /// </summary>
     public static class OccupancyPlan
     {
-        /// <summary>The notes of one column. <paramref name="occupied"/> is bottom row first;
+        /// <summary>A tile's sounds: the puff when it has no mark, else one per mark.</summary>
+        public static IEnumerable<AudioCue> Cues(TileMark mark)
+        {
+            if (mark == TileMark.None) { yield return AudioCue.Empty; yield break; }
+            if ((mark & TileMark.Occupied) != 0) yield return AudioCue.Occupied;
+            if ((mark & TileMark.Target) != 0) yield return AudioCue.Target;
+            if ((mark & TileMark.Danger) != 0) yield return AudioCue.Danger;
+        }
+
+        /// <summary>One tile's notes, at once and centred: its sounds (<see cref="Cues"/>) at the pitch a
+        /// sweep gives its <paramref name="row"/>, raised by <paramref name="baseSemitones"/>.</summary>
+        public static List<OccupancyNote> Tile(TileMark mark, int row, int pitchSemitones, int baseSemitones = 0,
+            float pan = 0f, double delay = 0)
+        {
+            var notes = new List<OccupancyNote>();
+            float pitch = (float)Math.Pow(2.0, (baseSemitones + row * pitchSemitones) / 12.0);
+            foreach (var cue in Cues(mark))
+                notes.Add(new OccupancyNote { Cue = cue, Delay = delay, Pan = pan, Pitch = pitch });
+            return notes;
+        }
+
+        /// <summary>A step's state, to compare with the last step's: the tile's marks and who strikes it
+        /// (<paramref name="danger"/>, a stable key such as the attackers' names joined; null or empty for
+        /// none), so a different attacker is a different state though both are danger.
+        /// <paramref name="kind"/> keeps states of different things apart (a cell, a hand card).</summary>
+        public static string StepKey(string kind, TileMark mark, string danger) =>
+            kind + "|" + (int)mark + "|" + (danger ?? "");
+
+        /// <summary>
+        /// A step's sounds: the tile's full sweep sound (<see cref="Tile"/>) when its state
+        /// (<see cref="StepKey"/>) differs from the last step's (<paramref name="lastKey"/>; null =
+        /// unknown, so it plays), else nothing. Moving across tiles that are alike is silent, and each
+        /// change says what the new tile holds.
+        /// </summary>
+        public static List<OccupancyNote> Step(TileMark mark, string key, string lastKey, int row, int pitchSemitones,
+            int baseSemitones = 0)
+        {
+            if (key == lastKey) return new List<OccupancyNote>();
+            return Tile(mark, row, pitchSemitones, baseSemitones);
+        }
+
+        /// <summary>The notes of one column. <paramref name="tiles"/> is bottom row first;
         /// <paramref name="fromRow"/> the first row swept (0 = the bottom); <paramref name="baseSemitones"/>
         /// raises the whole column; <paramref name="stopAtLastOccupied"/> ends the sweep at the highest
-        /// occupied tile swept (no notes when there is none).</summary>
-        public static List<OccupancyNote> Column(IReadOnlyList<bool> occupied, int fromRow, int rowDelayMs, int pitchSemitones,
+        /// marked tile swept (occupied, target or danger; no notes when there is none).</summary>
+        public static List<OccupancyNote> Column(IReadOnlyList<TileMark> tiles, int fromRow, int rowDelayMs, int pitchSemitones,
             float pan = 0f, double start = 0, int baseSemitones = 0, bool stopAtLastOccupied = false)
         {
             var notes = new List<OccupancyNote>();
-            if (occupied == null) return notes;
+            if (tiles == null) return notes;
             if (fromRow < 0) fromRow = 0;
-            int end = occupied.Count; // one past the last row swept
+            int end = tiles.Count; // one past the last row swept
             if (stopAtLastOccupied)
-                while (end > fromRow && !occupied[end - 1]) end--;
+                while (end > fromRow && tiles[end - 1] == TileMark.None) end--;
             for (int row = fromRow; row < end; row++)
-            {
-                notes.Add(new OccupancyNote
-                {
-                    Cue = occupied[row] ? AudioCue.Occupied : AudioCue.Empty,
-                    Delay = start + (row - fromRow) * rowDelayMs / 1000.0,
-                    Pan = pan,
-                    Pitch = (float)Math.Pow(2.0, (baseSemitones + row * pitchSemitones) / 12.0),
-                });
-            }
+                notes.AddRange(Tile(tiles[row], row, pitchSemitones, baseSemitones, pan, start + (row - fromRow) * rowDelayMs / 1000.0));
             return notes;
         }
 
@@ -174,7 +232,7 @@ namespace StarVoders.Core.Audio
         /// row first, each column starting one row step after the last note of the one before. <paramref name="columnSemitones"/> above 0 tells the columns apart
         /// by pitch (centred) instead of by pan. A column with no notes (stopping at the last occupied
         /// tile, and none) takes no time: the next follows on.</summary>
-        public static List<OccupancyNote> Grid(IReadOnlyList<IReadOnlyList<bool>> columns, int fromRow, int rowDelayMs,
+        public static List<OccupancyNote> Grid(IReadOnlyList<IReadOnlyList<TileMark>> columns, int fromRow, int rowDelayMs,
             int pitchSemitones, int widthPercent, int columnSemitones = 0, bool stopAtLastOccupied = false)
         {
             var notes = new List<OccupancyNote>();

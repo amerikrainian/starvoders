@@ -11,6 +11,12 @@ namespace StarVoders.Core.Audio
         Empty,
         /// <summary>A board tile with something on it (grid occupancy): a sine blip.</summary>
         Occupied,
+        /// <summary>A tile (or hand card) the running selection takes: a bell jumping up a fifth. Played
+        /// on focus in place of the word "target", and in a sweep.</summary>
+        Target,
+        /// <summary>A tile an invader will strike: a falling square that restarts, a short siren. Played
+        /// on focus in place of "targeted by", and in a sweep.</summary>
+        Danger,
     }
 
     public static class AudioCues

@@ -262,7 +262,7 @@ namespace StarVoders.Module.Screens
                 {
                     var tile = Tile(x, y);
                     if (tile != null) FightState.Hover(tile);
-                    Audio.OccupancySounds.Focused(x, y); // a new column plays its occupancy
+                    Audio.OccupancySounds.Focused(x, y); // the tile's sound, or a new column's occupancy
                 },
                 OnActivate = () => ActivateCell(x, y),
                 Details = () => CellDetails(x, y),
@@ -276,9 +276,12 @@ namespace StarVoders.Module.Screens
             // The mech's cell answers a Swift move's Skip Move: said first, as the game's own words.
             var skip = SkipMoveAt(x, y);
             if (skip != null) parts.Add(ViewNodes.Label(skip) ?? Strings.FightTarget);
-            if (IsTarget(x, y)) parts.Add(Strings.FightTarget);
+            // Target and danger are the step's sounds (OccupancySounds.Focused), unless moves are silent;
+            // danger's attackers stay in the details either way.
+            bool words = !Audio.OccupancySounds.StepSounds;
+            if (words && IsTarget(x, y)) parts.Add(Strings.FightTarget);
             if (FightState.Strike(x, y)) parts.Add(Strings.FightStrike);
-            string contents = CellContents(FightBoard.Read(), x, y);
+            string contents = CellContents(FightBoard.Read(), x, y, danger: words);
             if (contents != null) parts.Add(contents);
             parts.Add(FightBoard.CoordText(x, y));
             string zone = ZoneCrossing(x, y);
@@ -359,15 +362,16 @@ namespace StarVoders.Module.Screens
         }
 
         /// <summary>What a tile holds and what threatens it, before its coordinates: the entity with
-        /// its state, the danger, the tile's status, a card pickup. Null for an empty, safe tile.</summary>
-        internal static string CellContents(FightBoard board, int x, int y)
+        /// its state, the danger (unless <paramref name="danger"/> is false: its sound stands in), the
+        /// tile's status, a card pickup. Null for an empty, safe tile.</summary>
+        internal static string CellContents(FightBoard board, int x, int y, bool danger = true)
         {
             if (board == null) return null;
             var parts = new List<string>();
             var entity = board.At(x, y);
             if (entity != null) parts.Add(board.Describe(entity));
-            string danger = board.Danger(x, y);
-            if (danger != null) parts.Add(danger);
+            string threat = danger ? board.Danger(x, y) : null;
+            if (threat != null) parts.Add(threat);
             var status = board.Status(x, y);
             if (status.HasValue) parts.Add(FightBoard.StatusName(status.Value));
             string pickup = board.Pickup(x, y);
@@ -632,8 +636,9 @@ namespace StarVoders.Module.Screens
                 ControlType = ControlTypes.Text,
                 Announcements = new List<NodeAnnouncement>
                 {
-                    // While a choice among the hand's cards runs, the ones it takes say so first, as cells do.
-                    GameNodes.LabelPart(() => HandTarget(view) ? Strings.FightTarget + ", " + name() : name()),
+                    // While a choice among the hand's cards runs, the ones it takes say so first, as cells do
+                    // (by the target sound as focus lands, unless moves are silent).
+                    GameNodes.LabelPart(() => HandTarget(view) && !Audio.OccupancySounds.StepSounds ? Strings.FightTarget + ", " + name() : name()),
                     new NodeAnnouncement(() => FightState.CardUpgrade(view.CardModel), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => Cost(view.CardModel, view), kind: AnnouncementKinds.Value),
                     new NodeAnnouncement(() => FightState.PaymentNote(view), kind: AnnouncementKinds.Value),
@@ -648,7 +653,12 @@ namespace StarVoders.Module.Screens
                     GameNodes.TooltipPart(() => FightState.CardUpgradeDescription(view.CardModel)),
                 },
                 SearchText = name,
-                OnFocus = () => FightState.Hover(view),
+                OnFocus = () =>
+                {
+                    FightState.Hover(view);
+                    // In a choice among the hand's cards: the bell or puff when target-ness changes.
+                    if (HandChoice() != null) Audio.OccupancySounds.CardFocused(HandTarget(view));
+                },
                 // In a choice among the hand's cards, Enter answers it on a target and refuses others.
                 OnActivate = () =>
                 {

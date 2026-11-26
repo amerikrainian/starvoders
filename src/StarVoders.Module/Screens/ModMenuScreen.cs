@@ -190,8 +190,9 @@ namespace StarVoders.Module.Screens
 
     /// <summary>Grid occupancy's toggles (a child of the mod menu; its sliders are in Sounds): when it
     /// plays (a column as the cursor crosses columns, the full grid as the player's turn starts) and how
-    /// (sweeps from the cursor's row, stopping at the last occupied tile, pickups as occupied, columns by
-    /// pitch instead of stereo). Enter flips one and speaks the new state.</summary>
+    /// (sweeps from the cursor's row, stopping at the last occupied tile, each move playing the tile's
+    /// sound in place of the target and danger words, pickups as occupied, columns by pitch instead of
+    /// stereo). Enter flips one and speaks the new state.</summary>
     public sealed class ModOccupancyScreen : Screen
     {
         public override string Key => "mod.occupancy";
@@ -217,6 +218,8 @@ namespace StarVoders.Module.Screens
                 () => occupancy.FromCursor, v => occupancy.FromCursor = v));
             b.AddItem(ControlId.Structural("modoccupancy:stopatlast"), ModSettingsScreen.Toggle(() => Strings.OccupancyStopAtLast,
                 () => occupancy.StopAtLastOccupied, v => occupancy.StopAtLastOccupied = v));
+            b.AddItem(ControlId.Structural("modoccupancy:stepsounds"), ModSettingsScreen.Toggle(() => Strings.OccupancyStepSounds,
+                () => occupancy.StepSounds, v => occupancy.StepSounds = v));
             b.AddItem(ControlId.Structural("modoccupancy:pickups"), ModSettingsScreen.Toggle(() => Strings.OccupancyPickups,
                 () => occupancy.Pickups, v => occupancy.Pickups = v));
             b.AddItem(ControlId.Structural("modoccupancy:columnpitch"), ModSettingsScreen.Toggle(() => Strings.OccupancyColumnPitch,

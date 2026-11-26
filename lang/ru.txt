@@ -310,3 +310,6 @@ value.semitones=полутонов: {0}
 bind.fight.occupancy.column=Занятость столбца
 bind.fight.occupancy.grid=Занятость всего поля
 occupancy.stop_at_last=Останавливаться на последней занятой клетке
+sound.cue.target=Цель
+sound.cue.danger=Опасность
+occupancy.step_sounds=Звук клетки при перемещении

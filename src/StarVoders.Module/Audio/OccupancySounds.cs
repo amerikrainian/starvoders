@@ -11,7 +11,9 @@ namespace StarVoders.Module.Audio
 {
     /// <summary>
     /// Grid occupancy: each tile of a column as a sound, empty (a soft puff) or occupied (a blip: any
-    /// entity, the mech, an invader, a bomb, a Summon; a card pickup when the setting says so), swept
+    /// entity, the mech, an invader, a bomb, a Summon; a card pickup when the setting says so), with the
+    /// target bell where the running selection takes the tile and the danger siren where an invader will
+    /// strike it (alone on an empty tile, with the blip on an occupied one), swept
     /// bottom to top with the sounds overlapping (<see cref="OccupancyPlan"/>). A column plays centred:
     /// on its key, and as the board cursor enters a new column; the full grid sweeps the columns left
     /// to right as one stream (each column's first note a row step after the last note before it), panned left to right: on its key, and when the player's turn starts. With columns by
@@ -52,19 +54,60 @@ namespace StarVoders.Module.Audio
 
         // ---- the cursor crossing columns ----
 
-        /// <summary>A board cell took focus: entering a new column plays it.</summary>
+        /// <summary>A board cell took focus: entering a new column plays it (when that is on), else the
+        /// step plays the tile's sound when the tile differs from the last step's (when that is on): moving
+        /// across alike tiles is silent. The column's sweep holds the tile already, so the two never play
+        /// together.</summary>
         public static void Focused(int x, int y)
         {
-            if (_lastColumn == x) return;
+            bool newColumn = _lastColumn != x;
             _lastColumn = x;
             var settings = Settings;
-            if (settings == null || !settings.OnColumnCross) return;
-            var board = FightBoard.Read();
-            if (board != null) PlayColumn(board, x, y);
+            var board = settings != null ? FightBoard.Read() : null;
+            if (board == null) return;
+            var mark = Mark(board, settings, x, y);
+            string key = OccupancyPlan.StepKey("tile", mark, DangerKey(board, x, y));
+            string last = _lastStep;
+            _lastStep = key;
+            if (newColumn && settings.OnColumnCross) { PlayColumn(board, x, y); return; }
+            if (!settings.StepSounds) return;
+            var notes = OccupancyPlan.Step(mark, key, last, y, settings.PitchStep.Value, x * ColumnSemitones(settings));
+            if (notes.Count > 0) Play(notes);
         }
 
-        /// <summary>Focus is off the cells: coming back to any column plays it.</summary>
-        public static void LeftBoard() => _lastColumn = null;
+        /// <summary>A hand card took focus while a choice among the hand's cards runs: the bell when it
+        /// is a target and the last step was not, the puff the other way, nothing between alike ones.</summary>
+        public static void CardFocused(bool target)
+        {
+            var settings = Settings;
+            if (settings == null) return;
+            var mark = target ? TileMark.Target : TileMark.None;
+            string key = OccupancyPlan.StepKey("card", mark, null);
+            string last = _lastStep;
+            _lastStep = key;
+            if (!settings.StepSounds) return;
+            var notes = OccupancyPlan.Step(mark, key, last, 0, 0);
+            if (notes.Count > 0) Play(notes);
+        }
+
+        /// <summary>Focus is off the cells: coming back to any column plays it, and off the hand too,
+        /// the next step plays whatever it lands on.</summary>
+        public static void LeftBoard()
+        {
+            _lastColumn = null;
+            if (!EncounterScreen.FocusedOnHand()) _lastStep = null;
+        }
+
+        // The last step's state (OccupancyPlan.StepKey): a step plays only when its own differs.
+        private static string _lastStep;
+
+        // Who strikes the tile, as a stable key: the attackers' names in order, empty when safe.
+        private static string DangerKey(FightBoard board, int x, int y)
+        {
+            var who = board.Attackers(x, y);
+            who.Sort(StringComparer.Ordinal);
+            return string.Join("|", who);
+        }
 
         // ---- the player's turn starting ----
 
@@ -91,8 +134,10 @@ namespace StarVoders.Module.Audio
 
         // ---- the sounds screen's preview ----
 
-        // A made-up board for the preview outside a fight: five columns of seven rows, bottom first.
-        private static readonly string[] DemoColumns = { "OEEOEOE", "EEEEOOO", "OEOOOEO", "EEEOEEE", "OEEEEEO" };
+        // A made-up board for the preview outside a fight: five columns of seven rows, bottom first
+        // (O occupied, D danger, X occupied and in danger, E empty): a Shooter on the middle column
+        // firing down at the mech.
+        private static readonly string[] DemoColumns = { "OEEOEOE", "EEEEOOO", "XDDDDOE", "EEEOEEE", "OEEEEEO" };
 
         /// <summary>The full grid as the settings now make it: the live board in a fight, else a made-up one.</summary>
         public static void Preview()
@@ -100,11 +145,13 @@ namespace StarVoders.Module.Audio
             if (FightBoard.Read() != null) { PlayGrid(); return; }
             var settings = Settings;
             if (settings == null) return;
-            var columns = new List<IReadOnlyList<bool>>();
+            var columns = new List<IReadOnlyList<TileMark>>();
             foreach (var pattern in DemoColumns)
             {
-                var col = new List<bool>();
-                foreach (char ch in pattern) col.Add(ch == 'O');
+                var col = new List<TileMark>();
+                foreach (char ch in pattern)
+                    col.Add(ch == 'O' ? TileMark.Occupied : ch == 'D' ? TileMark.Danger
+                        : ch == 'X' ? TileMark.Occupied | TileMark.Danger : TileMark.None);
                 columns.Add(col);
             }
             Play(OccupancyPlan.Grid(columns, 0, settings.RowDelay.Value,
@@ -126,23 +173,39 @@ namespace StarVoders.Module.Audio
         // everything centred), else 0 (columns go by pan in the full grid).
         private static int ColumnSemitones(OccupancySettings settings) => settings.ColumnsByPitch ? settings.ColumnPitchStep.Value : 0;
 
-        private static List<IReadOnlyList<bool>> Columns(FightBoard board, OccupancySettings settings)
+        private static List<IReadOnlyList<TileMark>> Columns(FightBoard board, OccupancySettings settings)
         {
-            var columns = new List<IReadOnlyList<bool>>();
+            var columns = new List<IReadOnlyList<TileMark>>();
             for (int x = 0; x < board.Columns; x++) columns.Add(Column(board, settings, x));
             return columns;
         }
 
-        // The column's tiles, bottom row first: occupied when something stands there (or a pickup lies
-        // there, when pickups count).
-        private static List<bool> Column(FightBoard board, OccupancySettings settings, int x)
+        // The column's tiles, bottom row first, as their marks.
+        private static List<TileMark> Column(FightBoard board, OccupancySettings settings, int x)
         {
-            bool pickups = settings.Pickups;
-            var col = new List<bool>(board.Rows);
-            for (int y = 0; y < board.Rows; y++)
-                col.Add(board.At(x, y) != null || (pickups && board.HasPickup(x, y)));
+            var col = new List<TileMark>(board.Rows);
+            for (int y = 0; y < board.Rows; y++) col.Add(Mark(board, settings, x, y));
             return col;
         }
+
+        // Occupied when something stands there (or a pickup lies there, when pickups count); target when
+        // the running selection takes it; danger when an invader will strike it.
+        private static TileMark Mark(FightBoard board, OccupancySettings settings, int x, int y)
+        {
+            var mark = TileMark.None;
+            if (board.At(x, y) != null || (settings.Pickups && board.HasPickup(x, y))) mark |= TileMark.Occupied;
+            if (EncounterScreen.IsTarget(x, y)) mark |= TileMark.Target;
+            if (board.Attackers(x, y).Count > 0) mark |= TileMark.Danger;
+            return mark;
+        }
+
+        // ---- a step's sound ----
+
+        /// <summary>Whether moves play the tiles' sounds (which then stand in for the words "target" and
+        /// "targeted by").</summary>
+        public static bool StepSounds => Settings?.StepSounds ?? false;
+
+
 
         // The sweep under way: its notes not yet handed to the engine, earliest first, and when it began.
         // The game's FMOD has 32 real voices, so a 45-note grid scheduled at once overruns them and

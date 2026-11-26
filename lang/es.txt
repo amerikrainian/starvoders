@@ -310,3 +310,6 @@ value.semitones={0} semitonos
 bind.fight.occupancy.column=Ocupación de la columna
 bind.fight.occupancy.grid=Ocupación de toda la cuadrícula
 occupancy.stop_at_last=Parar en la última casilla ocupada
+sound.cue.target=Objetivo
+sound.cue.danger=Peligro
+occupancy.step_sounds=Reproducir el sonido de la casilla al moverte

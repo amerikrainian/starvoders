@@ -366,6 +366,9 @@ namespace StarVoders.Core.Strings
             D("sound.master", "Master volume"),
             D("sound.cue.empty", "Empty tile"),
             D("sound.cue.occupied", "Occupied tile"),
+            // A tile (or card) the running choice takes; a tile an invader will strike.
+            D("sound.cue.target", "Target"),
+            D("sound.cue.danger", "Danger"),
             // Its Grid occupancy section: each board tile of a column as a sound, swept bottom to top.
             // Toggles: a column played as the cursor enters it; sweeps starting at the cursor's row
             // instead of the bottom; the whole grid played as the player's turn starts; card pickups
@@ -378,6 +381,9 @@ namespace StarVoders.Core.Strings
             D("occupancy.from_cursor", "Sweeps start at the cursor's row"),
             D("occupancy.turn_start", "Play the full grid when your turn starts"),
             D("occupancy.pickups", "Pickups count as occupied"),
+            // On: each move on the board plays the tile's sound (empty, occupied, target, danger), and
+            // the target and danger sounds replace the words "target" and "targeted by".
+            D("occupancy.step_sounds", "Play the tile's sound as you move"),
             // A sweep ends at the column's highest occupied tile instead of running on to the top.
             D("occupancy.stop_at_last", "Stop at the last occupied tile"),
             D("occupancy.row_delay", "Delay between rows"),
@@ -755,6 +761,7 @@ namespace StarVoders.Core.Strings
         public static string OccupancyFromCursor => Get("occupancy.from_cursor");
         public static string OccupancyTurnStart => Get("occupancy.turn_start");
         public static string OccupancyPickups => Get("occupancy.pickups");
+        public static string OccupancyStepSounds => Get("occupancy.step_sounds");
         public static string OccupancyStopAtLast => Get("occupancy.stop_at_last");
         public static string OccupancyRowDelay => Get("occupancy.row_delay");
         public static string OccupancyPitch => Get("occupancy.pitch");

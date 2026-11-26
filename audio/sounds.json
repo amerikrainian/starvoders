@@ -23,5 +23,32 @@
       "env_punch": 0.25,
       "env_decay": 0.33
     }
+  },
+  "target": {
+    "level": 0.15,
+    "sfxr": {
+      "wave_type": "sine",
+      "base_freq": 0.4,
+      "arp_speed": 0.7,
+      "arp_mod": 0.6,
+      "env_attack": 0.01,
+      "env_sustain": 0.1,
+      "env_punch": 0.35,
+      "env_decay": 0.3
+    }
+  },
+  "danger": {
+    "level": 0.13,
+    "sfxr": {
+      "wave_type": "square",
+      "base_freq": 0.36,
+      "freq_ramp": -0.35,
+      "repeat_speed": 0.6,
+      "duty": 0.3,
+      "lpf_freq": 0.5,
+      "env_attack": 0.01,
+      "env_sustain": 0.14,
+      "env_decay": 0.22
+    }
   }
 }

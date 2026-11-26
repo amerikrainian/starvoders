@@ -310,3 +310,6 @@ value.semitones={0} Halbtöne
 bind.fight.occupancy.column=Belegung der Spalte
 bind.fight.occupancy.grid=Belegung des ganzen Rasters
 occupancy.stop_at_last=Beim letzten besetzten Feld anhalten
+sound.cue.target=Ziel
+sound.cue.danger=Gefahr
+occupancy.step_sounds=Feldklang beim Bewegen abspielen

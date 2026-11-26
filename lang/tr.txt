@@ -310,3 +310,6 @@ value.semitones={0} yarım ses
 bind.fight.occupancy.column=Sütun doluluğu
 bind.fight.occupancy.grid=Tüm ızgara doluluğu
 occupancy.stop_at_last=Son dolu karede dur
+sound.cue.target=Hedef
+sound.cue.danger=Tehlike
+occupancy.step_sounds=Hareket ederken karenin sesini çal

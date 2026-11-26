@@ -310,3 +310,6 @@ value.semitones={0} 个半音
 bind.fight.occupancy.column=列占用
 bind.fight.occupancy.grid=整个网格占用
 occupancy.stop_at_last=在最后一个占用格子处停止
+sound.cue.target=目标
+sound.cue.danger=危险
+occupancy.step_sounds=移动时播放格子的声音

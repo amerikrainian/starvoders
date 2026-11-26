@@ -310,3 +310,6 @@ value.semitones={0} semitons
 bind.fight.occupancy.column=Ocupação da coluna
 bind.fight.occupancy.grid=Ocupação da grade inteira
 occupancy.stop_at_last=Parar na última casa ocupada
+sound.cue.target=Alvo
+sound.cue.danger=Perigo
+occupancy.step_sounds=Tocar o som da casa ao se mover

@@ -310,3 +310,6 @@ value.semitones={0} demi-tons
 bind.fight.occupancy.column=Occupation de la colonne
 bind.fight.occupancy.grid=Occupation de toute la grille
 occupancy.stop_at_last=S'arrêter à la dernière case occupée
+sound.cue.target=Cible
+sound.cue.danger=Danger
+occupancy.step_sounds=Jouer le son de la case en se déplaçant
