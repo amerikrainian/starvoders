@@ -309,3 +309,4 @@ value.semitone.one=1 demi-ton
 value.semitones={0} demi-tons
 bind.fight.occupancy.column=Occupation de la colonne
 bind.fight.occupancy.grid=Occupation de toute la grille
+occupancy.stop_at_last=S'arrêter à la dernière case occupée

@@ -309,3 +309,4 @@ value.semitone.one=1반음
 value.semitones={0}반음
 bind.fight.occupancy.column=열 점유
 bind.fight.occupancy.grid=격자 전체 점유
+occupancy.stop_at_last=마지막 찬 칸에서 멈춤

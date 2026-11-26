@@ -309,3 +309,4 @@ value.semitone.one=1 個半音
 value.semitones={0} 個半音
 bind.fight.occupancy.column=欄佔用
 bind.fight.occupancy.grid=整個網格佔用
+occupancy.stop_at_last=在最後一個佔用格子處停止

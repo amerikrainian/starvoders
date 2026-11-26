@@ -309,3 +309,4 @@ value.semitone.one=1 Halbton
 value.semitones={0} Halbtöne
 bind.fight.occupancy.column=Belegung der Spalte
 bind.fight.occupancy.grid=Belegung des ganzen Rasters
+occupancy.stop_at_last=Beim letzten besetzten Feld anhalten

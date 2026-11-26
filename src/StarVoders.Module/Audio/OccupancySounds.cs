@@ -47,7 +47,7 @@ namespace StarVoders.Module.Audio
             var at = EncounterScreen.FocusedTile();
             int from = settings.FromCursor && at.HasValue ? at.Value.Y : 0;
             Play(OccupancyPlan.Grid(Columns(board, settings), from, settings.RowDelay.Value,
-                settings.PitchStep.Value, settings.Width.Value, ColumnSemitones(settings)));
+                settings.PitchStep.Value, settings.Width.Value, ColumnSemitones(settings), settings.StopAtLastOccupied));
         }
 
         // ---- the cursor crossing columns ----
@@ -108,7 +108,7 @@ namespace StarVoders.Module.Audio
                 columns.Add(col);
             }
             Play(OccupancyPlan.Grid(columns, 0, settings.RowDelay.Value,
-                settings.PitchStep.Value, settings.Width.Value, ColumnSemitones(settings)));
+                settings.PitchStep.Value, settings.Width.Value, ColumnSemitones(settings), settings.StopAtLastOccupied));
         }
 
         // ---- shared ----
@@ -119,7 +119,7 @@ namespace StarVoders.Module.Audio
             if (settings == null || x < 0 || x >= board.Columns) return;
             int from = settings.FromCursor ? cursorRow : 0;
             Play(OccupancyPlan.Column(Column(board, settings, x), from, settings.RowDelay.Value, settings.PitchStep.Value,
-                baseSemitones: x * ColumnSemitones(settings)));
+                baseSemitones: x * ColumnSemitones(settings), stopAtLastOccupied: settings.StopAtLastOccupied));
         }
 
         // Semitones between neighbouring columns when columns go by pitch (each to the right higher,

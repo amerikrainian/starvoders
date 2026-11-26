@@ -309,3 +309,4 @@ value.semitone.one=1 半音
 value.semitones={0} 半音
 bind.fight.occupancy.column=列の占有
 bind.fight.occupancy.grid=グリッド全体の占有
+occupancy.stop_at_last=最後の埋まっているマスで止める

@@ -309,3 +309,4 @@ value.semitone.one=1 полутон
 value.semitones=полутонов: {0}
 bind.fight.occupancy.column=Занятость столбца
 bind.fight.occupancy.grid=Занятость всего поля
+occupancy.stop_at_last=Останавливаться на последней занятой клетке

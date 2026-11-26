@@ -94,6 +94,26 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Stopping_at_the_last_occupied_tile_drops_the_empty_tiles_above_it()
+        {
+            Assert.Equal("OEEOEO", Cues(OccupancyPlan.Column(Col("OEEOEOE"), 0, 80, 0, stopAtLastOccupied: true)));
+            // From the cursor: only the rows swept count.
+            Assert.Equal("EO", Cues(OccupancyPlan.Column(Col("OEEOEOE"), 4, 80, 0, stopAtLastOccupied: true)));
+            Assert.Empty(OccupancyPlan.Column(Col("EEEE"), 0, 80, 0, stopAtLastOccupied: true));
+            Assert.Empty(OccupancyPlan.Column(Col("OEEE"), 1, 80, 0, stopAtLastOccupied: true));
+        }
+
+        [Fact]
+        public void An_empty_column_stopped_at_its_last_occupied_tile_takes_no_time_in_the_grid()
+        {
+            var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
+            var notes = OccupancyPlan.Grid(cols, 0, 80, 0, 100, stopAtLastOccupied: true);
+            Assert.Equal("OEO", Cues(notes));
+            Assert.Equal(new[] { 0, 0.08, 0.16 }, notes.Select(n => Math.Round(n.Delay, 6)));
+            Assert.Equal(new[] { -1f, 1f, 1f }, notes.Select(n => n.Pan)); // the third column keeps its place
+        }
+
+        [Fact]
         public void A_one_column_grid_is_centred()
         {
             var notes = OccupancyPlan.Grid(new List<IReadOnlyList<bool>> { Col("OE") }, 0, 80, 0, 100);

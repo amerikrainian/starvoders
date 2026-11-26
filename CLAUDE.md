@@ -91,7 +91,9 @@ a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includ
   `tools/python/sfxr.py`); a batch's cues are scheduled on the group's DSP clock (`setDelay`). Grid
   occupancy (`Module/Audio/OccupancySounds`, notes from Core `OccupancyPlan`, tested): G the column,
   Shift+G the grid, a column on crossing columns (off by default), the grid when the player's turn starts; the mod
-  menu's Sounds screen holds the volumes (0-200) and occupancy settings.
+  menu's Sounds screen holds the volumes (0-200) and occupancy's sliders (the row delay is the only
+  timing: the grid's columns run on at the row step), its Grid occupancy screen the toggles (stopping
+  at the last occupied tile is on by default: an empty column then plays nothing).
 - Not ported from guildrun yet: `NumberEdit` (the mod's own number entry),
   `ScreenAudit`, `BufferKeys`' guildrun buffer names (hero, quest... are placeholders).
 - Buffers (`UI/Buffers`, sources in `Fight/FightBuffers`): ui (the focused control), hand (each card

@@ -273,6 +273,7 @@ occupancy.on_cross=Play a column when crossing columns
 occupancy.from_cursor=Sweeps start at the cursor's row
 occupancy.turn_start=Play the full grid when your turn starts
 occupancy.pickups=Pickups count as occupied
+occupancy.stop_at_last=Stop at the last occupied tile
 occupancy.row_delay=Delay between rows
 occupancy.pitch=Pitch rise per row
 occupancy.width=Stereo width

@@ -309,3 +309,4 @@ value.semitone.one=1 yarım ses
 value.semitones={0} yarım ses
 bind.fight.occupancy.column=Sütun doluluğu
 bind.fight.occupancy.grid=Tüm ızgara doluluğu
+occupancy.stop_at_last=Son dolu karede dur

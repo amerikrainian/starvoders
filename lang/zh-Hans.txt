@@ -309,3 +309,4 @@ value.semitone.one=1 个半音
 value.semitones={0} 个半音
 bind.fight.occupancy.column=列占用
 bind.fight.occupancy.grid=整个网格占用
+occupancy.stop_at_last=在最后一个占用格子处停止

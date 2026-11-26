@@ -309,3 +309,4 @@ value.semitone.one=1 semitono
 value.semitones={0} semitonos
 bind.fight.occupancy.column=Ocupación de la columna
 bind.fight.occupancy.grid=Ocupación de toda la cuadrícula
+occupancy.stop_at_last=Parar en la última casilla ocupada

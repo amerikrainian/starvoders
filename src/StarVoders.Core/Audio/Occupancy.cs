@@ -94,6 +94,14 @@ namespace StarVoders.Core.Audio
             set => _store.SetBool("occupancy_turn_start", value);
         }
 
+        /// <summary>A sweep ends at the column's highest occupied tile instead of running on to the top;
+        /// a column with nothing in it plays nothing. On by default.</summary>
+        public bool StopAtLastOccupied
+        {
+            get => _store.GetBool("occupancy_stop_at_last", true);
+            set => _store.SetBool("occupancy_stop_at_last", value);
+        }
+
         /// <summary>A card pickup lying on a tile counts as occupied.</summary>
         public bool Pickups
         {
@@ -138,14 +146,18 @@ namespace StarVoders.Core.Audio
     {
         /// <summary>The notes of one column. <paramref name="occupied"/> is bottom row first;
         /// <paramref name="fromRow"/> the first row swept (0 = the bottom); <paramref name="baseSemitones"/>
-        /// raises the whole column.</summary>
+        /// raises the whole column; <paramref name="stopAtLastOccupied"/> ends the sweep at the highest
+        /// occupied tile swept (no notes when there is none).</summary>
         public static List<OccupancyNote> Column(IReadOnlyList<bool> occupied, int fromRow, int rowDelayMs, int pitchSemitones,
-            float pan = 0f, double start = 0, int baseSemitones = 0)
+            float pan = 0f, double start = 0, int baseSemitones = 0, bool stopAtLastOccupied = false)
         {
             var notes = new List<OccupancyNote>();
             if (occupied == null) return notes;
             if (fromRow < 0) fromRow = 0;
-            for (int row = fromRow; row < occupied.Count; row++)
+            int end = occupied.Count; // one past the last row swept
+            if (stopAtLastOccupied)
+                while (end > fromRow && !occupied[end - 1]) end--;
+            for (int row = fromRow; row < end; row++)
             {
                 notes.Add(new OccupancyNote
                 {
@@ -160,9 +172,10 @@ namespace StarVoders.Core.Audio
 
         /// <summary>The notes of the whole grid: <paramref name="columns"/> left to right, each bottom
         /// row first, each column starting one row step after the last note of the one before. <paramref name="columnSemitones"/> above 0 tells the columns apart
-        /// by pitch (centred) instead of by pan.</summary>
+        /// by pitch (centred) instead of by pan. A column with no notes (stopping at the last occupied
+        /// tile, and none) takes no time: the next follows on.</summary>
         public static List<OccupancyNote> Grid(IReadOnlyList<IReadOnlyList<bool>> columns, int fromRow, int rowDelayMs,
-            int pitchSemitones, int widthPercent, int columnSemitones = 0)
+            int pitchSemitones, int widthPercent, int columnSemitones = 0, bool stopAtLastOccupied = false)
         {
             var notes = new List<OccupancyNote>();
             if (columns == null) return notes;
@@ -174,7 +187,7 @@ namespace StarVoders.Core.Audio
                 bool byPitch = columnSemitones > 0;
                 float pan = !byPitch && n > 1 ? width * (-1f + 2f * x / (n - 1)) : 0f;
                 var column = Column(columns[x], fromRow, rowDelayMs, pitchSemitones, pan, start,
-                    byPitch ? x * columnSemitones : 0);
+                    byPitch ? x * columnSemitones : 0, stopAtLastOccupied);
                 notes.AddRange(column);
                 if (column.Count > 0) start = column[column.Count - 1].Delay + rowDelayMs / 1000.0;
             }

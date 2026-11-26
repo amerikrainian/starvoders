@@ -14,7 +14,7 @@ using Screen = StarVoders.Core.Screens.Screen;
 namespace StarVoders.Module.Screens
 {
     /// <summary>
-    /// The mod's own menu (Ctrl+Shift+M anywhere): Settings, Sounds, Key help, Close. An overlay above every
+    /// The mod's own menu (Ctrl+Shift+M anywhere): Settings, Sounds, Grid occupancy, Key help, Close. An overlay above every
     /// game screen, opened and closed by a static flag the poll picks up; its sub-screens are child
     /// screens, so Escape walks back through them to the game.
     /// </summary>
@@ -44,6 +44,7 @@ namespace StarVoders.Module.Screens
             b.PushContext(null, null);
             b.AddItem(ControlId.Structural("modmenu:settings"), GameNodes.Button(() => Strings.ModSettings, () => PushChild(new ModSettingsScreen())));
             b.AddItem(ControlId.Structural("modmenu:sounds"), GameNodes.Button(() => Strings.ModSounds, () => PushChild(new ModSoundsScreen())));
+            b.AddItem(ControlId.Structural("modmenu:occupancy"), GameNodes.Button(() => Strings.OccupancySection, () => PushChild(new ModOccupancyScreen())));
             b.AddItem(ControlId.Structural("modmenu:keys"), GameNodes.Button(() => Strings.ModKeyHelp, () => PushChild(new KeyHelpScreen())));
             b.AddItem(ControlId.Structural("modmenu:close"), GameNodes.Button(() => Strings.ModClose, Close));
             b.PopContext();
@@ -109,12 +110,11 @@ namespace StarVoders.Module.Screens
     /// <summary>
     /// The mod's sounds (a child of the mod menu; guildrun's): Volumes (the master, then each sound,
     /// 0 to 200 percent; Left and Right step them, Enter plays the sound once, the master the grid),
-    /// then Grid occupancy (toggles: a column as the cursor crosses columns, sweeps from the cursor's
-    /// row, the full grid as the player's turn starts, pickups as occupied; sliders: the delay between
-    /// rows (the only timing: the grid runs its columns on at the same step), the pitch rise per row, the stereo width; columns by pitch instead of
-    /// stereo, and the pitch rise per column; Enter on a slider plays the
-    /// full grid with it: the live board in a fight, else a made-up one). Alt+Up and Alt+Down move
-    /// between the two sections. Values live in the host's settings store.
+    /// then Grid occupancy's sliders (the delay between rows, the only timing: the grid runs its columns
+    /// on at the same step; the pitch rise per row, the stereo width, the pitch rise per column; Enter on one plays
+    /// the full grid with it: the live board in a fight, else a made-up one). Occupancy's toggles are
+    /// <see cref="ModOccupancyScreen"/>'s. Alt+Up and Alt+Down move between the two sections. Values
+    /// live in the host's settings store.
     /// </summary>
     public sealed class ModSoundsScreen : Screen
     {
@@ -151,22 +151,12 @@ namespace StarVoders.Module.Screens
 
             b.SetRegion("occupancy");
             b.PushContext(Strings.OccupancySection);
-            b.AddItem(ControlId.Structural("modsounds:cross"), ModSettingsScreen.Toggle(() => Strings.OccupancyOnCross,
-                () => occupancy.OnColumnCross, v => occupancy.OnColumnCross = v));
-            b.AddItem(ControlId.Structural("modsounds:fromcursor"), ModSettingsScreen.Toggle(() => Strings.OccupancyFromCursor,
-                () => occupancy.FromCursor, v => occupancy.FromCursor = v));
-            b.AddItem(ControlId.Structural("modsounds:turnstart"), ModSettingsScreen.Toggle(() => Strings.OccupancyTurnStart,
-                () => occupancy.OnTurnStart, v => occupancy.OnTurnStart = v));
-            b.AddItem(ControlId.Structural("modsounds:pickups"), ModSettingsScreen.Toggle(() => Strings.OccupancyPickups,
-                () => occupancy.Pickups, v => occupancy.Pickups = v));
             b.AddItem(ControlId.Structural("modsounds:rowdelay"), Slider(() => Strings.OccupancyRowDelay,
                 () => Strings.Milliseconds(occupancy.RowDelay.Value), occupancy.RowDelay.Adjust, grid));
             b.AddItem(ControlId.Structural("modsounds:pitch"), Slider(() => Strings.OccupancyPitch,
                 () => Strings.Semitones(occupancy.PitchStep.Value), occupancy.PitchStep.Adjust, grid));
             b.AddItem(ControlId.Structural("modsounds:width"), Slider(() => Strings.OccupancyWidth,
                 () => Strings.Percent(occupancy.Width.Value), occupancy.Width.Adjust, grid));
-            b.AddItem(ControlId.Structural("modsounds:columnpitch"), ModSettingsScreen.Toggle(() => Strings.OccupancyColumnPitch,
-                () => occupancy.ColumnsByPitch, v => occupancy.ColumnsByPitch = v));
             b.AddItem(ControlId.Structural("modsounds:columnpitchstep"), Slider(() => Strings.OccupancyColumnPitchStep,
                 () => Strings.Semitones(occupancy.ColumnPitchStep.Value), occupancy.ColumnPitchStep.Adjust, grid));
             b.PopContext();
@@ -190,6 +180,48 @@ namespace StarVoders.Module.Screens
                 StateText = value,
                 OnActivate = preview,
             };
+        }
+
+        public override IEnumerable<ElementAction> GetActions()
+        {
+            yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ => ParentScreen?.RemoveChild(this));
+        }
+    }
+
+    /// <summary>Grid occupancy's toggles (a child of the mod menu; its sliders are in Sounds): when it
+    /// plays (a column as the cursor crosses columns, the full grid as the player's turn starts) and how
+    /// (sweeps from the cursor's row, stopping at the last occupied tile, pickups as occupied, columns by
+    /// pitch instead of stereo). Enter flips one and speaks the new state.</summary>
+    public sealed class ModOccupancyScreen : Screen
+    {
+        public override string Key => "mod.occupancy";
+        public override bool KeptThroughTransitions => true;
+        public override string ScreenName => Strings.OccupancySection;
+        public override bool IsActive() => false; // only ever a child of the mod menu
+
+        public override void Build(GraphBuilder b)
+        {
+            var occupancy = ModuleMain.Occupancy;
+            b.PushContext(null, null); // the screen name says "Grid occupancy"
+            if (occupancy == null)
+            {
+                b.AddItem(ControlId.Structural("modoccupancy:none"), GameNodes.Text(() => Strings.NoTooltip));
+                b.PopContext();
+                return;
+            }
+            b.AddItem(ControlId.Structural("modoccupancy:cross"), ModSettingsScreen.Toggle(() => Strings.OccupancyOnCross,
+                () => occupancy.OnColumnCross, v => occupancy.OnColumnCross = v));
+            b.AddItem(ControlId.Structural("modoccupancy:turnstart"), ModSettingsScreen.Toggle(() => Strings.OccupancyTurnStart,
+                () => occupancy.OnTurnStart, v => occupancy.OnTurnStart = v));
+            b.AddItem(ControlId.Structural("modoccupancy:fromcursor"), ModSettingsScreen.Toggle(() => Strings.OccupancyFromCursor,
+                () => occupancy.FromCursor, v => occupancy.FromCursor = v));
+            b.AddItem(ControlId.Structural("modoccupancy:stopatlast"), ModSettingsScreen.Toggle(() => Strings.OccupancyStopAtLast,
+                () => occupancy.StopAtLastOccupied, v => occupancy.StopAtLastOccupied = v));
+            b.AddItem(ControlId.Structural("modoccupancy:pickups"), ModSettingsScreen.Toggle(() => Strings.OccupancyPickups,
+                () => occupancy.Pickups, v => occupancy.Pickups = v));
+            b.AddItem(ControlId.Structural("modoccupancy:columnpitch"), ModSettingsScreen.Toggle(() => Strings.OccupancyColumnPitch,
+                () => occupancy.ColumnsByPitch, v => occupancy.ColumnsByPitch = v));
+            b.PopContext();
         }
 
         public override IEnumerable<ElementAction> GetActions()
