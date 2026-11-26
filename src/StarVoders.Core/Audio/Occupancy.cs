@@ -72,10 +72,11 @@ namespace StarVoders.Core.Audio
         /// <summary>Semitones each column to the right is raised by, when columns go by pitch.</summary>
         public SteppedSetting ColumnPitchStep { get; }
 
-        /// <summary>Play a column's occupancy, centred, whenever the board cursor enters a new column.</summary>
+        /// <summary>Play a column's occupancy, centred, whenever the board cursor enters a new column. Off
+        /// by default.</summary>
         public bool OnColumnCross
         {
-            get => _store.GetBool("occupancy_on_cross", true);
+            get => _store.GetBool("occupancy_on_cross", false);
             set => _store.SetBool("occupancy_on_cross", value);
         }
 

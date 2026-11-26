@@ -90,7 +90,7 @@ a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includ
   (from `audio/cues`, rendered by `tools/python/audio_samples.py` from `audio/sounds.json` through
   `tools/python/sfxr.py`); a batch's cues are scheduled on the group's DSP clock (`setDelay`). Grid
   occupancy (`Module/Audio/OccupancySounds`, notes from Core `OccupancyPlan`, tested): G the column,
-  Shift+G the grid, a column on crossing columns, the grid when the player's turn starts; the mod
+  Shift+G the grid, a column on crossing columns (off by default), the grid when the player's turn starts; the mod
   menu's Sounds screen holds the volumes (0-200) and occupancy settings.
 - Not ported from guildrun yet: `NumberEdit` (the mod's own number entry),
   `ScreenAudit`, `BufferKeys`' guildrun buffer names (hero, quest... are placeholders).
