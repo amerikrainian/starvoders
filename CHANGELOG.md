@@ -1,5 +1,10 @@
 # Changelog
 
+## V0.1.9
+
+- First attempt at sonifying grid occupancy: press g to play a column, shift g to play the entire grid, and go to settings to configure how often, fast, or at all it goes off.
+- You can now press enter on your mech to not move while playing a swift card.
+
 ## V0.1.8
 
 - Focus now resets to control when you move to a new UI control.
