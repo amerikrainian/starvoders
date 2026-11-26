@@ -300,7 +300,6 @@ occupancy.from_cursor=扫描从光标所在行开始
 occupancy.turn_start=回合开始时播放整个网格
 occupancy.pickups=可拾取卡牌算作占用
 occupancy.row_delay=行间延迟
-occupancy.column_delay=列间延迟
 occupancy.pitch=每行音高升高
 occupancy.width=立体声宽度
 occupancy.column_pitch=按音高而非立体声区分列

@@ -300,7 +300,6 @@ occupancy.from_cursor=Taramalar imlecin satırından başlar
 occupancy.turn_start=Turun başında tüm ızgarayı çal
 occupancy.pickups=Toplanabilir kartlar dolu sayılır
 occupancy.row_delay=Satırlar arası gecikme
-occupancy.column_delay=Sütunlar arası gecikme
 occupancy.pitch=Satır başına perde artışı
 occupancy.width=Stereo genişliği
 occupancy.column_pitch=Sütunlar stereo yerine perdeyle

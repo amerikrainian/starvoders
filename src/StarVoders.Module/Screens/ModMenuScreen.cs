@@ -111,7 +111,7 @@ namespace StarVoders.Module.Screens
     /// 0 to 200 percent; Left and Right step them, Enter plays the sound once, the master the grid),
     /// then Grid occupancy (toggles: a column as the cursor crosses columns, sweeps from the cursor's
     /// row, the full grid as the player's turn starts, pickups as occupied; sliders: the delay between
-    /// rows and between columns, the pitch rise per row, the stereo width; columns by pitch instead of
+    /// rows (the only timing: the grid runs its columns on at the same step), the pitch rise per row, the stereo width; columns by pitch instead of
     /// stereo, and the pitch rise per column; Enter on a slider plays the
     /// full grid with it: the live board in a fight, else a made-up one). Alt+Up and Alt+Down move
     /// between the two sections. Values live in the host's settings store.
@@ -161,8 +161,6 @@ namespace StarVoders.Module.Screens
                 () => occupancy.Pickups, v => occupancy.Pickups = v));
             b.AddItem(ControlId.Structural("modsounds:rowdelay"), Slider(() => Strings.OccupancyRowDelay,
                 () => Strings.Milliseconds(occupancy.RowDelay.Value), occupancy.RowDelay.Adjust, grid));
-            b.AddItem(ControlId.Structural("modsounds:columndelay"), Slider(() => Strings.OccupancyColumnDelay,
-                () => Strings.Milliseconds(occupancy.ColumnDelay.Value), occupancy.ColumnDelay.Adjust, grid));
             b.AddItem(ControlId.Structural("modsounds:pitch"), Slider(() => Strings.OccupancyPitch,
                 () => Strings.Semitones(occupancy.PitchStep.Value), occupancy.PitchStep.Adjust, grid));
             b.AddItem(ControlId.Structural("modsounds:width"), Slider(() => Strings.OccupancyWidth,

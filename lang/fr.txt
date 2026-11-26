@@ -300,7 +300,6 @@ occupancy.from_cursor=Les balayages partent de la ligne du curseur
 occupancy.turn_start=Jouer toute la grille au début de votre tour
 occupancy.pickups=Les cartes à ramasser comptent comme occupées
 occupancy.row_delay=Délai entre les lignes
-occupancy.column_delay=Délai entre les colonnes
 occupancy.pitch=Hausse de hauteur par ligne
 occupancy.width=Largeur stéréo
 occupancy.column_pitch=Colonnes par hauteur plutôt que stéréo

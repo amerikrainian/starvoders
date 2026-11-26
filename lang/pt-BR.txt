@@ -300,7 +300,6 @@ occupancy.from_cursor=As varreduras começam na linha do cursor
 occupancy.turn_start=Tocar a grade inteira no início do seu turno
 occupancy.pickups=Cartas coletáveis contam como ocupadas
 occupancy.row_delay=Atraso entre linhas
-occupancy.column_delay=Atraso entre colunas
 occupancy.pitch=Aumento de tom por linha
 occupancy.width=Largura estéreo
 occupancy.column_pitch=Colunas por tom em vez de estéreo

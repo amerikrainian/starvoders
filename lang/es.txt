@@ -300,7 +300,6 @@ occupancy.from_cursor=Los barridos empiezan en la fila del cursor
 occupancy.turn_start=Reproducir toda la cuadrícula al empezar tu turno
 occupancy.pickups=Las cartas recogibles cuentan como ocupadas
 occupancy.row_delay=Retraso entre filas
-occupancy.column_delay=Retraso entre columnas
 occupancy.pitch=Subida de tono por fila
 occupancy.width=Amplitud estéreo
 occupancy.column_pitch=Columnas por tono en lugar de estéreo

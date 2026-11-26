@@ -370,8 +370,8 @@ namespace StarVoders.Core.Strings
             // Toggles: a column played as the cursor enters it; sweeps starting at the cursor's row
             // instead of the bottom; the whole grid played as the player's turn starts; card pickups
             // counting as occupied; the grid's columns told apart by pitch (all centred, each to the
-            // right higher) instead of by stereo position. Sliders: the time between rows' sounds and
-            // between columns, the pitch rise per row, how far left and right the columns are panned,
+            // right higher) instead of by stereo position. Sliders: the time between rows' sounds, the
+            // pitch rise per row, how far left and right the columns are panned,
             // the pitch rise per column.
             D("occupancy.section", "Grid occupancy"),
             D("occupancy.on_cross", "Play a column when crossing columns"),
@@ -379,7 +379,6 @@ namespace StarVoders.Core.Strings
             D("occupancy.turn_start", "Play the full grid when your turn starts"),
             D("occupancy.pickups", "Pickups count as occupied"),
             D("occupancy.row_delay", "Delay between rows"),
-            D("occupancy.column_delay", "Delay between columns"),
             D("occupancy.pitch", "Pitch rise per row"),
             D("occupancy.width", "Stereo width"),
             D("occupancy.column_pitch", "Columns by pitch instead of stereo"),
@@ -755,7 +754,6 @@ namespace StarVoders.Core.Strings
         public static string OccupancyTurnStart => Get("occupancy.turn_start");
         public static string OccupancyPickups => Get("occupancy.pickups");
         public static string OccupancyRowDelay => Get("occupancy.row_delay");
-        public static string OccupancyColumnDelay => Get("occupancy.column_delay");
         public static string OccupancyPitch => Get("occupancy.pitch");
         public static string OccupancyWidth => Get("occupancy.width");
         public static string OccupancyColumnPitch => Get("occupancy.column_pitch");

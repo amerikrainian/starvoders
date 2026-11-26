@@ -14,7 +14,7 @@ namespace StarVoders.Module.Audio
     /// entity, the mech, an invader, a bomb, a Summon; a card pickup when the setting says so), swept
     /// bottom to top with the sounds overlapping (<see cref="OccupancyPlan"/>). A column plays centred:
     /// on its key, and as the board cursor enters a new column; the full grid sweeps the columns left
-    /// to right, panned left to right: on its key, and when the player's turn starts. With columns by
+    /// to right as one stream (each column's first note a row step after the last note before it), panned left to right: on its key, and when the player's turn starts. With columns by
     /// pitch, everything is centred and each column to the right is higher, a single column included. A new sweep stops
     /// the one before. The board is read when a sweep starts; nothing is kept.
     /// </summary>
@@ -46,7 +46,7 @@ namespace StarVoders.Module.Audio
             if (settings == null) return;
             var at = EncounterScreen.FocusedTile();
             int from = settings.FromCursor && at.HasValue ? at.Value.Y : 0;
-            Play(OccupancyPlan.Grid(Columns(board, settings), from, settings.RowDelay.Value, settings.ColumnDelay.Value,
+            Play(OccupancyPlan.Grid(Columns(board, settings), from, settings.RowDelay.Value,
                 settings.PitchStep.Value, settings.Width.Value, ColumnSemitones(settings)));
         }
 
@@ -107,7 +107,7 @@ namespace StarVoders.Module.Audio
                 foreach (char ch in pattern) col.Add(ch == 'O');
                 columns.Add(col);
             }
-            Play(OccupancyPlan.Grid(columns, 0, settings.RowDelay.Value, settings.ColumnDelay.Value,
+            Play(OccupancyPlan.Grid(columns, 0, settings.RowDelay.Value,
                 settings.PitchStep.Value, settings.Width.Value, ColumnSemitones(settings)));
         }
 

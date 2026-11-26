@@ -55,12 +55,13 @@ namespace StarVoders.Tests
         public void The_grid_sweeps_columns_left_to_right_panned_across_the_width()
         {
             var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
-            var notes = OccupancyPlan.Grid(cols, 0, 80, 500, 0, 100);
+            var notes = OccupancyPlan.Grid(cols, 0, 80, 0, 100);
             Assert.Equal("OEEEEO", Cues(notes));
-            Assert.Equal(new[] { 0, 0.08, 0.5, 0.58, 1.0, 1.08 }, notes.Select(n => Math.Round(n.Delay, 6)));
+            // One stream: each column's first note a row step after the last note before it.
+            Assert.Equal(new[] { 0, 0.08, 0.16, 0.24, 0.32, 0.40 }, notes.Select(n => Math.Round(n.Delay, 6)));
             Assert.Equal(new[] { -1f, -1f, 0f, 0f, 1f, 1f }, notes.Select(n => n.Pan));
 
-            var half = OccupancyPlan.Grid(cols, 0, 80, 500, 0, 50);
+            var half = OccupancyPlan.Grid(cols, 0, 80, 0, 50);
             Assert.Equal(-0.5f, half[0].Pan);
             Assert.Equal(0.5f, half[5].Pan);
         }
@@ -69,7 +70,7 @@ namespace StarVoders.Tests
         public void Columns_by_pitch_are_centred_each_higher_than_the_one_to_its_left()
         {
             var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
-            var notes = OccupancyPlan.Grid(cols, 0, 80, 500, 1, 100, columnSemitones: 2);
+            var notes = OccupancyPlan.Grid(cols, 0, 80, 1, 100, columnSemitones: 2);
             Assert.All(notes, n => Assert.Equal(0f, n.Pan));
             // Column 3's top row: 2 columns of 2 semitones plus 1 row of 1.
             Assert.Equal(Math.Pow(2, 5 / 12.0), notes[5].Pitch, 4);
@@ -77,9 +78,25 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Columns_run_on_at_the_row_step_however_many_rows_they_play()
+        {
+            var cols = new List<IReadOnlyList<bool>> { Col("OEEOEOE"), Col("EEEEOOO"), Col("OEOOOEO") };
+            foreach (int from in new[] { 0, 4 })
+            {
+                var notes = OccupancyPlan.Grid(cols, from, 80, 0, 100);
+                int perColumn = 7 - from;
+                for (int x = 1; x < 3; x++)
+                {
+                    double lastBefore = notes[x * perColumn - 1].Delay, first = notes[x * perColumn].Delay;
+                    Assert.Equal(0.08, Math.Round(first - lastBefore, 6));
+                }
+            }
+        }
+
+        [Fact]
         public void A_one_column_grid_is_centred()
         {
-            var notes = OccupancyPlan.Grid(new List<IReadOnlyList<bool>> { Col("OE") }, 0, 80, 500, 0, 100);
+            var notes = OccupancyPlan.Grid(new List<IReadOnlyList<bool>> { Col("OE") }, 0, 80, 0, 100);
             Assert.All(notes, n => Assert.Equal(0f, n.Pan));
         }
 

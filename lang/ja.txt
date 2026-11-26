@@ -300,7 +300,6 @@ occupancy.from_cursor=スイープをカーソルの行から開始
 occupancy.turn_start=ターン開始時にグリッド全体を再生
 occupancy.pickups=拾えるカードを占有として扱う
 occupancy.row_delay=行の間隔
-occupancy.column_delay=列の間隔
 occupancy.pitch=行ごとの音程の上昇
 occupancy.width=ステレオの幅
 occupancy.column_pitch=列をステレオではなく音程で区別

@@ -300,7 +300,6 @@ occupancy.from_cursor=Durchläufe beginnen in der Zeile des Cursors
 occupancy.turn_start=Ganzes Raster zu Beginn deines Zuges abspielen
 occupancy.pickups=Aufnehmbare Karten zählen als besetzt
 occupancy.row_delay=Verzögerung zwischen Zeilen
-occupancy.column_delay=Verzögerung zwischen Spalten
 occupancy.pitch=Tonhöhenanstieg pro Zeile
 occupancy.width=Stereobreite
 occupancy.column_pitch=Spalten nach Tonhöhe statt Stereo

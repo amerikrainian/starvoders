@@ -55,7 +55,6 @@ namespace StarVoders.Core.Audio
         {
             _store = store;
             RowDelay = new SteppedSetting(store, "occupancy_row_delay_ms", 20, 300, 5, 80);
-            ColumnDelay = new SteppedSetting(store, "occupancy_column_delay_ms", 100, 2000, 50, 500);
             PitchStep = new SteppedSetting(store, "occupancy_pitch_semitones", 0, 4, 1, 0);
             Width = new SteppedSetting(store, "occupancy_stereo_width", 0, 100, 10, 100);
             ColumnPitchStep = new SteppedSetting(store, "occupancy_column_semitones", 1, 6, 1, 2);
@@ -105,9 +104,6 @@ namespace StarVoders.Core.Audio
         /// <summary>Milliseconds between one row's sound and the next (shorter than the sounds: they overlap).</summary>
         public SteppedSetting RowDelay { get; }
 
-        /// <summary>Milliseconds between one column's sweep and the next, in the full grid.</summary>
-        public SteppedSetting ColumnDelay { get; }
-
         /// <summary>Semitones each row above the bottom is raised by; 0 = no pitch.</summary>
         public SteppedSetting PitchStep { get; }
 
@@ -132,7 +128,8 @@ namespace StarVoders.Core.Audio
     /// <summary>
     /// Grid occupancy as notes, engine-free. A column is swept bottom to top (or from a given row up),
     /// one note per tile, each <c>rowDelayMs</c> after the one below; the full grid sweeps the columns
-    /// left to right, each <c>columnDelayMs</c> after the one before, panned from left to right across
+    /// left to right as one stream: each column's first note one row step after the last note of the
+    /// one before, panned from left to right across
     /// the stereo width, or, with <c>columnSemitones</c> above 0, all centred and each column that many
     /// semitones above the one to its left. Row pitch, when on, follows the tile's own row (its height
     /// on the board), so a sweep from the cursor keeps the same pitch for the same row; the two pitches add.
@@ -162,21 +159,24 @@ namespace StarVoders.Core.Audio
         }
 
         /// <summary>The notes of the whole grid: <paramref name="columns"/> left to right, each bottom
-        /// row first. <paramref name="columnSemitones"/> above 0 tells the columns apart by pitch
-        /// (centred) instead of by pan.</summary>
-        public static List<OccupancyNote> Grid(IReadOnlyList<IReadOnlyList<bool>> columns, int fromRow, int rowDelayMs, int columnDelayMs,
+        /// row first, each column starting one row step after the last note of the one before. <paramref name="columnSemitones"/> above 0 tells the columns apart
+        /// by pitch (centred) instead of by pan.</summary>
+        public static List<OccupancyNote> Grid(IReadOnlyList<IReadOnlyList<bool>> columns, int fromRow, int rowDelayMs,
             int pitchSemitones, int widthPercent, int columnSemitones = 0)
         {
             var notes = new List<OccupancyNote>();
             if (columns == null) return notes;
             int n = columns.Count;
             float width = Math.Max(0, Math.Min(100, widthPercent)) / 100f;
+            double start = 0;
             for (int x = 0; x < n; x++)
             {
                 bool byPitch = columnSemitones > 0;
                 float pan = !byPitch && n > 1 ? width * (-1f + 2f * x / (n - 1)) : 0f;
-                notes.AddRange(Column(columns[x], fromRow, rowDelayMs, pitchSemitones, pan, x * columnDelayMs / 1000.0,
-                    byPitch ? x * columnSemitones : 0));
+                var column = Column(columns[x], fromRow, rowDelayMs, pitchSemitones, pan, start,
+                    byPitch ? x * columnSemitones : 0);
+                notes.AddRange(column);
+                if (column.Count > 0) start = column[column.Count - 1].Delay + rowDelayMs / 1000.0;
             }
             return notes;
         }

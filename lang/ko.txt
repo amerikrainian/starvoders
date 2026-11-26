@@ -300,7 +300,6 @@ occupancy.from_cursor=훑기를 커서 행에서 시작
 occupancy.turn_start=턴 시작 시 격자 전체 재생
 occupancy.pickups=줍는 카드도 찬 칸으로 취급
 occupancy.row_delay=행 간 지연
-occupancy.column_delay=열 간 지연
 occupancy.pitch=행당 음높이 상승
 occupancy.width=스테레오 폭
 occupancy.column_pitch=열을 스테레오 대신 음높이로 구분

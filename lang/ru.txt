@@ -300,7 +300,6 @@ occupancy.from_cursor=Проход начинается со строки кур
 occupancy.turn_start=Проигрывать всё поле в начале вашего хода
 occupancy.pickups=Подбираемые карты считаются занятыми
 occupancy.row_delay=Задержка между строками
-occupancy.column_delay=Задержка между столбцами
 occupancy.pitch=Повышение тона на строку
 occupancy.width=Ширина стерео
 occupancy.column_pitch=Столбцы по высоте тона вместо стерео
