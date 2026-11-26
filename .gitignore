@@ -18,3 +18,6 @@ installer/target/
 # The rendered manual (mdbook build docs_src)
 docs_src/book/
 tools/python/__pycache__/
+
+# Demo columns tools/python/audio_samples.py renders beside the shipped cues (audio/cues)
+audio/samples/

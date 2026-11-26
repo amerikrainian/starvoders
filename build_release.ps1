@@ -127,6 +127,14 @@ try {
         }
     }
 
+    # The sounds, one WAV per cue (audio\cues), in the plugin's audio folder.
+    $cueDir = Join-Path $scriptDir "audio\cues"
+    $cueFiles = Get-ChildItem (Join-Path $cueDir "*.wav") -ErrorAction SilentlyContinue
+    if (-not $cueFiles) { throw "No sound files in $cueDir (run tools/python/audio_samples.py)" }
+    $stageAudioDir = Join-Path $pluginDir "audio"
+    New-Item -ItemType Directory -Force $stageAudioDir | Out-Null
+    Copy-Item -Path $cueFiles.FullName -Destination $stageAudioDir
+
     if ($hasDocs) {
         # Packaging pattern adapted from SayTheSpire2: https://github.com/bradjrenshaw/say-the-spire2
         Copy-Item -Path (Join-Path $docsDir "book") -Destination (Join-Path $stageDir "StarVodersDocs") -Recurse

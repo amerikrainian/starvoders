@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using StarVoders.Contracts;
 using StarVoders.Core;
+using StarVoders.Core.Audio;
 using StarVoders.Core.Graph;
 using StarVoders.Core.Input;
 using StarVoders.Core.Screens;
@@ -29,6 +30,14 @@ namespace StarVoders.Module
         /// <summary>The host of the live generation (settings, logging), for screens that need it.</summary>
         public static IModHost Host { get; private set; }
         private Harmony _harmony;
+
+        // The mod's sounds: their volumes, grid occupancy's settings, and the engine every cue plays
+        // through (the game's FMOD, the player's volumes applied). Static for the screens and the fight;
+        // this generation's own, cleared on teardown.
+        private Audio.FmodCueEngine _cueEngine;
+        public static SoundVolumes Sounds { get; private set; }
+        public static OccupancySettings Occupancy { get; private set; }
+        public static IAudioEngine CueEngine { get; private set; }
 
         // The launch update check: asked once the module is up, its line spoken from Tick when the
         // request lands, after the language is in place (so it is worded, and after "loaded").
@@ -68,6 +77,12 @@ namespace StarVoders.Module
             _harmony = new Harmony("com.amerikranian.starvoders.module." + Guid.NewGuid().ToString("N"));
 
             GameScenes.Start();
+            // The sounds: settings in the host's store, files in the plugin's audio folder, played
+            // through the game's FMOD (Unity's own audio is off in this game).
+            Sounds = new SoundVolumes(host.Settings.Store);
+            Occupancy = new OccupancySettings(host.Settings.Store);
+            _cueEngine = new Audio.FmodCueEngine(System.IO.Path.Combine(host.PluginDir, "audio"));
+            CueEngine = new VolumeScaledEngine(_cueEngine, Sounds);
             RegisterInput();
             // The registered keys are the defaults; the player's own replace them (KeyBindings).
             KeyBindings.Snapshot();
@@ -191,6 +206,7 @@ namespace StarVoders.Module
             InputManager.Tick();
             // Before the screens: an event is heard before the focus landing it caused (a target list).
             Safe(Fight.FightEvents.Tick, "fight events");
+            Safe(Audio.OccupancySounds.Tick, "occupancy");
             ScreenManager.Tick();
             Safe(TextEdit.Tick, "text edit");
             if (!TextEdit.OwnsKeyboard) Navigation.TickTypeahead();
@@ -224,6 +240,11 @@ namespace StarVoders.Module
             try { KeyBindings.Clear(); InputManager.Clear(); } catch (Exception e) { _host?.LogError("[dispose] input: " + e); }
             try { LanguageSync.Stop(); } catch (Exception e) { _host?.LogError("[dispose] language: " + e); }
             try { GameScenes.Shutdown(); } catch (Exception e) { _host?.LogError("[dispose] scenes: " + e); }
+            try { _cueEngine?.Dispose(); } catch (Exception e) { _host?.LogError("[dispose] audio: " + e); }
+            _cueEngine = null;
+            Sounds = null;
+            Occupancy = null;
+            CueEngine = null;
             try { _harmony?.UnpatchSelf(); } catch (Exception e) { _host?.LogError("[dispose] harmony: " + e); }
             _harmony = null;
             _host = null;

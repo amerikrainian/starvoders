@@ -26,7 +26,8 @@ namespace StarVoders.Module.Fight
     /// (top row first), moving the cursor; danger zones step by region, each attacker's tiles merged
     /// as its targets are announced ("5 1 to 5 5, targeted by Shooter 2", the cursor to its first
     /// tile); Alt+Backspace jumps back to where a jump left from; Shift+arrows skip cells that read
-    /// the same; Home and End go to the row's ends, Page Up and Page Down to the column's.
+    /// the same; Home and End go to the row's ends, Page Up and Page Down to the column's; G plays the
+    /// cursor's column's occupancy, Shift+G the whole grid's (<see cref="Audio.OccupancySounds"/>).
     /// The game's own fight keys are its actions' keys, read from the game (<see cref="GameKeyBinding"/>,
     /// so its rebinding carries over): the card digits, E ends the turn, A and S open the draw and
     /// discard piles, R rewinds, F is Backspace's details (the game's more info).
@@ -88,6 +89,11 @@ namespace StarVoders.Module.Fight
                 string bombs = Fight.Bombs(), summons = Fight.Summons();
                 return bombs != null && summons != null ? bombs + ", " + summons : bombs ?? summons;
             });
+            // Grid occupancy: G the cursor's column (centred), Shift+G every column left to right.
+            InputManager.Register("fight.occupancy.column", "Column occupancy", InputCategory.Game, Audio.OccupancySounds.PlayCurrentColumn)
+                .AddBinding(new KeyboardBinding(KeyCode.G));
+            InputManager.Register("fight.occupancy.grid", "Grid occupancy", InputCategory.Game, Audio.OccupancySounds.PlayGrid)
+                .AddBinding(new KeyboardBinding(KeyCode.G, shift: true));
             InputManager.Register("fight.mech.jump", "Go to the mech", InputCategory.Game, () => JumpTo(Mech()))
                 .AddBinding(new KeyboardBinding(KeyCode.M, shift: true));
             InputManager.Register("fight.hand", "Go to the hand", InputCategory.Game, JumpToHand)

@@ -72,6 +72,8 @@ These are the game's own actions, so they follow its Controls options. The defau
 | Ctrl+O | Objective |
 | Ctrl+M | The mech: its state and tile |
 | Ctrl+B | Bombs out of the limit, and Summons |
+| G | Grid occupancy of the focused column |
+| Shift+G | Grid occupancy of the whole grid |
 
 ## The Board
 

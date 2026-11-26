@@ -341,6 +341,9 @@ namespace StarVoders.Core.Strings
             D("bind.fight.discard", "Discard pile"),
             D("bind.fight.rewind", "Rewind"),
             D("bind.fight.moreinfo", "More info"),
+            // Grid occupancy keys: the cursor's column as sounds, bottom to top; every column, left to right.
+            D("bind.fight.occupancy.column", "Column occupancy"),
+            D("bind.fight.occupancy.grid", "Grid occupancy"),
 
             // The run's deck in the status row: {0} = the game's "Deck", {1} = its cards, {2} = its artifacts (the count forms below).
             D("status.deck", "{0}, {1}, {2}"),
@@ -356,6 +359,35 @@ namespace StarVoders.Core.Strings
             D("mod.close", "Close"),
             D("mod.speak_positions", "Speak list positions"),
             D("mod.focus_on_launch", "Keyboard navigation on at launch"),
+            // The mod menu's sounds screen: its Volumes section (the master, then each sound by what it
+            // stands for: a board tile with nothing on it, one with something on it).
+            D("mod.sounds", "Sounds"),
+            D("sound.volumes", "Volumes"),
+            D("sound.master", "Master volume"),
+            D("sound.cue.empty", "Empty tile"),
+            D("sound.cue.occupied", "Occupied tile"),
+            // Its Grid occupancy section: each board tile of a column as a sound, swept bottom to top.
+            // Toggles: a column played as the cursor enters it; sweeps starting at the cursor's row
+            // instead of the bottom; the whole grid played as the player's turn starts; card pickups
+            // counting as occupied; the grid's columns told apart by pitch (all centred, each to the
+            // right higher) instead of by stereo position. Sliders: the time between rows' sounds and
+            // between columns, the pitch rise per row, how far left and right the columns are panned,
+            // the pitch rise per column.
+            D("occupancy.section", "Grid occupancy"),
+            D("occupancy.on_cross", "Play a column when crossing columns"),
+            D("occupancy.from_cursor", "Sweeps start at the cursor's row"),
+            D("occupancy.turn_start", "Play the full grid when your turn starts"),
+            D("occupancy.pickups", "Pickups count as occupied"),
+            D("occupancy.row_delay", "Delay between rows"),
+            D("occupancy.column_delay", "Delay between columns"),
+            D("occupancy.pitch", "Pitch rise per row"),
+            D("occupancy.width", "Stereo width"),
+            D("occupancy.column_pitch", "Columns by pitch instead of stereo"),
+            D("occupancy.column_pitch_step", "Pitch rise per column"),
+            // Slider values: {0} = a whole number of milliseconds; of semitones (0 reads "off").
+            D("value.ms", "{0} milliseconds"),
+            D("value.semitone.one", "1 semitone"),
+            D("value.semitones", "{0} semitones"),
             // {0} = the key category, one of the four names below.
             D("mod.key_category", "{0} keys"),
             // The key categories of the "All keys" list: live everywhere, on the focused screen, in a
@@ -712,6 +744,24 @@ namespace StarVoders.Core.Strings
         public static string ModClose => Get("mod.close");
         public static string ModSpeakPositions => Get("mod.speak_positions");
         public static string ModFocusOnLaunch => Get("mod.focus_on_launch");
+        public static string ModSounds => Get("mod.sounds");
+        public static string SoundVolumes => Get("sound.volumes");
+        public static string SoundMaster => Get("sound.master");
+        /// <summary>A sound's name by its cue's file name ("empty", "occupied").</summary>
+        public static string SoundCue(string cue) => Get("sound.cue." + cue);
+        public static string OccupancySection => Get("occupancy.section");
+        public static string OccupancyOnCross => Get("occupancy.on_cross");
+        public static string OccupancyFromCursor => Get("occupancy.from_cursor");
+        public static string OccupancyTurnStart => Get("occupancy.turn_start");
+        public static string OccupancyPickups => Get("occupancy.pickups");
+        public static string OccupancyRowDelay => Get("occupancy.row_delay");
+        public static string OccupancyColumnDelay => Get("occupancy.column_delay");
+        public static string OccupancyPitch => Get("occupancy.pitch");
+        public static string OccupancyWidth => Get("occupancy.width");
+        public static string OccupancyColumnPitch => Get("occupancy.column_pitch");
+        public static string OccupancyColumnPitchStep => Get("occupancy.column_pitch_step");
+        public static string Milliseconds(int ms) => F("value.ms", ms);
+        public static string Semitones(int n) => n == 0 ? StateOff : n == 1 ? Get("value.semitone.one") : F("value.semitones", n);
         public static string ModKeyCategory(string category)
         {
             string name = "mod.category." + (category ?? "").ToLowerInvariant();

@@ -34,11 +34,16 @@
     </PropertyGroup>
     <ItemGroup>
       <_LangFile Include="$(RepoRoot)lang\*.txt" />
+      <_AudioCue Include="$(RepoRoot)audio\cues\*.wav" />
     </ItemGroup>
     <MakeDir Directories="$(PluginDeployDir)" />
     <Copy SourceFiles="$(TargetPath);$(CoreDll)" DestinationFolder="$(PluginDeployDir)" ContinueOnError="true" />
     <Copy SourceFiles="@(_LangFile)" DestinationFolder="$(PluginDeployDir)\lang"
           SkipUnchangedFiles="true" ContinueOnError="true" Condition="'@(_LangFile)' != ''" />
+    <!-- The sounds, one WAV per cue, in the plugin's audio folder (loaded on a cue's first play, so a
+         replaced file is heard after a reload). -->
+    <Copy SourceFiles="@(_AudioCue)" DestinationFolder="$(PluginDeployDir)\audio"
+          SkipUnchangedFiles="true" ContinueOnError="true" Condition="'@(_AudioCue)' != ''" />
     <Message Importance="high" Text="StarVoders.Module + Core deployed -> $(PluginDeployDir)" />
   </Target>
 

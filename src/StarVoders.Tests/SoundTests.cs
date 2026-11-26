@@ -1,0 +1,122 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using StarVoders.Contracts;
+using StarVoders.Core.Audio;
+using Xunit;
+
+namespace StarVoders.Tests
+{
+    /// <summary>
+    /// The mod's sounds without an engine: grid occupancy as timed notes (a column bottom to top, the
+    /// grid's columns left to right by pan or by pitch), and the volumes and stepped settings over the
+    /// settings store.
+    /// </summary>
+    public class SoundTests
+    {
+        private sealed class MemoryStore : ISettingsStore
+        {
+            public readonly Dictionary<string, object> Values = new Dictionary<string, object>();
+            public bool GetBool(string key, bool d) => Values.TryGetValue(key, out var v) ? (bool)v : d;
+            public void SetBool(string key, bool value) => Values[key] = value;
+            public int GetInt(string key, int d) => Values.TryGetValue(key, out var v) ? (int)v : d;
+            public void SetInt(string key, int value) => Values[key] = value;
+            public string GetString(string key, string d) => Values.TryGetValue(key, out var v) ? (string)v : d;
+            public void SetString(string key, string value) => Values[key] = value;
+        }
+
+        // "OEEO", bottom first.
+        private static List<bool> Col(string pattern) => pattern.Select(c => c == 'O').ToList();
+
+        private static string Cues(IEnumerable<OccupancyNote> notes) =>
+            string.Concat(notes.Select(n => n.Cue == AudioCue.Occupied ? 'O' : 'E'));
+
+        [Fact]
+        public void A_column_plays_bottom_to_top_a_row_delay_apart_centred_at_one_pitch()
+        {
+            var notes = OccupancyPlan.Column(Col("OEEOEOE"), 0, 80, 0);
+            Assert.Equal("OEEOEOE", Cues(notes));
+            Assert.Equal(new[] { 0, 0.08, 0.16, 0.24, 0.32, 0.40, 0.48 }, notes.Select(n => Math.Round(n.Delay, 6)));
+            Assert.All(notes, n => Assert.Equal(0f, n.Pan));
+            Assert.All(notes, n => Assert.Equal(1f, n.Pitch));
+        }
+
+        [Fact]
+        public void A_sweep_from_the_cursor_starts_at_its_row_and_keeps_each_rows_pitch()
+        {
+            var notes = OccupancyPlan.Column(Col("OEEOEOE"), 3, 80, 2);
+            Assert.Equal("OEOE", Cues(notes));
+            Assert.Equal(0, notes[0].Delay);
+            // Row 3 (the fourth from the bottom) is six semitones up, wherever the sweep starts.
+            Assert.Equal(Math.Pow(2, 6 / 12.0), notes[0].Pitch, 4);
+        }
+
+        [Fact]
+        public void The_grid_sweeps_columns_left_to_right_panned_across_the_width()
+        {
+            var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
+            var notes = OccupancyPlan.Grid(cols, 0, 80, 500, 0, 100);
+            Assert.Equal("OEEEEO", Cues(notes));
+            Assert.Equal(new[] { 0, 0.08, 0.5, 0.58, 1.0, 1.08 }, notes.Select(n => Math.Round(n.Delay, 6)));
+            Assert.Equal(new[] { -1f, -1f, 0f, 0f, 1f, 1f }, notes.Select(n => n.Pan));
+
+            var half = OccupancyPlan.Grid(cols, 0, 80, 500, 0, 50);
+            Assert.Equal(-0.5f, half[0].Pan);
+            Assert.Equal(0.5f, half[5].Pan);
+        }
+
+        [Fact]
+        public void Columns_by_pitch_are_centred_each_higher_than_the_one_to_its_left()
+        {
+            var cols = new List<IReadOnlyList<bool>> { Col("OE"), Col("EE"), Col("EO") };
+            var notes = OccupancyPlan.Grid(cols, 0, 80, 500, 1, 100, columnSemitones: 2);
+            Assert.All(notes, n => Assert.Equal(0f, n.Pan));
+            // Column 3's top row: 2 columns of 2 semitones plus 1 row of 1.
+            Assert.Equal(Math.Pow(2, 5 / 12.0), notes[5].Pitch, 4);
+            Assert.Equal(1f, notes[0].Pitch);
+        }
+
+        [Fact]
+        public void A_one_column_grid_is_centred()
+        {
+            var notes = OccupancyPlan.Grid(new List<IReadOnlyList<bool>> { Col("OE") }, 0, 80, 500, 0, 100);
+            Assert.All(notes, n => Assert.Equal(0f, n.Pan));
+        }
+
+        [Fact]
+        public void A_sound_volume_follows_the_master_and_goes_past_100()
+        {
+            var store = new MemoryStore();
+            var volumes = new SoundVolumes(store);
+            var empty = volumes.All[(int)AudioCue.Empty];
+            for (int i = 0; i < 15; i++) empty.Adjust(1);
+            Assert.Equal(SoundVolume.MaxVolume, empty.Value);
+            Assert.Equal(2f, volumes.Gain(AudioCue.Empty));
+            for (int i = 0; i < 5; i++) volumes.Master.Adjust(-1);
+            Assert.Equal(150, empty.Value);
+            Assert.Equal(50, volumes.All[(int)AudioCue.Occupied].Value);
+
+            var reloaded = new SoundVolumes(store);
+            Assert.Equal(150, reloaded.All[(int)AudioCue.Empty].Value);
+        }
+
+        [Fact]
+        public void A_stepped_setting_clamps_and_persists()
+        {
+            var store = new MemoryStore();
+            var settings = new OccupancySettings(store);
+            Assert.Equal(80, settings.RowDelay.Value);
+            Assert.True(settings.RowDelay.Adjust(1));
+            Assert.Equal(85, settings.RowDelay.Value);
+            Assert.Equal(85, new OccupancySettings(store).RowDelay.Value);
+            for (int i = 0; i < 100; i++) settings.RowDelay.Adjust(-1);
+            Assert.Equal(20, settings.RowDelay.Value);
+            Assert.False(settings.RowDelay.Adjust(-1));
+            store.SetInt("occupancy_row_delay_ms", 9999);
+            Assert.Equal(300, settings.RowDelay.Value);
+        }
+
+        [Fact]
+        public void Cue_files_are_snake_case() => Assert.Equal("occupied", AudioCues.FileName(AudioCue.Occupied));
+    }
+}

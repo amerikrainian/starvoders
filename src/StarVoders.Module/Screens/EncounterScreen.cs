@@ -186,6 +186,9 @@ namespace StarVoders.Module.Screens
         private static string _lastZone;
         private static (int X, int Y)? _lastTile; // the cell last focused, for a target choice begun from the hand
 
+        /// <summary>The cell last focused (0-based), kept while focus is off the board; null before any.</summary>
+        public static (int X, int Y)? LastTile => _lastTile;
+
         public static ControlId TileId(int x, int y) => ControlId.Structural("fight:tile:" + x + "," + y);
 
         /// <summary>The 0-based tile the focus is on, or null off the board.</summary>
@@ -255,7 +258,12 @@ namespace StarVoders.Module.Screens
                 Announcements = new List<NodeAnnouncement> { GameNodes.LabelPart(() => CellText(x, y)) },
                 SearchText = () => FightBoard.CoordText(x, y),
                 IsSelected = () => IsMech(x, y),
-                OnFocus = () => { var tile = Tile(x, y); if (tile != null) FightState.Hover(tile); },
+                OnFocus = () =>
+                {
+                    var tile = Tile(x, y);
+                    if (tile != null) FightState.Hover(tile);
+                    Audio.OccupancySounds.Focused(x, y); // a new column plays its occupancy
+                },
                 OnActivate = () => ActivateCell(x, y),
                 Details = () => CellDetails(x, y),
                 OnSecondary = () => SayDetails(CellDetails(x, y)),
@@ -481,7 +489,11 @@ namespace StarVoders.Module.Screens
             NoChoicesUpdate();
             var on = FocusedTile();
             if (on.HasValue) _lastTile = on;
-            else _lastZone = null; // off the cells (the hand counts): the zone is named again on return
+            else
+            {
+                _lastZone = null; // off the cells (the hand counts): the zone is named again on return
+                Audio.OccupancySounds.LeftBoard(); // and the column's occupancy played again
+            }
         }
 
         private static readonly ControlId SkipRepeatsId = ControlId.Structural("fight:skiprepeats");

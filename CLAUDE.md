@@ -84,7 +84,15 @@ a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includ
   Prism, `HostPump`, `ModuleLoader`, dev server), **Core** (netstandard2.0, reloadable, engine-free,
   unit-tested: key graph, navigator, buffers, input manager, screens, strings), **Module** (net6.0,
   reloadable, engine-coupled: day-to-day work), **Patcher** (net6.0, preloader, permanent), **Tests**.
-- Not ported from guildrun yet: audio cues, `NumberEdit` (the mod's own number entry),
+- Sounds (guildrun's cue engine, `Module/Audio/FmodCueEngine`): Unity's audio is off in this game, so
+  cues play through the game's FMOD (`RuntimeManager.CoreSystem`, our channel group under
+  `bus:/Master/SFX`, never unlocked), one WAV per `Core/Audio/AudioCue` in the plugin's `audio` folder
+  (from `audio/cues`, rendered by `tools/python/audio_samples.py` from `audio/sounds.json` through
+  `tools/python/sfxr.py`); a batch's cues are scheduled on the group's DSP clock (`setDelay`). Grid
+  occupancy (`Module/Audio/OccupancySounds`, notes from Core `OccupancyPlan`, tested): G the column,
+  Shift+G the grid, a column on crossing columns, the grid when the player's turn starts; the mod
+  menu's Sounds screen holds the volumes (0-200) and occupancy settings.
+- Not ported from guildrun yet: `NumberEdit` (the mod's own number entry),
   `ScreenAudit`, `BufferKeys`' guildrun buffer names (hero, quest... are placeholders).
 - Buffers (`UI/Buffers`, sources in `Fight/FightBuffers`): ui (the focused control), hand (each card
   as its focus reads it: `GraphAnnouncer.LeafText` over `EncounterScreen.Card`), player (in a fight:

@@ -1,0 +1,27 @@
+{
+  "_comment": "sfxr parameters (tools/python/sfxr.py; names as sfxr's .sfs fields without p_). level = the RMS (average loudness) every instance is scaled to before mixing, so fresh noise puffs match each other.",
+  "empty": {
+    "level": 0.115,
+    "sfxr": {
+      "wave_type": "noise",
+      "base_freq": 0.3,
+      "env_attack": 0.09,
+      "env_sustain": 0.03,
+      "env_decay": 0.31,
+      "lpf_freq": 0.25,
+      "lpf_resonance": 0.1,
+      "hpf_freq": 0.15
+    }
+  },
+  "occupied": {
+    "level": 0.16,
+    "sfxr": {
+      "wave_type": "sine",
+      "base_freq": 0.35,
+      "env_attack": 0.02,
+      "env_sustain": 0.08,
+      "env_punch": 0.25,
+      "env_decay": 0.33
+    }
+  }
+}

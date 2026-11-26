@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using StarVoders.Core.Audio;
 using StarVoders.Core.Graph;
 using StarVoders.Core.Input;
 using StarVoders.Core.Screens;
@@ -13,7 +14,7 @@ using Screen = StarVoders.Core.Screens.Screen;
 namespace StarVoders.Module.Screens
 {
     /// <summary>
-    /// The mod's own menu (Ctrl+Shift+M anywhere): Settings, Key help, Close. An overlay above every
+    /// The mod's own menu (Ctrl+Shift+M anywhere): Settings, Sounds, Key help, Close. An overlay above every
     /// game screen, opened and closed by a static flag the poll picks up; its sub-screens are child
     /// screens, so Escape walks back through them to the game.
     /// </summary>
@@ -42,6 +43,7 @@ namespace StarVoders.Module.Screens
             // name itself (Toggle), so a label would say it a second time.
             b.PushContext(null, null);
             b.AddItem(ControlId.Structural("modmenu:settings"), GameNodes.Button(() => Strings.ModSettings, () => PushChild(new ModSettingsScreen())));
+            b.AddItem(ControlId.Structural("modmenu:sounds"), GameNodes.Button(() => Strings.ModSounds, () => PushChild(new ModSoundsScreen())));
             b.AddItem(ControlId.Structural("modmenu:keys"), GameNodes.Button(() => Strings.ModKeyHelp, () => PushChild(new KeyHelpScreen())));
             b.AddItem(ControlId.Structural("modmenu:close"), GameNodes.Button(() => Strings.ModClose, Close));
             b.PopContext();
@@ -79,7 +81,7 @@ namespace StarVoders.Module.Screens
             b.PopContext();
         }
 
-        private static NodeVtable Toggle(Func<string> label, Func<bool> get, Action<bool> set)
+        internal static NodeVtable Toggle(Func<string> label, Func<bool> get, Action<bool> set)
         {
             return new NodeVtable
             {
@@ -96,6 +98,100 @@ namespace StarVoders.Module.Screens
                     set(next);
                     Core.Speech.Say(next ? Strings.StateOn : Strings.StateOff, interrupt: true);
                 },
+            };
+        }
+
+        public override IEnumerable<ElementAction> GetActions()
+        {
+            yield return new ElementAction(ActionIds.Back, Strings.Get("bind.ui.back"), _ => ParentScreen?.RemoveChild(this));
+        }
+    }
+
+    /// <summary>
+    /// The mod's sounds (a child of the mod menu; guildrun's): Volumes (the master, then each sound,
+    /// 0 to 200 percent; Left and Right step them, Enter plays the sound once, the master the grid),
+    /// then Grid occupancy (toggles: a column as the cursor crosses columns, sweeps from the cursor's
+    /// row, the full grid as the player's turn starts, pickups as occupied; sliders: the delay between
+    /// rows and between columns, the pitch rise per row, the stereo width; columns by pitch instead of
+    /// stereo, and the pitch rise per column; Enter on a slider plays the
+    /// full grid with it: the live board in a fight, else a made-up one). Alt+Up and Alt+Down move
+    /// between the two sections. Values live in the host's settings store.
+    /// </summary>
+    public sealed class ModSoundsScreen : Screen
+    {
+        public override string Key => "mod.sounds";
+        public override bool KeptThroughTransitions => true;
+        public override string ScreenName => Strings.ModSounds;
+        public override bool IsActive() => false; // only ever a child of the mod menu
+
+        public override void Build(GraphBuilder b)
+        {
+            var sounds = ModuleMain.Sounds;
+            var occupancy = ModuleMain.Occupancy;
+            var engine = ModuleMain.CueEngine;
+            if (sounds == null || occupancy == null || engine == null)
+            {
+                b.PushContext(null, null);
+                b.AddItem(ControlId.Structural("modsounds:none"), GameNodes.Text(() => Strings.NoTooltip));
+                b.PopContext();
+                return;
+            }
+            Action grid = Audio.OccupancySounds.Preview;
+
+            b.SetRegion("volumes");
+            b.PushContext(Strings.SoundVolumes);
+            b.AddItem(ControlId.Structural("modsounds:master"), Slider(() => Strings.SoundMaster,
+                () => Strings.Percent(sounds.Master.Value), sounds.Master.Adjust, grid));
+            foreach (var volume in sounds.All)
+            {
+                var v = volume;
+                b.AddItem(ControlId.Structural("modsounds:volume:" + AudioCues.FileName(v.Cue)), Slider(() => Strings.SoundCue(AudioCues.FileName(v.Cue)),
+                    () => Strings.Percent(v.Value), v.Adjust, () => Audio.OccupancySounds.PlayOne(v.Cue)));
+            }
+            b.PopContext();
+
+            b.SetRegion("occupancy");
+            b.PushContext(Strings.OccupancySection);
+            b.AddItem(ControlId.Structural("modsounds:cross"), ModSettingsScreen.Toggle(() => Strings.OccupancyOnCross,
+                () => occupancy.OnColumnCross, v => occupancy.OnColumnCross = v));
+            b.AddItem(ControlId.Structural("modsounds:fromcursor"), ModSettingsScreen.Toggle(() => Strings.OccupancyFromCursor,
+                () => occupancy.FromCursor, v => occupancy.FromCursor = v));
+            b.AddItem(ControlId.Structural("modsounds:turnstart"), ModSettingsScreen.Toggle(() => Strings.OccupancyTurnStart,
+                () => occupancy.OnTurnStart, v => occupancy.OnTurnStart = v));
+            b.AddItem(ControlId.Structural("modsounds:pickups"), ModSettingsScreen.Toggle(() => Strings.OccupancyPickups,
+                () => occupancy.Pickups, v => occupancy.Pickups = v));
+            b.AddItem(ControlId.Structural("modsounds:rowdelay"), Slider(() => Strings.OccupancyRowDelay,
+                () => Strings.Milliseconds(occupancy.RowDelay.Value), occupancy.RowDelay.Adjust, grid));
+            b.AddItem(ControlId.Structural("modsounds:columndelay"), Slider(() => Strings.OccupancyColumnDelay,
+                () => Strings.Milliseconds(occupancy.ColumnDelay.Value), occupancy.ColumnDelay.Adjust, grid));
+            b.AddItem(ControlId.Structural("modsounds:pitch"), Slider(() => Strings.OccupancyPitch,
+                () => Strings.Semitones(occupancy.PitchStep.Value), occupancy.PitchStep.Adjust, grid));
+            b.AddItem(ControlId.Structural("modsounds:width"), Slider(() => Strings.OccupancyWidth,
+                () => Strings.Percent(occupancy.Width.Value), occupancy.Width.Adjust, grid));
+            b.AddItem(ControlId.Structural("modsounds:columnpitch"), ModSettingsScreen.Toggle(() => Strings.OccupancyColumnPitch,
+                () => occupancy.ColumnsByPitch, v => occupancy.ColumnsByPitch = v));
+            b.AddItem(ControlId.Structural("modsounds:columnpitchstep"), Slider(() => Strings.OccupancyColumnPitchStep,
+                () => Strings.Semitones(occupancy.ColumnPitchStep.Value), occupancy.ColumnPitchStep.Adjust, grid));
+            b.PopContext();
+            b.SetRegion(null);
+        }
+
+        // A slider: Left and Right step it (five steps with the large step), the value read at once;
+        // Enter plays what it sets.
+        private static NodeVtable Slider(Func<string> label, Func<string> value, Func<int, bool> adjust, Action preview)
+        {
+            return new NodeVtable
+            {
+                ControlType = ControlTypes.Slider,
+                Announcements = new List<NodeAnnouncement>
+                {
+                    GameNodes.LabelPart(label),
+                    new NodeAnnouncement(value, live: true, kind: AnnouncementKinds.Value),
+                },
+                SearchText = label,
+                OnAdjust = (sign, large) => { for (int i = 0; i < (large ? 5 : 1); i++) adjust(sign); },
+                StateText = value,
+                OnActivate = preview,
             };
         }
 
