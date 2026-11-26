@@ -365,10 +365,13 @@ namespace StarVoders.Core.Strings
             D("sound.volumes", "Volumes"),
             D("sound.master", "Master volume"),
             D("sound.cue.empty", "Empty tile"),
-            D("sound.cue.occupied", "Occupied tile"),
-            // A tile (or card) the running choice takes; a tile an invader will strike.
+            // One of the player's own on a tile (the mech, a bomb, a Summon); an invader on a tile; a tile
+            // (or card) the running choice takes; a tile an invader will strike; a tile about to be struck.
+            D("sound.cue.ally", "Ally"),
+            D("sound.cue.invader", "Invader"),
             D("sound.cue.target", "Target"),
             D("sound.cue.danger", "Danger"),
+            D("sound.cue.strike", "Strike"),
             // Its Grid occupancy section: each board tile of a column as a sound, swept bottom to top.
             // Toggles: a column played as the cursor enters it; sweeps starting at the cursor's row
             // instead of the bottom; the whole grid played as the player's turn starts; card pickups
@@ -381,8 +384,9 @@ namespace StarVoders.Core.Strings
             D("occupancy.from_cursor", "Sweeps start at the cursor's row"),
             D("occupancy.turn_start", "Play the full grid when your turn starts"),
             D("occupancy.pickups", "Pickups count as occupied"),
-            // On: each move on the board plays the tile's sound (empty, occupied, target, danger), and
-            // the target and danger sounds replace the words "target" and "targeted by".
+            // On: a move on the board plays the tile's sound (empty, ally, invader, target, strike,
+            // danger) when it differs from the last, and those sounds replace the words "target",
+            // "strike" and "targeted by".
             D("occupancy.step_sounds", "Play the tile's sound as you move"),
             // A sweep ends at the column's highest occupied tile instead of running on to the top.
             D("occupancy.stop_at_last", "Stop at the last occupied tile"),

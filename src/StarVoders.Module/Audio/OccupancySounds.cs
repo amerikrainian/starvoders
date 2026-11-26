@@ -10,10 +10,11 @@ using FightState = StarVoders.Module.Fight.Fight;
 namespace StarVoders.Module.Audio
 {
     /// <summary>
-    /// Grid occupancy: each tile of a column as a sound, empty (a soft puff) or occupied (a blip: any
-    /// entity, the mech, an invader, a bomb, a Summon; a card pickup when the setting says so), with the
-    /// target bell where the running selection takes the tile and the danger siren where an invader will
-    /// strike it (alone on an empty tile, with the blip on an occupied one), swept
+    /// Grid occupancy: each tile of a column as a sound, empty (a soft puff), an invader (a buzzy blip)
+    /// or one of the player's own (a sine blip: the mech, a bomb, a Summon, any entity not an invader; a
+    /// card pickup when the setting says so), with the target bell where the running selection takes the
+    /// tile, the strike crack where the game marks it about to be struck, and the danger siren where an
+    /// invader will strike it (alone on an empty tile, with the blip on an occupied one), swept
     /// bottom to top with the sounds overlapping (<see cref="OccupancyPlan"/>). A column plays centred:
     /// on its key, and as the board cursor enters a new column; the full grid sweeps the columns left
     /// to right as one stream (each column's first note a row step after the last note before it), panned left to right: on its key, and when the player's turn starts. With columns by
@@ -135,9 +136,9 @@ namespace StarVoders.Module.Audio
         // ---- the sounds screen's preview ----
 
         // A made-up board for the preview outside a fight: five columns of seven rows, bottom first
-        // (O occupied, D danger, X occupied and in danger, E empty): a Shooter on the middle column
-        // firing down at the mech.
-        private static readonly string[] DemoColumns = { "OEEOEOE", "EEEEOOO", "XDDDDOE", "EEEOEEE", "OEEEEEO" };
+        // (A the mech, I an invader, D danger, X the mech in danger, E empty): a Shooter on the middle
+        // column firing down at the mech.
+        private static readonly string[] DemoColumns = { "AEEIEIE", "EEEEIII", "XDDDDIE", "EEEIEEE", "EEEEEEI" };
 
         /// <summary>The full grid as the settings now make it: the live board in a fight, else a made-up one.</summary>
         public static void Preview()
@@ -150,8 +151,8 @@ namespace StarVoders.Module.Audio
             {
                 var col = new List<TileMark>();
                 foreach (char ch in pattern)
-                    col.Add(ch == 'O' ? TileMark.Occupied : ch == 'D' ? TileMark.Danger
-                        : ch == 'X' ? TileMark.Occupied | TileMark.Danger : TileMark.None);
+                    col.Add(ch == 'A' ? TileMark.Ally : ch == 'I' ? TileMark.Invader : ch == 'D' ? TileMark.Danger
+                        : ch == 'X' ? TileMark.Ally | TileMark.Danger : TileMark.None);
                 columns.Add(col);
             }
             Play(OccupancyPlan.Grid(columns, 0, settings.RowDelay.Value,
@@ -188,13 +189,17 @@ namespace StarVoders.Module.Audio
             return col;
         }
 
-        // Occupied when something stands there (or a pickup lies there, when pickups count); target when
-        // the running selection takes it; danger when an invader will strike it.
+        // Invader or ally by what stands there (anything not an invader is the player's: the mech, a bomb,
+        // a Summon; a pickup when pickups count); target when the running selection takes it; strike when
+        // the game marks it about to be struck; danger when an invader will strike it.
         private static TileMark Mark(FightBoard board, OccupancySettings settings, int x, int y)
         {
             var mark = TileMark.None;
-            if (board.At(x, y) != null || (settings.Pickups && board.HasPickup(x, y))) mark |= TileMark.Occupied;
+            var entity = board.At(x, y);
+            if (entity != null) mark |= entity.TryCast<StarVaders.EnemyEntityModel>() != null ? TileMark.Invader : TileMark.Ally;
+            else if (settings.Pickups && board.HasPickup(x, y)) mark |= TileMark.Ally;
             if (EncounterScreen.IsTarget(x, y)) mark |= TileMark.Target;
+            if (FightState.Strike(x, y)) mark |= TileMark.Strike;
             if (board.Attackers(x, y).Count > 0) mark |= TileMark.Danger;
             return mark;
         }

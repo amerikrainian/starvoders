@@ -94,11 +94,13 @@ a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includ
   menu's Sounds screen holds the volumes (0-200) and occupancy's sliders (the row delay is the only
   timing: the grid's columns run on at the row step), its Grid occupancy screen the toggles (stopping
   at the last occupied tile is on by default: an empty column then plays nothing).
-  Target and danger cues (`AudioCue.Target`, a bell; `Danger`, a short siren): a tile's `TileMark`s
-  (occupied, target while a selection takes it, danger while `Attackers` is non-empty) each play in its
-  sweep slot (an empty tile's puff only when it has none), and as a step's sound they replace the words: a cell no
-  longer says "target" or "targeted by ..." (the attackers stay in its details), a hand-choice card no
-  longer says "target". A move on the board plays the tile's sweep sound only when the tile's state
+  Tile cues: `Ally` (a sine blip: the mech, a bomb, a Summon, any entity not an `EnemyEntityModel`; a
+  pickup when pickups count), `Invader` (a sawtooth blip), `Target` (a bell), `Danger` (a short siren),
+  `Strike` (a noise crack, the game's strike mark: `Fight.Strike`). A tile's `TileMark`s (ally or invader,
+  target while a selection takes it, strike, danger while `Attackers` is non-empty) each play in its sweep
+  slot (an empty tile's puff only when it has none), and as a step's sound they replace the words: a cell
+  no longer says "target", "strike" or "targeted by ..." (the attackers stay in its details), a
+  hand-choice card no longer says "target". A move on the board plays the tile's sweep sound only when the tile's state
   (`OccupancyPlan.StepKey`: its marks and its attackers) differs from the last step's, so alike tiles are
   silent (`OccupancySettings.StepSounds`, on by default; off, moves are silent and the words come back);
   a move into a new column while crossing columns plays that column instead; a hand-choice card plays the

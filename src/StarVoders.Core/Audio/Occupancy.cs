@@ -43,15 +43,18 @@ namespace StarVoders.Core.Audio
         private int Clamp(int v) => v < Min ? Min : v > Max ? Max : v;
     }
 
-    /// <summary>What a tile holds for the sweep: anything standing there, the running selection taking
-    /// it, an invader about to strike it. None is an empty, unmarked tile (the puff).</summary>
+    /// <summary>What a tile holds for the sweep: one of the player's own or an invader standing there,
+    /// the running selection taking it, an invader about to strike it, the game's strike mark on it.
+    /// None is an empty, unmarked tile (the puff).</summary>
     [Flags]
     public enum TileMark
     {
         None = 0,
-        Occupied = 1,
+        Ally = 1,
         Target = 2,
         Danger = 4,
+        Invader = 8,
+        Strike = 16,
     }
 
     /// <summary>
@@ -125,7 +128,7 @@ namespace StarVoders.Core.Audio
             set => _store.SetBool("occupancy_step_sounds", value);
         }
 
-        /// <summary>A card pickup lying on a tile counts as occupied.</summary>
+        /// <summary>A card pickup lying on a tile counts as occupied (it plays the ally sound).</summary>
         public bool Pickups
         {
             get => _store.GetBool("occupancy_pickups", false);
@@ -159,8 +162,8 @@ namespace StarVoders.Core.Audio
     /// <summary>
     /// Grid occupancy as notes, engine-free. A column is swept bottom to top (or from a given row up),
     /// one slot per tile, each <c>rowDelayMs</c> after the one below: the puff for an empty tile, else a
-    /// note for each of its marks at once (occupied, target, danger: an occupied tile in danger plays the
-    /// blip and the siren together); the full grid sweeps the columns
+    /// note for each of its marks at once (ally or invader, target, strike, danger: the mech in danger
+    /// plays its blip and the siren together); the full grid sweeps the columns
     /// left to right as one stream: each column's first note one row step after the last note of the
     /// one before, panned from left to right across
     /// the stereo width, or, with <c>columnSemitones</c> above 0, all centred and each column that many
@@ -173,8 +176,10 @@ namespace StarVoders.Core.Audio
         public static IEnumerable<AudioCue> Cues(TileMark mark)
         {
             if (mark == TileMark.None) { yield return AudioCue.Empty; yield break; }
-            if ((mark & TileMark.Occupied) != 0) yield return AudioCue.Occupied;
+            if ((mark & TileMark.Ally) != 0) yield return AudioCue.Ally;
+            if ((mark & TileMark.Invader) != 0) yield return AudioCue.Invader;
             if ((mark & TileMark.Target) != 0) yield return AudioCue.Target;
+            if ((mark & TileMark.Strike) != 0) yield return AudioCue.Strike;
             if ((mark & TileMark.Danger) != 0) yield return AudioCue.Danger;
         }
 
@@ -213,7 +218,7 @@ namespace StarVoders.Core.Audio
         /// <summary>The notes of one column. <paramref name="tiles"/> is bottom row first;
         /// <paramref name="fromRow"/> the first row swept (0 = the bottom); <paramref name="baseSemitones"/>
         /// raises the whole column; <paramref name="stopAtLastOccupied"/> ends the sweep at the highest
-        /// marked tile swept (occupied, target or danger; no notes when there is none).</summary>
+        /// marked tile swept (an ally or invader, target, strike or danger; no notes when there is none).</summary>
         public static List<OccupancyNote> Column(IReadOnlyList<TileMark> tiles, int fromRow, int rowDelayMs, int pitchSemitones,
             float pan = 0f, double start = 0, int baseSemitones = 0, bool stopAtLastOccupied = false)
         {

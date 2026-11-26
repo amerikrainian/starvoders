@@ -13,7 +13,7 @@
       "hpf_freq": 0.15
     }
   },
-  "occupied": {
+  "ally": {
     "level": 0.16,
     "sfxr": {
       "wave_type": "sine",
@@ -22,6 +22,18 @@
       "env_sustain": 0.08,
       "env_punch": 0.25,
       "env_decay": 0.33
+    }
+  },
+  "invader": {
+    "level": 0.14,
+    "sfxr": {
+      "wave_type": "sawtooth",
+      "base_freq": 0.3,
+      "lpf_freq": 0.55,
+      "env_attack": 0.01,
+      "env_sustain": 0.08,
+      "env_punch": 0.3,
+      "env_decay": 0.24
     }
   },
   "target": {
@@ -49,6 +61,18 @@
       "env_attack": 0.01,
       "env_sustain": 0.14,
       "env_decay": 0.22
+    }
+  },
+  "strike": {
+    "level": 0.13,
+    "sfxr": {
+      "wave_type": "noise",
+      "base_freq": 0.6,
+      "hpf_freq": 0.2,
+      "env_attack": 0.0,
+      "env_sustain": 0.03,
+      "env_punch": 0.6,
+      "env_decay": 0.17
     }
   }
 }

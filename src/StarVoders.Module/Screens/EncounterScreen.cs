@@ -276,11 +276,11 @@ namespace StarVoders.Module.Screens
             // The mech's cell answers a Swift move's Skip Move: said first, as the game's own words.
             var skip = SkipMoveAt(x, y);
             if (skip != null) parts.Add(ViewNodes.Label(skip) ?? Strings.FightTarget);
-            // Target and danger are the step's sounds (OccupancySounds.Focused), unless moves are silent;
+            // Target, strike and danger are the step's sounds (OccupancySounds.Focused), unless moves are silent;
             // danger's attackers stay in the details either way.
             bool words = !Audio.OccupancySounds.StepSounds;
             if (words && IsTarget(x, y)) parts.Add(Strings.FightTarget);
-            if (FightState.Strike(x, y)) parts.Add(Strings.FightStrike);
+            if (words && FightState.Strike(x, y)) parts.Add(Strings.FightStrike);
             string contents = CellContents(FightBoard.Read(), x, y, danger: words);
             if (contents != null) parts.Add(contents);
             parts.Add(FightBoard.CoordText(x, y));

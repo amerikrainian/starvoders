@@ -25,15 +25,17 @@ namespace StarVoders.Tests
             public void SetString(string key, string value) => Values[key] = value;
         }
 
-        // Bottom first: E empty, O occupied, T target, D danger, Y occupied and target, X occupied and in danger.
+        // Bottom first: E empty, O an ally, I an invader, T target, D danger, S strike, Y an ally and
+        // target, X an ally in danger, K an invader struck.
         private static List<TileMark> Col(string pattern) => pattern.Select(c =>
-            c == 'O' ? TileMark.Occupied : c == 'T' ? TileMark.Target : c == 'D' ? TileMark.Danger
-            : c == 'Y' ? TileMark.Occupied | TileMark.Target : c == 'X' ? TileMark.Occupied | TileMark.Danger
-            : TileMark.None).ToList();
+            c == 'O' ? TileMark.Ally : c == 'I' ? TileMark.Invader : c == 'T' ? TileMark.Target
+            : c == 'D' ? TileMark.Danger : c == 'S' ? TileMark.Strike
+            : c == 'Y' ? TileMark.Ally | TileMark.Target : c == 'X' ? TileMark.Ally | TileMark.Danger
+            : c == 'K' ? TileMark.Invader | TileMark.Strike : TileMark.None).ToList();
 
-        // Each note as its sound's letter: E O T D.
+        // Each note as its sound's letter, in AudioCue order: E O I T D S.
         private static string Cues(IEnumerable<OccupancyNote> notes) =>
-            string.Concat(notes.Select(n => "EOTD"[(int)n.Cue]));
+            string.Concat(notes.Select(n => "EOITDS"[(int)n.Cue]));
 
         [Fact]
         public void A_column_plays_bottom_to_top_a_row_delay_apart_centred_at_one_pitch()
@@ -135,7 +137,7 @@ namespace StarVoders.Tests
         [Fact]
         public void A_step_plays_its_tile_as_the_sweep_slot_would_at_its_rows_pitch()
         {
-            var notes = OccupancyPlan.Tile(TileMark.Occupied | TileMark.Danger, 3, 2, baseSemitones: 4);
+            var notes = OccupancyPlan.Tile(TileMark.Ally | TileMark.Danger, 3, 2, baseSemitones: 4);
             Assert.Equal("OD", Cues(notes));
             Assert.All(notes, n => Assert.Equal(0, n.Delay));
             Assert.All(notes, n => Assert.Equal(0f, n.Pan));
@@ -151,7 +153,7 @@ namespace StarVoders.Tests
             string last = Key(TileMark.None, "");
             var steps = new List<string>();
             foreach (var (mark, danger) in new[] { (TileMark.Danger, "Shooter 2"), (TileMark.Danger, "Shooter 2"),
-                (TileMark.Occupied | TileMark.Danger, "Shooter 2"), (TileMark.Danger, "Shooter 2"),
+                (TileMark.Ally | TileMark.Danger, "Shooter 2"), (TileMark.Danger, "Shooter 2"),
                 (TileMark.Danger, "Shooter 2|Shooter 3"), (TileMark.None, ""), (TileMark.None, "") })
             {
                 string key = Key(mark, danger);
@@ -168,6 +170,13 @@ namespace StarVoders.Tests
             string key = OccupancyPlan.StepKey("tile", TileMark.None, null);
             Assert.Equal("E", Cues(OccupancyPlan.Step(TileMark.None, key, null, 0, 0)));
             Assert.NotEqual(OccupancyPlan.StepKey("card", TileMark.None, null), key);
+        }
+
+        [Fact]
+        public void Invaders_and_strikes_play_their_own_sounds()
+        {
+            Assert.Equal("OEISIS", Cues(OccupancyPlan.Column(Col("OEISK"), 0, 80, 0)));
+            Assert.Equal("OEIS", Cues(OccupancyPlan.Column(Col("OEISEE"), 0, 80, 0, stopAtLastOccupied: true)));
         }
 
         [Fact]
@@ -188,7 +197,7 @@ namespace StarVoders.Tests
             Assert.Equal(2f, volumes.Gain(AudioCue.Empty));
             for (int i = 0; i < 5; i++) volumes.Master.Adjust(-1);
             Assert.Equal(150, empty.Value);
-            Assert.Equal(50, volumes.All[(int)AudioCue.Occupied].Value);
+            Assert.Equal(50, volumes.All[(int)AudioCue.Ally].Value);
 
             var reloaded = new SoundVolumes(store);
             Assert.Equal(150, reloaded.All[(int)AudioCue.Empty].Value);
@@ -211,6 +220,6 @@ namespace StarVoders.Tests
         }
 
         [Fact]
-        public void Cue_files_are_snake_case() => Assert.Equal("occupied", AudioCues.FileName(AudioCue.Occupied));
+        public void Cue_files_are_snake_case() => Assert.Equal("ally", AudioCues.FileName(AudioCue.Ally));
     }
 }
