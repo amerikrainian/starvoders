@@ -1,7 +1,7 @@
 """Renders audio/sounds.json: each sound into audio/cues (the files the mod ships and plays, one per
 cue, named as the mod's AudioCue in snake case), then demo columns into audio/samples.
 
-A column is read bottom to top, one sound per cell (E = empty, O = occupied), each cell's slot a fixed
+A column is read bottom to top, one sound per cell (E = empty, O = an ally), each cell's slot a fixed
 stagger after the one below it, the stagger shorter than the sounds so they overlap. Each sound starts
 its attack time before its slot, so it is at full volume on the slot: a sound that swells in, started on
 the slot, is heard late, and the column stumbles. No pitch yet: every cell's sound is the same, except
@@ -63,7 +63,7 @@ def attack_samples(defs: dict, name: str) -> int:
 
 def column(defs: dict, pattern: str, stagger_ms: int) -> list[float]:
     step = round(sfxr.RATE * stagger_ms / 1000)
-    names = ["occupied" if c == "O" else "empty" for c in pattern]
+    names = ["ally" if c == "O" else "empty" for c in pattern]
     parts = [sound(defs, n, seed=100 + i) for i, n in enumerate(names)]
     leads = [attack_samples(defs, n) for n in names]
     pad = max(leads)
