@@ -83,21 +83,20 @@ namespace StarVoders.Module.Screens
 
         internal static NodeVtable Toggle(Func<string> label, Func<bool> get, Action<bool> set)
         {
+            Func<string> state = () => get() ? Strings.StateOn : Strings.StateOff;
             return new NodeVtable
             {
                 ControlType = ControlTypes.Toggle,
                 Announcements = new List<NodeAnnouncement>
                 {
                     GameNodes.LabelPart(label),
-                    new NodeAnnouncement(() => get() ? Strings.StateOn : Strings.StateOff, live: true, kind: AnnouncementKinds.Value),
+                    new NodeAnnouncement(state, live: true, kind: AnnouncementKinds.Value),
                 },
                 SearchText = label,
-                OnActivate = () =>
-                {
-                    bool next = !get();
-                    set(next);
-                    Core.Speech.Say(next ? Strings.StateOn : Strings.StateOff, interrupt: true);
-                },
+                OnActivate = () => set(!get()),
+                // The navigator says the new state at once and rebaselines the live watch; saying it here
+                // as well had the live value repeat it.
+                StateText = state,
             };
         }
 
