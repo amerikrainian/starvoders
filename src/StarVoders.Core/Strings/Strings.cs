@@ -388,6 +388,7 @@ namespace StarVoders.Core.Strings
             // danger) when it differs from the last, and those sounds replace the words "target",
             // "strike" and "targeted by".
             D("occupancy.step_sounds", "Play the tile's sound as you move"),
+            D("occupancy.step_on_change", "Tile sounds only when the tile changes"),
             // A sweep ends at the column's highest occupied tile instead of running on to the top.
             D("occupancy.stop_at_last", "Stop at the last occupied tile"),
             D("occupancy.row_delay", "Delay between rows"),
@@ -766,6 +767,7 @@ namespace StarVoders.Core.Strings
         public static string OccupancyTurnStart => Get("occupancy.turn_start");
         public static string OccupancyPickups => Get("occupancy.pickups");
         public static string OccupancyStepSounds => Get("occupancy.step_sounds");
+        public static string OccupancyStepOnChange => Get("occupancy.step_on_change");
         public static string OccupancyStopAtLast => Get("occupancy.stop_at_last");
         public static string OccupancyRowDelay => Get("occupancy.row_delay");
         public static string OccupancyPitch => Get("occupancy.pitch");

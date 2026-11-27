@@ -117,8 +117,8 @@ namespace StarVoders.Core.Audio
         }
 
         /// <summary>A move on the board plays the tile's sound as a sweep would (the puff, the blip, the
-        /// bell, the siren) when the tile differs from the one before (what it holds, whether it is a
-        /// target, who strikes it): moving across alike tiles is silent. Those sounds stand in for the
+        /// bell, the siren), on every tile, or with <see cref="StepOnChangeOnly"/> only when the tile differs
+        /// from the one before. Those sounds stand in for the
         /// words "target" and "targeted by" on a cell ("target" on a hand card in a choice among them,
         /// which plays the bell, or the puff on leaving the targets). Off, moves are silent and the words are
         /// said. On by default. Sweeps play every sound either way.</summary>
@@ -126,6 +126,15 @@ namespace StarVoders.Core.Audio
         {
             get => _store.GetBool("occupancy_step_sounds", true);
             set => _store.SetBool("occupancy_step_sounds", value);
+        }
+
+        /// <summary>A step plays only when the tile differs from the last step's (what it holds, whether it
+        /// is a target, who strikes it): moving across alike tiles is silent. Off by default: every step
+        /// plays its tile.</summary>
+        public bool StepOnChangeOnly
+        {
+            get => _store.GetBool("occupancy_step_on_change", false);
+            set => _store.SetBool("occupancy_step_on_change", value);
         }
 
         /// <summary>A card pickup lying on a tile counts as occupied (it plays the ally sound).</summary>
@@ -203,15 +212,15 @@ namespace StarVoders.Core.Audio
             kind + "|" + (int)mark + "|" + (danger ?? "");
 
         /// <summary>
-        /// A step's sounds: the tile's full sweep sound (<see cref="Tile"/>) when its state
-        /// (<see cref="StepKey"/>) differs from the last step's (<paramref name="lastKey"/>; null =
-        /// unknown, so it plays), else nothing. Moving across tiles that are alike is silent, and each
-        /// change says what the new tile holds.
+        /// A step's sounds: the tile's full sweep sound (<see cref="Tile"/>), or, with
+        /// <paramref name="onChangeOnly"/>, only when its state (<see cref="StepKey"/>) differs from the last
+        /// step's (<paramref name="lastKey"/>; null = unknown, so it plays), else nothing: moving across tiles
+        /// that are alike is silent, and each change says what the new tile holds.
         /// </summary>
         public static List<OccupancyNote> Step(TileMark mark, string key, string lastKey, int row, int pitchSemitones,
-            int baseSemitones = 0)
+            int baseSemitones = 0, bool onChangeOnly = true)
         {
-            if (key == lastKey) return new List<OccupancyNote>();
+            if (onChangeOnly && key == lastKey) return new List<OccupancyNote>();
             return Tile(mark, row, pitchSemitones, baseSemitones);
         }
 

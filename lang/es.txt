@@ -315,3 +315,4 @@ occupancy.stop_at_last=Parar en la última casilla ocupada
 sound.cue.target=Objetivo
 sound.cue.danger=Peligro
 occupancy.step_sounds=Reproducir el sonido de la casilla al moverte
+occupancy.step_on_change=Sonido de la casilla solo cuando cambia

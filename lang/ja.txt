@@ -315,3 +315,4 @@ occupancy.stop_at_last=最後の埋まっているマスで止める
 sound.cue.target=ターゲット
 sound.cue.danger=危険
 occupancy.step_sounds=移動時にマスの音を再生
+occupancy.step_on_change=マスが変わったときだけマスの音を再生

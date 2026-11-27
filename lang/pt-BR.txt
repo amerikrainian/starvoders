@@ -315,3 +315,4 @@ occupancy.stop_at_last=Parar na última casa ocupada
 sound.cue.target=Alvo
 sound.cue.danger=Perigo
 occupancy.step_sounds=Tocar o som da casa ao se mover
+occupancy.step_on_change=Som da casa só quando ela muda

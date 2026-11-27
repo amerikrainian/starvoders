@@ -220,6 +220,8 @@ namespace StarVoders.Module.Screens
                 () => occupancy.StopAtLastOccupied, v => occupancy.StopAtLastOccupied = v));
             b.AddItem(ControlId.Structural("modoccupancy:stepsounds"), ModSettingsScreen.Toggle(() => Strings.OccupancyStepSounds,
                 () => occupancy.StepSounds, v => occupancy.StepSounds = v));
+            b.AddItem(ControlId.Structural("modoccupancy:steponchange"), ModSettingsScreen.Toggle(() => Strings.OccupancyStepOnChange,
+                () => occupancy.StepOnChangeOnly, v => occupancy.StepOnChangeOnly = v));
             b.AddItem(ControlId.Structural("modoccupancy:pickups"), ModSettingsScreen.Toggle(() => Strings.OccupancyPickups,
                 () => occupancy.Pickups, v => occupancy.Pickups = v));
             b.AddItem(ControlId.Structural("modoccupancy:columnpitch"), ModSettingsScreen.Toggle(() => Strings.OccupancyColumnPitch,

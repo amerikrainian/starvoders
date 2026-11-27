@@ -315,3 +315,4 @@ occupancy.stop_at_last=S'arrêter à la dernière case occupée
 sound.cue.target=Cible
 sound.cue.danger=Danger
 occupancy.step_sounds=Jouer le son de la case en se déplaçant
+occupancy.step_on_change=Son de la case seulement quand elle change

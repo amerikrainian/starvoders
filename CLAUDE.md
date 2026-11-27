@@ -100,11 +100,12 @@ a push to main touching `docs_src` or `CHANGELOG.md` (the change log page includ
   target while a selection takes it, strike, danger while `Attackers` is non-empty) each play in its sweep
   slot (an empty tile's puff only when it has none), and as a step's sound they replace the words: a cell
   no longer says "target", "strike" or "targeted by ..." (the attackers stay in its details), a
-  hand-choice card no longer says "target". A move on the board plays the tile's sweep sound only when the tile's state
-  (`OccupancyPlan.StepKey`: its marks and its attackers) differs from the last step's, so alike tiles are
-  silent (`OccupancySettings.StepSounds`, on by default; off, moves are silent and the words come back);
+  hand-choice card no longer says "target". A move on the board plays the tile's sweep sound on every tile
+  (`OccupancySettings.StepSounds`, on by default; off, moves are silent and the words come back); with
+  `StepOnChangeOnly` (off by default) only when the tile's state (`OccupancyPlan.StepKey`: its marks and its
+  attackers) differs from the last step's, so alike tiles are silent;
   a move into a new column while crossing columns plays that column instead; a hand-choice card plays the
-  bell or puff when target-ness changes; leaving the board and hand forgets the last state; a new step or
+  bell or puff (with `StepOnChangeOnly`, when target-ness changes); leaving the board and hand forgets the last state; a new step or
   sweep cuts off the last.
 - Not ported from guildrun yet: `NumberEdit` (the mod's own number entry),
   `ScreenAudit`, `BufferKeys`' guildrun buffer names (hero, quest... are placeholders).

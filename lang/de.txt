@@ -315,3 +315,4 @@ occupancy.stop_at_last=Beim letzten besetzten Feld anhalten
 sound.cue.target=Ziel
 sound.cue.danger=Gefahr
 occupancy.step_sounds=Feldklang beim Bewegen abspielen
+occupancy.step_on_change=Feldklang nur, wenn sich das Feld ändert

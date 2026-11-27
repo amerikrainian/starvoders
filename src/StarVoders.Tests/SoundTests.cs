@@ -165,6 +165,14 @@ namespace StarVoders.Tests
         }
 
         [Fact]
+        public void Every_step_plays_its_tile_unless_only_changes_play()
+        {
+            string key = OccupancyPlan.StepKey("tile", TileMark.Danger, "Shooter 2");
+            Assert.Equal("D", Cues(OccupancyPlan.Step(TileMark.Danger, key, key, 0, 0, onChangeOnly: false)));
+            Assert.Equal("", Cues(OccupancyPlan.Step(TileMark.Danger, key, key, 0, 0, onChangeOnly: true)));
+        }
+
+        [Fact]
         public void A_first_step_always_plays_and_kinds_never_match()
         {
             string key = OccupancyPlan.StepKey("tile", TileMark.None, null);

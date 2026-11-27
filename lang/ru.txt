@@ -315,3 +315,4 @@ occupancy.stop_at_last=Останавливаться на последней з
 sound.cue.target=Цель
 sound.cue.danger=Опасность
 occupancy.step_sounds=Звук клетки при перемещении
+occupancy.step_on_change=Звук клетки только при её изменении

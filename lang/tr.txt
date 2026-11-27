@@ -315,3 +315,4 @@ occupancy.stop_at_last=Son dolu karede dur
 sound.cue.target=Hedef
 sound.cue.danger=Tehlike
 occupancy.step_sounds=Hareket ederken karenin sesini çal
+occupancy.step_on_change=Karenin sesi yalnızca kare değiştiğinde

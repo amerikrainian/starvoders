@@ -56,8 +56,8 @@ namespace StarVoders.Module.Audio
         // ---- the cursor crossing columns ----
 
         /// <summary>A board cell took focus: entering a new column plays it (when that is on), else the
-        /// step plays the tile's sound when the tile differs from the last step's (when that is on): moving
-        /// across alike tiles is silent. The column's sweep holds the tile already, so the two never play
+        /// step plays the tile's sound (when that is on; with StepOnChangeOnly only when the tile differs
+        /// from the last step's: moving across alike tiles is silent). The column's sweep holds the tile already, so the two never play
         /// together.</summary>
         public static void Focused(int x, int y)
         {
@@ -72,12 +72,13 @@ namespace StarVoders.Module.Audio
             _lastStep = key;
             if (newColumn && settings.OnColumnCross) { PlayColumn(board, x, y); return; }
             if (!settings.StepSounds) return;
-            var notes = OccupancyPlan.Step(mark, key, last, y, settings.PitchStep.Value, x * ColumnSemitones(settings));
+            var notes = OccupancyPlan.Step(mark, key, last, y, settings.PitchStep.Value, x * ColumnSemitones(settings),
+                settings.StepOnChangeOnly);
             if (notes.Count > 0) Play(notes);
         }
 
         /// <summary>A hand card took focus while a choice among the hand's cards runs: the bell when it
-        /// is a target and the last step was not, the puff the other way, nothing between alike ones.</summary>
+        /// is a target, else the puff; with StepOnChangeOnly only when that differs from the last step.</summary>
         public static void CardFocused(bool target)
         {
             var settings = Settings;
@@ -87,7 +88,7 @@ namespace StarVoders.Module.Audio
             string last = _lastStep;
             _lastStep = key;
             if (!settings.StepSounds) return;
-            var notes = OccupancyPlan.Step(mark, key, last, 0, 0);
+            var notes = OccupancyPlan.Step(mark, key, last, 0, 0, 0, settings.StepOnChangeOnly);
             if (notes.Count > 0) Play(notes);
         }
 
@@ -99,7 +100,7 @@ namespace StarVoders.Module.Audio
             if (!EncounterScreen.FocusedOnHand()) _lastStep = null;
         }
 
-        // The last step's state (OccupancyPlan.StepKey): a step plays only when its own differs.
+        // The last step's state (OccupancyPlan.StepKey): with StepOnChangeOnly a step plays only when its own differs.
         private static string _lastStep;
 
         // Who strikes the tile, as a stable key: the attackers' names in order, empty when safe.

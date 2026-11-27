@@ -1,5 +1,9 @@
 # Changelog
 
+## V0.2.0
+
+- Per suggestion, sounds play on each grid tile by default, with the option to go to deltas.
+
 ## V0.1.9
 
 - First attempt at sonifying grid occupancy: press g to play a column, shift g to play the entire grid, and go to settings to configure how often, fast, or at all it goes off. The grid also gained sounds as you scroll over cells, playing them as tiles change. We can also add more cues, but this should cover a fair number of cases.

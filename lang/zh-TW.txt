@@ -315,3 +315,4 @@ occupancy.stop_at_last=在最後一個佔用格子處停止
 sound.cue.target=目標
 sound.cue.danger=危險
 occupancy.step_sounds=移動時播放格子的聲音
+occupancy.step_on_change=僅在格子變化時播放格子的聲音
